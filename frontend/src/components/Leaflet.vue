@@ -1,24 +1,27 @@
 
 <template> 
-   <div id="container">
-      <l-map ref="map" :zoom="zoom" :center="center" id="map">
-         <l-tile-layer :url="url" :attribution="attrib"></l-tile-layer>
-         <l-marker :lat-lng="marker" :icon="icon">
-         </l-marker>
-         <div v-for="layer in layers" v-bind:key="layer.id">
-            <l-geo-json
-              :geojson="layer.json"
-              :optionsStyle="layer.style">
-            </l-geo-json>
-         </div>
-      </l-map>
-   </div>
+   <l-map ref="map" :zoom="zoom" :center="center" id="map">
+      <l-tile-layer :url="url" :attribution="attrib"></l-tile-layer>
+      <l-marker :lat-lng="marker" :icon="icon">
+      </l-marker>
+      <div v-for="layer in layers" v-bind:key="layer.id">
+         <l-geo-json
+           :geojson="layer.fields.geometry"
+           :optionsStyle="computeStyle(layer)">
+         </l-geo-json>
+      </div>
+   </l-map>
 </template>
 
 <script charset="utf-8">
+
    import {LMap, LTileLayer, LMarker, LGeoJson} from "vue2-leaflet"
    import L from "leaflet"
    import "leaflet-draw" 
+   import Layer from "@/models/layer.js"
+
+   import * as R from "ramda"
+
 
    export default {
       name: "Leaflet",
@@ -40,6 +43,40 @@
          }
       },
 
+      methods: {
+         computeStyle: function(layer){
+
+            let red = 75;
+            let green = 25;
+            let blue = 25; 
+
+            layer.style.color = this.rgbToHex(red,green,blue);
+            return layer.style
+         },
+
+         scaleValueToHex: function(x){
+            // Turns a number between 0 and 100 into a hex value
+
+            const ceil = (x,y) => x > y ? y : x;
+
+            const toHex = (x) => Number(x).toString(16)
+
+            const normalize = R.pipe((x) => x*2.55, 
+                                     R.curry(ceil)(R.__,255),
+                                     Math.round)
+
+            return toHex(normalize(x))
+
+         }, 
+
+         rgbToHex: function(r,g,b){
+            let hexValues = R.map(this.scaleValueToHex,[r,g,b])
+            return "#" + hexValues.join("")
+         },
+
+
+      },
+
       computed: {
          layers: function(){
             return this.$store.state.layers;
@@ -50,11 +87,12 @@
       },
 
       mounted: function(){
+
          this.$nextTick(function(){
             // Add draw control
             const map = this.$refs.map.mapObject;
             const store = this.$store;
-            let ndrawn = 0;
+
             this.map = map 
 
 
@@ -68,18 +106,12 @@
 
             // Add event listener
             map.on(L.Draw.Event.CREATED, function(e){
-               let json = e.layer.toGeoJSON();
-               let style = {color: "red"}
-               //if(e.layerType === "polygon"){
-               store.commit("pushLayer",{
-                  style: style,
-                  type: e.layerType,
-                  json: json,
-                  id: ndrawn});
-               ndrawn ++;
-               //}
+               let layer = new Layer(
+                  e.layer.toGeoJSON(), 0,0
+               );
+               layer.pk = layer.hash 
+               store.commit("pushLayer",layer);
             })
-
          });
       }
    }
@@ -87,6 +119,6 @@
 
 <style lang="sass" type="text/css" media="screen">
    #map
-      height: 500px
-      width: 100vg 
+      height: 90vh 
+      width: 100% 
 </style>

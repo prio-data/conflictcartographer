@@ -4,11 +4,11 @@ import Vuex from "vuex"
 Vue.use(Vuex);
 
 const defaultStyle = {
-   color: "red"
+   weight: 1
 }
 
 const focusedStyle = {
-   color: "blue"
+   weight: 3
 }
 
 const state = {
@@ -21,21 +21,6 @@ const state = {
    hello: "world",
    debugNotify: "",
    count: 1,
-
-   randomList: [
-      {  
-         id: "1",
-         content: "Hello"
-      },
-      {  
-         id: "2",
-         content: "World"
-      },
-      {  
-         id: "3",
-         content: "Howdy"
-      },
-   ]
 };
 
 const mutations = {
@@ -55,38 +40,40 @@ const mutations = {
       state.djangodata = data;
    },
 
-   deleteRandomItem(state,item){
-      let i = state.randomList.findIndex(layer => layer.id == item.id);
-      state.randomList.splice(i,1) 
-   },
-
    pushLayer(state,pushed){
       pushed["style"] = defaultStyle
       state.layers.push(pushed)
    },
 
+   updateLayer(state,updated){
+      let i = state.layers.findIndex(layer => layer === updated);
+      state.layers[i] = updated
+   },
+
    deleteLayer(state,deleted){
-      let i = state.layers.findIndex(layer => layer.id == deleted.id);
+      let i = state.layers.findIndex(layer => layer === deleted);
       state.layers.splice(i,1) 
    },
 
    focusOn(state,focused){
-      let focusedLayer = state.layers.findIndex(layer => layer.id === focused.id)
+      let focusedLayer = state.layers.findIndex(layer => layer == focused)
       state.layers[focusedLayer]["style"] = focusedStyle 
-      state.infocus = focused.id;
+      state.infocus = focused;
    },
 
    unfocus(state){
-      let focused = {id: state.infocus}
-      let focusedLayer = state.layers.findIndex(layer => layer.id === focused.id)
-      state.layers[focusedLayer]["style"] = defaultStyle 
-      state.infocus = null;
+      let focused = state.infocus
+      let focusedLayer = state.layers.findIndex(layer => layer === focused)
+      if(typeof state.layers[focusedLayer] !== "undefined"){
+         state.layers[focusedLayer]["style"] = defaultStyle 
+         state.infocus = null;
+      }
    }
 
 };
 
 const store = new Vuex.Store({
-   strict: true,
+   strict: false,
    state,
    mutations
 })

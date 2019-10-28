@@ -1,16 +1,34 @@
 <template>
    <div
       v-on:mouseenter ="$emit('mouseover')"
-      v-on:mouseleave ="$emit('onmouseout')">
+      v-on:mouseleave ="$emit('onmouseout')" class="layerview">
+
       <div class="row">
-         <p>{{layer.type}}</p>
+         <p>Intensity</p>
+         <vue-slider
+            ref="slider1"
+            v-model="layer.fields.intensity"
+            :min="intensity_min"
+            :max="intensity_max"
+            :interval="intensity_interval"
+         />
+      </div>
+
+      <div class="row">
+         <p>Confidence</p>
+         <vue-slider
+            ref="slider2"
+            v-model="layer.fields.confidence"
+            :min="confidence_min"
+            :max="confidence_max"
+            :interval="confidence_interval"
+         />
+      </div>
+
+      <div class="row">
          <button v-on:click="$emit('deleteMe')">Delete me!</button>
       </div>
-      <input type="text" name="layername" value="A layer" id="layername">
-      <vue-slider
-         ref="slider"
-         v-model="sliderval"
-      />
+
    </div>
 </template>
 
@@ -23,12 +41,31 @@
       components: {vueSlider},
       data: function(){
          return {
-            sliderval: 0
+            confidence_min: -5,
+            confidence_max: 5,
+            confidence_interval: 1,
+            intensity_min: -5,
+            intensity_max: 5,
+            intensity_interval: 1,
          }
       },
    }
 </script>
 
-<style scoped lang="sass" type="text/css" media="screen">
+<style scoped lang="scss">
+@import "../sass/variables.sass";
+.layerview {
+   background: $ui_gray;
+   margin: 5px;
+   padding: 5px;
+   border-radius: 5px;
+}
+input {
+   width: 100%;
+}
+
+button {
+   width: 100%;
+}
 </style>
 

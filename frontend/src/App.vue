@@ -1,5 +1,5 @@
 <template>
-   <div id="app" class="container">
+   <div id="app">
       <div id="navbar" class="row twelve columns"> 
          <Navbar title="Conflict Cartographer"/> 
       </div>
@@ -11,10 +11,6 @@
             <Toolbar v-on:pushData="pushData"/>  
          </div>
       </div>
-      <div class="row">
-         <debug v-bind:data="djangodata"/> 
-         <debug v-bind:data="debugNotify"/> 
-      </div>
    </div>
 </template>
 
@@ -23,7 +19,8 @@
 import Leaflet from './components/Leaflet.vue'
 import Toolbar from "./components/Toolbar.vue"
 import Navbar from "./components/Navbar.vue"
-import Debug from "./components/Debug.vue"
+
+import Layer from "./models/layer.js"
 
 export default {
    name: 'app',
@@ -31,23 +28,11 @@ export default {
       Leaflet,
       Toolbar,
       Navbar,
-      Debug,
-   },
-
-   data: function(){
-   return {
-      djangodata: JSON.parse(document.getElementById("dat").textContent),
-   }},
-
-   computed: {
-      debugNotify: function(){
-         return this.$store.state.debugNotify;
-      }
    },
 
    methods: {
       pushData: function(){
-         let payload  = {foo: "bar"};
+         let payload  = this.$store.state.layers;
          let csrfToken = this.$cookies.get("csrftoken");
          let config = {
             credentials: "include",
@@ -67,17 +52,36 @@ export default {
       //this.map = this.$refs.mainmap.map;
       //this.layers = this.$refs.mainmap.layers;
       this.map = this.$refs.map;
-      let djangodata = JSON.parse(document.getElementById("dat").textContent);
-      this.$store.commit("initDjango",djangodata);
+      let data = JSON.parse(JSON.parse(document.getElementById("dat").textContent));
+      let layers = data.map(function(obj){
+         let layer = new Layer(
+            obj.fields.geometry,
+            obj.fields.intensity,
+            obj.fields.confidence
+         );
+         layer.pk = obj.pk;
+         return layer;
+      })
+
+      layers.forEach((layer) => this.$store.commit("pushLayer",layer))
+
+      this.$store.commit("initDjango",data);
+
    },
    delimiters: ["[[","]]"]
 }
 </script>
 
-<style>
-#app {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-}
+<style lang="sass">
+#app 
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+  color: #2c3e50
+  margin-right: 2vh
+
+#navbar
+   height: 10vh
+
+#content
+   height: 90vh 
 </style>

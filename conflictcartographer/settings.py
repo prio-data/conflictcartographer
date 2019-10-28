@@ -38,8 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "django.contrib.gis",
     "webpack_loader",
     "livereload",
+    "cartographer"
 ]
 
 MIDDLEWARE = [
@@ -79,8 +81,12 @@ WSGI_APPLICATION = 'conflictcartographer.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        "HOST":"0.0.0.0",
+        "PORT":"2345",
+        "USER":"postgres",
+        "PASSWORD":"letmein",
+        'NAME': "conflictcartographer" 
     }
 }
 

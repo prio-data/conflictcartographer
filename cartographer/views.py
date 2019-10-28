@@ -1,14 +1,25 @@
 from django.shortcuts import render
+from django.core import serializers
 from django.http import HttpResponse
 from django.shortcuts import redirect
+from .models import DrawnShape
 import json
 
 # Create your views here.
 
 def cartographer(request):
     if request.method == "GET":
-        context = {"data":[1,2,3,4,5]}
+
+        shapes = DrawnShape.objects.all()
+
+        context = {"data": serializers.serialize("json",shapes)} 
         return render(request,"cartographer.html",context)
     elif request.method == "POST":
-        print(f"Recieved: {request.body.decode()}")
+        DrawnShape.objects.all().delete()
+        data = request.body.decode()
+        print(f"Recieved: {data}")
+        shapes = serializers.deserialize("json",data)
+        for shape in shapes: 
+            shape.save()
+
         return HttpResponse("You posted!!")

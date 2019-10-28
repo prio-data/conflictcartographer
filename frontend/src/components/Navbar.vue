@@ -1,7 +1,6 @@
 <template>
    <div>
       <h1>{{ title }}</h1>
-      <hr>
    </div>
 </template>
 
@@ -16,5 +15,7 @@
 </script>
 
 <style scoped lang="sass" type="text/css" media="screen">
+h1
+   margin-left: 15px
 </style>
 

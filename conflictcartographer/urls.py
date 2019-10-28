@@ -20,5 +20,5 @@ from cartographer.views import cartographer
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", cartographer, name = "app"),
+    path("", cartographer, name = "conflictcartographer"),
 ]

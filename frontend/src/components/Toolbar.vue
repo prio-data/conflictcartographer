@@ -1,16 +1,8 @@
 <template>
    <div>
-
-      <div class="row">
-         <h1>Tools</h1>
-      </div>
-
       <div class="row">
          <div class="six columns">
             <button v-on:click="$emit('pushData')" class="button-primary">Save</button>
-         </div>
-         <div class="six columns">
-            <button v-on:click="reverseGreeting" class="button-primary">Test</button>
          </div>
       </div>
 
@@ -23,7 +15,6 @@
                :layer="layer"/>
          </div>
       </div>
-
    </div>
 </template>
 
@@ -34,10 +25,6 @@
       name: "Toolbar",
 
       methods: {
-         y: function(){},
-         reverseGreeting: function(){
-            this.$store.commit("reverseGreeting");
-         },
          deleteLayer: function(layer){
             this.$store.commit("deleteLayer",layer)
          },
@@ -67,5 +54,6 @@
 button
    margin-top: 5px
    margin-bottom: 5px
+
 </style>
 
