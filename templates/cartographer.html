@@ -28,8 +28,8 @@
 
    {% csrf_token %}
    {{ data|json_script:"dat"}}
+   {{ sessionInfo|json_script:"sessionInfo"}}
    {% render_bundle 'app' %}
 
 </body>
 </html>
-

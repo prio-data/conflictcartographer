@@ -7,7 +7,8 @@
          <p>Intensity</p>
          <vue-slider
             ref="slider1"
-            v-model="layer.fields.intensity"
+            v-on:drag-end = "$emit('change')"
+            v-model="layer.intensity"
             :min="intensity_min"
             :max="intensity_max"
             :interval="intensity_interval"
@@ -18,7 +19,8 @@
          <p>Confidence</p>
          <vue-slider
             ref="slider2"
-            v-model="layer.fields.confidence"
+            v-on:drag-end = "$emit('change')"
+            v-model="layer.confidence"
             :min="confidence_min"
             :max="confidence_max"
             :interval="confidence_interval"
@@ -52,20 +54,23 @@
    }
 </script>
 
-<style scoped lang="scss">
-@import "../sass/variables.sass";
-.layerview {
-   background: $ui_gray;
-   margin: 5px;
-   padding: 5px;
-   border-radius: 5px;
-}
-input {
-   width: 100%;
-}
+<style scoped lang="sass">
+@import "../sass/variables.sass"
 
-button {
-   width: 100%;
-}
+div.layerview 
+   background: $ui_gray
+
+   margin-bottom: $gaps
+   margin-top: $gaps
+   margin-right: $gaps
+   padding: $gaps
+
+   border-radius: $roundedness 
+input 
+   width: 100%
+
+button 
+   width: 100%
+
 </style>
 

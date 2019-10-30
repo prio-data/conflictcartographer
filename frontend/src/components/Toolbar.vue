@@ -1,17 +1,12 @@
 <template>
    <div>
       <div class="row">
-         <div class="six columns">
-            <button v-on:click="$emit('pushData')" class="button-primary">Save</button>
-         </div>
-      </div>
-
-      <div class="row">
          <div v-for="layer in layers" v-bind:key="layer.id">
             <layer-view 
                v-on:mouseover = "focusOn(layer)"
                v-on:onmouseout = "unfocus"
                v-on:deleteMe = "deleteLayer(layer)" 
+               v-on:change = "updateLayer(layer)"
                :layer="layer"/>
          </div>
       </div>
@@ -28,6 +23,10 @@
          deleteLayer: function(layer){
             this.$store.commit("deleteLayer",layer)
          },
+         
+         updateLayer: function(layer){
+            this.$store.commit("updateLayer",layer)
+         },
 
          focusOn: function(layer){
             this.$store.commit("focusOn",layer)
@@ -35,6 +34,10 @@
 
          unfocus: function(){
             this.$store.commit("unfocus")
+         },
+         
+         valueChange(){
+            console.log("something changed")
          }
       },
 
@@ -52,8 +55,8 @@
 
 <style scoped lang="sass" type="text/css" media="screen">
 button
-   margin-top: 5px
-   margin-bottom: 5px
-
+   @import "../sass/variables.sass"
+   margin-top: $gaps 
+   margin-bottom: $gaps
 </style>
 

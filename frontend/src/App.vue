@@ -7,8 +7,8 @@
          <div id="mainwindow" class="nine columns">
             <Leaflet/> 
          </div>
-         <div id="sidebar" class="three columns">
-            <Toolbar v-on:pushData="pushData"/>  
+         <div id="toolbar" class="three columns">
+            <Toolbar/> 
          </div>
       </div>
    </div>
@@ -21,6 +21,7 @@ import Toolbar from "./components/Toolbar.vue"
 import Navbar from "./components/Navbar.vue"
 
 import Layer from "./models/layer.js"
+import * as R from "ramda"
 
 export default {
    name: 'app',
@@ -30,58 +31,77 @@ export default {
       Navbar,
    },
 
-   methods: {
-      pushData: function(){
-         let payload  = this.$store.state.layers;
-         let csrfToken = this.$cookies.get("csrftoken");
-         let config = {
-            credentials: "include",
-            headers: {"X-CSRFToken": csrfToken}
-         };
+   //data: function(){
+   //},
 
-         this.$http.post("/",payload,config).then(
-               response => {window.location = response.url;},
-               err => {this.$store.commit("notifyFailure", err["status"])
-         })
-         //this.$store.commit("pushData");
-      },
+   computed: {
    },
 
+   methods: {
+   },
+
+
    mounted: function(){
-      //this.$refs.mainmap.initMap();
-      //this.map = this.$refs.mainmap.map;
-      //this.layers = this.$refs.mainmap.layers;
+      const csrfToken = this.$cookies.get("csrftoken");
+
+      const apiDef = {
+         url: "/api",
+         header: {credentials: "include",
+            headers: {"X-CSRFToken": csrfToken}
+         }
+      }
+
       this.map = this.$refs.map;
-      let data = JSON.parse(JSON.parse(document.getElementById("dat").textContent));
-      let layers = data.map(function(obj){
-         let layer = new Layer(
-            obj.fields.geometry,
-            obj.fields.intensity,
-            obj.fields.confidence
-         );
-         layer.pk = obj.pk;
-         return layer;
-      })
+      let sessionInfo = JSON.parse(document.getElementById("sessionInfo").textContent);
+      this.$store.commit("updateSessionInfo",sessionInfo);
 
-      layers.forEach((layer) => this.$store.commit("pushLayer",layer))
+      this.$store.commit("initApi",apiDef)
+      this.$store.commit("initializeLocations")
+      this.$store.dispatch("initializeLayers",{})
 
-      this.$store.commit("initDjango",data);
+      // Csrftoken for AJAX  
 
+      // ****************************************************
+      // This is deprecated
+
+      //let data = JSON.parse(JSON.parse(document.getElementById("dat").textContent));
+
+      //let layers = data.map(function(obj){
+         //let layer = new Layer(
+            //obj.fields.geometry,
+            //obj.fields.intensity,
+            //obj.fields.confidence
+         //);
+         //layer.pk = obj.pk;
+         //return layer;
+      //})
+
+      //layers.forEach((layer) => this.$store.commit("pushLayer",layer))
+
+      // ****************************************************
    },
    delimiters: ["[[","]]"]
 }
 </script>
 
 <style lang="sass">
+@import "./sass/variables.sass"
+
 #app 
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale
   color: #2c3e50
   margin-right: 2vh
 
+#toolbar
+   margin: $gaps 
+
 #navbar
    height: 10vh
 
 #content
    height: 90vh 
+
+#map
+   border-radius: 25px
 </style>

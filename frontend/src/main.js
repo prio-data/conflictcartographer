@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueCookies from "vue-cookies"
 import VueResource from "vue-resource"
+import vueDebounce from "vue-debounce"
 
 import "leaflet/dist/leaflet.css"
 import "leaflet-draw/dist/leaflet.draw.css"
@@ -26,6 +27,7 @@ Icon.Default.mergeOptions({
 Vue.config.productionTip = false
 Vue.use(VueResource)
 Vue.use(VueCookies)
+Vue.use(vueDebounce)
 
 new Vue({
    el: "#app",
@@ -33,5 +35,4 @@ new Vue({
    delimiters: ["[[","]]"],
    render: h => h(App),
 }).$mount('#app')
-
 

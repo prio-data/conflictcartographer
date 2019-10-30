@@ -1,12 +1,14 @@
 
 <template> 
-   <l-map ref="map" :zoom="zoom" :center="center" id="map">
+   <l-map ref="map" 
+      :zoom="mapZoom" 
+      :center="mapCenter" 
+      id="map"
+      zoomControl="false">
       <l-tile-layer :url="url" :attribution="attrib"></l-tile-layer>
-      <l-marker :lat-lng="marker" :icon="icon">
-      </l-marker>
-      <div v-for="layer in layers" v-bind:key="layer.id">
+      <div v-for="layer in layers" v-bind:key="layer.pk">
          <l-geo-json
-           :geojson="layer.fields.geometry"
+           :geojson="layer.geometry"
            :optionsStyle="computeStyle(layer)">
          </l-geo-json>
       </div>
@@ -32,30 +34,29 @@
             url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
             attrib: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
             id: "mapbox.streets",
-            marker: L.latLng(60,10),
-            center: L.latLng(60,10),
-            zoom: 5,
-            icon: L.icon({
-               iconUrl: "http://icons.iconarchive.com/icons/graphicloads/100-flat/256/home-icon.png",
-               iconSize: [32,32],
-               iconAnchor: [16,37]
-            })
          }
       },
 
       methods: {
          computeStyle: function(layer){
+            let base = {
+               color: this.rgbToHex(layer.intensity,
+                                    -4,-4),
 
-            let red = 75;
-            let green = 25;
-            let blue = 25; 
-
-            layer.style.color = this.rgbToHex(red,green,blue);
-            return layer.style
+               fillOpacity: ((layer.confidence + 5)/10)
+            }
+            if(layer.vizId == this.focused){
+               base.weight = 2 
+               base.fillOpacity = base.fillOpacity + 0.2
+            } else {
+               base.weight = 0.1 
+            }
+            return base
          },
 
          scaleValueToHex: function(x){
             // Turns a number between 0 and 100 into a hex value
+            x = ((x+5)/10) * 100
 
             const ceil = (x,y) => x > y ? y : x;
 
@@ -83,34 +84,63 @@
          },
          focused: function(){
             return this.$store.state.infocus;
-         }
+         },
+         mapZoom: function(){
+            return this.$store.state.zoomlvl;
+         },
+         mapx: function(){
+            return this.$store.state.mapx;
+         },
+         mapy: function(){
+            return this.$store.state.mapy;
+         },
+         mapCenter: function(){
+            return L.latLng(this.mapx,this.mapy)
+         },
       },
 
       mounted: function(){
 
          this.$nextTick(function(){
-            // Add draw control
+
             const map = this.$refs.map.mapObject;
             const store = this.$store;
+            this.map = map;
 
-            this.map = map 
+            // Disable all movement 
+            this.map.touchZoom.disable();
+            this.map.doubleClickZoom.disable();
+            this.map.scrollWheelZoom.disable();
+            this.map.dragging.disable();
+
+            // Remove zoom control
+
+            this.map.zoomControl.remove();
 
 
+            // Add draw control
             this.drawnItems = new L.FeatureGroup();
-
             this.map.addControl(new L.Control.Draw({
+               draw: {
+                  rectangle: false,
+                  circle: false,
+                  circlemarker: false,
+                  polyline: false,
+               },
                edit: {
-                  featureGroup: this.drawnItems
+                  featureGroup: this.drawnItems,
+                  edit: false,
+                  remove: false
                }
             }));
 
             // Add event listener
             map.on(L.Draw.Event.CREATED, function(e){
-               let layer = new Layer(
-                  e.layer.toGeoJSON(), 0,0
-               );
-               layer.pk = layer.hash 
-               store.commit("pushLayer",layer);
+               let layer = e.layer.toGeoJSON()
+               layer.intensity = 0
+               layer.confidence = 0
+               layer.author = "http://localhost:8000/api/users/1/"
+               store.dispatch("createLayer",layer);
             })
          });
       }
@@ -118,7 +148,8 @@
 </script>
 
 <style lang="sass" type="text/css" media="screen">
+   @import "../sass/variables.sass"
    #map
-      height: 90vh 
+      height: $map_height 
       width: 100% 
 </style>

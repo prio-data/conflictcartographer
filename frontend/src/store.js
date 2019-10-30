@@ -1,8 +1,10 @@
 import Vue from "vue"
 import Vuex from "vuex"
+import Api from "./api.js"
 
 Vue.use(Vuex);
 
+// Move this out somewhere?=
 const defaultStyle = {
    weight: 1
 }
@@ -13,69 +15,125 @@ const focusedStyle = {
 
 const state = {
 
+   // Deprecated **************************
    djangodata: "", 
+   // Deprecated **************************
 
+   api: {},
+
+   // Username (etc?) retrieved from django sesh
+   sessionInfo: {},
+   apiURL: "/api/",
+   
+   // The user chooses a location to work on. 
+   // drawn shapes are registered on a location. 
+   locations: [],
+
+   // Retrieved from the current location, used to
+   // focus the leaflet map.
+   zoomlvl: 6,
+   mapx: 60,
+   mapy: 12,
+
+   // Current layers, either drawn or retrieved
+   // from server. Is pushed and wiped when switching
+   // location.
    layers: [],
+
+   // UI stuff
+   
+   // Used to highlight a shape when mousing over its
+   // control panel.
    infocus: null,
 
-   hello: "world",
-   debugNotify: "",
-   count: 1,
+   // Used to figure out which layer to highlight
+   vizId: 0,
+
 };
 
+const actions = {
+   createLayer(context,created){
+      context.commit("createLayer",created)
+      context.commit("incrementVizId")
+   },
+   initializeLayers(context,filter){
+      context.commit("initializeLayers",filter)
+      state.vizId = state.layers.length + 1
+   }
+}
+
 const mutations = {
-   reverseGreeting(state){
-      state.hello = state.hello.split("").reverse().join("");
-   },
-   notifySuccess(state){
-      state.debugNotify = "It got pushed!";
-   },
-   notifyFailure(state,err){
-      state.debugNotify = err; 
-   },
-   increment(state){
-      state.count ++
-   },
-   initDjango(state,data){
-      state.djangodata = data;
+   incrementVizId(state){
+      state.vizId = state.vizId + 1;
    },
 
-   pushLayer(state,pushed){
-      pushed["style"] = defaultStyle
-      state.layers.push(pushed)
+
+   // API requests ========================
+
+   initApi(state,api){
+      state.api = new Api(api.url,api.header);
+   },
+  
+   // Populate list of "codeable" locations from the API
+   initializeLocations(state){
+      let populate = (countries) => state.countries = countries
+      state.api.get("countries",populate,{})
+   },
+
+   // Leaflet layer handling ==============
+   initializeLayers(state,filter){
+      let populate = function(layers){
+         layers.forEach(function(layer,index){
+            layer.vizId = index
+         })
+         state.layers = layers
+         state.vizId = layers.length + 1
+      }
+      state.api.get("shapes",populate,filter)
    },
 
    updateLayer(state,updated){
-      let i = state.layers.findIndex(layer => layer === updated);
-      state.layers[i] = updated
+      state.api.del("shapes",updated.pk)
+      state.api.post("shapes",updated)
+   },
+   
+   createLayer(state,created){
+      created.vizId = state.vizId
+      state.layers.push(created)
+      state.api.post("shapes",created)
    },
 
    deleteLayer(state,deleted){
       let i = state.layers.findIndex(layer => layer === deleted);
+      let id = deleted.pk
       state.layers.splice(i,1) 
+      state.api.del("shapes",id)
+   },
+   
+   // Passed data from sesh, passed from django
+   // used to show username (etc. ?)
+   updateSessionInfo(state,data){
+      state.sessionInfo = {...data, ...state.sessionInfo}  
    },
 
+
+   // UI stuff ============================
+   
+   // Focus / unfocus when mousing over  
    focusOn(state,focused){
-      let focusedLayer = state.layers.findIndex(layer => layer == focused)
-      state.layers[focusedLayer]["style"] = focusedStyle 
-      state.infocus = focused;
+      state.infocus = focused.vizId;
    },
 
    unfocus(state){
-      let focused = state.infocus
-      let focusedLayer = state.layers.findIndex(layer => layer === focused)
-      if(typeof state.layers[focusedLayer] !== "undefined"){
-         state.layers[focusedLayer]["style"] = defaultStyle 
-         state.infocus = null;
-      }
-   }
-
+      state.infocus = -1;
+   },
 };
 
 const store = new Vuex.Store({
    strict: false,
    state,
-   mutations
+   mutations,
+   actions,
 })
 
 export default store;

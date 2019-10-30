@@ -17,6 +17,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 FRONTEND_DIR = os.path.join(BASE_DIR, "frontend")
 
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
@@ -26,7 +29,6 @@ SECRET_KEY = '8*yj)q$p4n5zk654t7y+%cpii2e!f%^bjc=l=2mz0=_)^#@2m0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -39,9 +41,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "django.contrib.gis",
+    "rest_framework",
+    "django_filters",
     "webpack_loader",
     "livereload",
-    "cartographer"
+    "cartographer",
+    "api",
 ]
 
 MIDDLEWARE = [
@@ -128,6 +133,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+ALLOWED_HOSTS = ["*"]
 
 WEBPACK_LOADER = {
     "DEFAULT": {
@@ -136,4 +142,9 @@ WEBPACK_LOADER = {
         "STATS_FILE": os.path.join(FRONTEND_DIR,"webpack-stats.json"),
         "PORT": 1337,
     }
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }

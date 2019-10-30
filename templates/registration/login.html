@@ -1,0 +1,16 @@
+
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width" />
+      <title>Login</title>
+   </head>
+   <body>
+      <form method="post" accept-charset="utf-8">
+         {% csrf_token %}
+         {{ form.as_p }}
+         <button type="submit">Login</button>
+      </form>
+   </body>
+</html>
