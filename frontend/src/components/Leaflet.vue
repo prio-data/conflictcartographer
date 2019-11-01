@@ -5,7 +5,6 @@
       :center="mapCenter" 
       id="map"
       zoomControl="false">
-      <l-tile-layer :url="url" :attribution="attrib"></l-tile-layer>
       <div v-for="layer in layers" v-bind:key="layer.pk">
          <l-geo-json
            :geojson="layer.geometry"
@@ -20,6 +19,7 @@
    import {LMap, LTileLayer, LMarker, LGeoJson} from "vue2-leaflet"
    import L from "leaflet"
    import "leaflet-draw" 
+   import "leaflet-boundary-canvas"
    import Layer from "@/models/layer.js"
 
    import * as R from "ramda"
@@ -74,8 +74,6 @@
             let hexValues = R.map(this.scaleValueToHex,[r,g,b])
             return "#" + hexValues.join("")
          },
-
-
       },
 
       computed: {
@@ -91,21 +89,23 @@
          mapx: function(){
             return this.$store.state.mapx;
          },
+
          mapy: function(){
             return this.$store.state.mapy;
          },
+
          mapCenter: function(){
             return L.latLng(this.mapx,this.mapy)
          },
       },
 
       mounted: function(){
-
+         const map = this.$refs.map.mapObject;
          this.$nextTick(function(){
 
-            const map = this.$refs.map.mapObject;
             const store = this.$store;
             this.map = map;
+
 
             // Disable all movement 
             this.map.touchZoom.disable();
@@ -116,7 +116,6 @@
             // Remove zoom control
 
             this.map.zoomControl.remove();
-
 
             // Add draw control
             this.drawnItems = new L.FeatureGroup();
@@ -134,15 +133,21 @@
                }
             }));
 
+            // Add tiles
+
             // Add event listener
             map.on(L.Draw.Event.CREATED, function(e){
                let layer = e.layer.toGeoJSON()
                layer.intensity = 0
                layer.confidence = 0
-               layer.author = "http://localhost:8000/api/users/1/"
                store.dispatch("createLayer",layer);
             })
          });
+
+         const osm = new L.TileLayer(this.url,{
+            id: "background"
+         })
+         map.addLayer(osm);
       }
    }
 </script>
@@ -151,5 +156,6 @@
    @import "../sass/variables.sass"
    #map
       height: $map_height 
-      width: 100% 
+      width: $map_width 
+      border: 1px solid lightgray 
 </style>

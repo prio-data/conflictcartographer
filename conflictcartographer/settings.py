@@ -29,7 +29,32 @@ SECRET_KEY = '8*yj)q$p4n5zk654t7y+%cpii2e!f%^bjc=l=2mz0=_)^#@2m0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# ================================================
+# ================================================
+# ================================================
+# Staticfile stuff
 
+ALLOWED_HOSTS = ["*"]
+
+STATIC_ROOT = ""
+STATIC_URL = '/frontend/dist/'
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "frontend/dist/"),
+)
+
+WEBPACK_LOADER = {
+    "DEFAULT": {
+        "CACHE": not DEBUG,
+        "BUNDLE_DIR_NAME": "js/",
+        "STATS_FILE": os.path.join(FRONTEND_DIR,"webpack-stats.json"),
+    }
+}
+
+
+# ================================================
+# ================================================
+# ================================================
 
 # Application definition
 
@@ -128,21 +153,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.2/howto/static-files/
-
-STATIC_URL = '/static/'
-ALLOWED_HOSTS = ["*"]
-
-WEBPACK_LOADER = {
-    "DEFAULT": {
-        "CACHE": DEBUG,
-        "BUNDLE_DIR_NAME": "/bundles/",
-        "STATS_FILE": os.path.join(FRONTEND_DIR,"webpack-stats.json"),
-        "PORT": 1337,
-    }
-}
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),

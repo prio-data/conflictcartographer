@@ -1,9 +1,13 @@
 from django.contrib import admin
-from api.models import Country
+from api.models import CountryProject, IntensityDrawnShape
 
 # Register your models here.
 
-@admin.register(Country)
-class CountryAdmin(admin.ModelAdmin):
+@admin.register(CountryProject)
+class CountryProjectAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(IntensityDrawnShape)
+class DrawnShapeAdmin(admin.ModelAdmin):
     pass
 

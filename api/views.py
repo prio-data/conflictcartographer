@@ -9,8 +9,8 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
-from api.models import IntensityDrawnShape, Country
-from api.serializers import UserSerializer, IntensityDrawnShapeSerializer, CountrySerializer
+from api.models import IntensityDrawnShape, CountryProject
+from api.serializers import UserSerializer, IntensityDrawnShapeSerializer, CountryProjectSerializer, CountryProjectDetailSerializer
 
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
@@ -23,7 +23,7 @@ class ShapeViewSet(ModelViewSet):
             "intensity",
             "confidence",
             "author",
-            ]
+            "project"]
 
     def create(self,request,*args,**kwargs):
         domany = isinstance(request.data, list)
@@ -33,7 +33,10 @@ class ShapeViewSet(ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return HttpResponse(serializer.data["pk"], status=status.HTTP_201_CREATED)
 
-class CountryViewSet(ModelViewSet):
-    queryset = Country.objects.all()
-    serializer_class = CountrySerializer
+class ProjectViewSet(ModelViewSet):
+    queryset = CountryProject.objects.all()
+    serializer_class = CountryProjectSerializer
 
+class ProjectDetails(ModelViewSet):
+    queryset = CountryProject.objects.all()
+    serializer_class = CountryProjectDetailSerializer

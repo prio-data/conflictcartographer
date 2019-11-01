@@ -2,35 +2,33 @@
    <div
       v-on:mouseenter ="$emit('mouseover')"
       v-on:mouseleave ="$emit('onmouseout')" class="layerview">
-
-      <div class="row">
-         <p>Intensity</p>
-         <vue-slider
-            ref="slider1"
-            v-on:drag-end = "$emit('change')"
-            v-model="layer.intensity"
-            :min="intensity_min"
-            :max="intensity_max"
-            :interval="intensity_interval"
-         />
+      <div class="header">
+         <button v-on:click="$emit('deleteMe')"></button>
       </div>
-
-      <div class="row">
-         <p>Confidence</p>
-         <vue-slider
-            ref="slider2"
-            v-on:drag-end = "$emit('change')"
-            v-model="layer.confidence"
-            :min="confidence_min"
-            :max="confidence_max"
-            :interval="confidence_interval"
-         />
+      <div class="controls">
+         <div class="sliders">
+            <p>Intensity</p>
+            <vue-slider
+               ref="slider1"
+               v-on:drag-end = "$emit('change')"
+               v-model="layer.intensity"
+               :min="intensity_min"
+               :max="intensity_max"
+               :interval="intensity_interval"
+            />
+         </div>
+         <div class="row">
+            <p>Confidence</p>
+            <vue-slider
+               ref="slider2"
+               v-on:drag-end = "$emit('change')"
+               v-model="layer.confidence"
+               :min="confidence_min"
+               :max="confidence_max"
+               :interval="confidence_interval"
+            />
+         </div>
       </div>
-
-      <div class="row">
-         <button v-on:click="$emit('deleteMe')">Delete me!</button>
-      </div>
-
    </div>
 </template>
 
@@ -57,7 +55,9 @@
 <style scoped lang="sass">
 @import "../sass/variables.sass"
 
-div.layerview 
+.layerview
+   width: inherit 
+   height: inherit 
    background: $ui_gray
 
    margin-bottom: $gaps
@@ -66,11 +66,39 @@ div.layerview
    padding: $gaps
 
    border-radius: $roundedness 
-input 
-   width: 100%
 
-button 
-   width: 100%
+
+.header button
+   width: 25px 
+   height: 25px
+   padding: 0px 
+
+   border: none
+
+   float: right
+
+   background: $ui_remove_1
+
+.header:hover button
+   background: $ui_remove_2 
+
+.controls
+   font-size: 20px
+   line-height: 2
+
+.controls p
+   margin-bottom: 0px
+
+// Slider
+.vue-slider-ltr
+   margin-right: 5px
+   margin-left: 5px
+
+//div.controls
+   display: none
+
+.layerview:hover div.controls
+   display: inline
 
 </style>
 

@@ -1,6 +1,6 @@
 <template>
    <div>
-      <div class="row">
+      <div class="viewcontainer">
          <div v-for="layer in layers" v-bind:key="layer.id">
             <layer-view 
                v-on:mouseover = "focusOn(layer)"
@@ -54,9 +54,11 @@
 </script>
 
 <style scoped lang="sass" type="text/css" media="screen">
-button
-   @import "../sass/variables.sass"
-   margin-top: $gaps 
-   margin-bottom: $gaps
+@import "../sass/variables.sass"
+div.viewcontainer
+   height: $map_height 
+   width: inherit
+   overflow: auto
+
 </style>
 

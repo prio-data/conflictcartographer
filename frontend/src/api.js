@@ -27,7 +27,6 @@ const Api = function(url, header){
          .then(
             function(response){
                if(typeof(payload) !== "list"){
-                  console.log("adding body")
                   payload.pk = Number(response.body)
                }
             },

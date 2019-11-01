@@ -28,6 +28,7 @@ const state = {
    // The user chooses a location to work on. 
    // drawn shapes are registered on a location. 
    locations: [],
+   layers: [],
 
    // Retrieved from the current location, used to
    // focus the leaflet map.
@@ -38,7 +39,9 @@ const state = {
    // Current layers, either drawn or retrieved
    // from server. Is pushed and wiped when switching
    // location.
-   layers: [],
+   projects: [],
+   currentProject: null,
+   projectDetails: null,
 
    // UI stuff
    
@@ -53,13 +56,41 @@ const state = {
 
 const actions = {
    createLayer(context,created){
+      const withApi = (x) => [window.location,"api/users/",x,"/"].join("")
+      created.vizId = state.vizId
+
+      created.author = withApi(state.sessionInfo.uk) 
+      created.project = state.currentProject.url
+
+      // Pushes to state and API
       context.commit("createLayer",created)
+
       context.commit("incrementVizId")
    },
+
    initializeLayers(context,filter){
       context.commit("initializeLayers",filter)
       state.vizId = state.layers.length + 1
-   }
+   },
+
+   chooseProject(context,project){
+      context.commit("setCurrentProject",project)
+      context.commit("setMap",project)
+
+      const setDetails = function(details){
+         context.commit("setProjectDetails",details)
+      }
+      state.api.get("projectdetails/" + project.pk, setDetails, {})
+
+   },
+
+   backToMenu(context){
+      context.commit("unsetProject")
+   },
+
+   initializeProjects(context){
+      context.commit("initializeProjects")
+   },
 }
 
 const mutations = {
@@ -75,9 +106,9 @@ const mutations = {
    },
   
    // Populate list of "codeable" locations from the API
-   initializeLocations(state){
-      let populate = (countries) => state.countries = countries
-      state.api.get("countries",populate,{})
+   initializeProjects(state){
+      let populate = (projects) => state.projects = projects 
+      state.api.get("projects",populate,{})
    },
 
    // Leaflet layer handling ==============
@@ -98,7 +129,6 @@ const mutations = {
    },
    
    createLayer(state,created){
-      created.vizId = state.vizId
       state.layers.push(created)
       state.api.post("shapes",created)
    },
@@ -116,6 +146,25 @@ const mutations = {
       state.sessionInfo = {...data, ...state.sessionInfo}  
    },
 
+   // Project stuff =======================
+
+   setCurrentProject(state,project){
+      state.currentProject = project
+   },
+
+   setProjectDetails(state,details){
+      state.projectDetails = details
+   },
+
+   setMap(state,project){
+      state.mapx = project.lat
+      state.mapy = project.lon
+      state.zoomlvl = project.zoom
+   },
+
+   unsetProject(state){
+      state.currentProject = null
+   },
 
    // UI stuff ============================
    

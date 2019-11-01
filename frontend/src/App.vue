@@ -1,107 +1,86 @@
 <template>
    <div id="app">
-      <div id="navbar" class="row twelve columns"> 
-         <Navbar title="Conflict Cartographer"/> 
-      </div>
-      <div id="content" class="row">
-         <div id="mainwindow" class="nine columns">
-            <Leaflet/> 
-         </div>
-         <div id="toolbar" class="three columns">
-            <Toolbar/> 
-         </div>
-      </div>
+      <Navbar 
+         v-on:goback="backToMenu"
+         v-on:logout="logout"
+         title="Conflict Cartographer"/> 
+      <ProjectMenu 
+         v-if="currentProject === null"         
+         v-bind:projects="projects"/>
+      <MapEditor
+         v-else
+         v-bind:user="currentUser"
+         v-bind:project="currentProject"
+         />
    </div>
 </template>
 
 <script>
 
-import Leaflet from './components/Leaflet.vue'
-import Toolbar from "./components/Toolbar.vue"
+import ProjectMenu from "./components/ProjectMenu.vue"
+import MapEditor from "./components/MapEditor.vue"
 import Navbar from "./components/Navbar.vue"
 
-import Layer from "./models/layer.js"
 import * as R from "ramda"
 
 export default {
    name: 'app',
    components: {
-      Leaflet,
-      Toolbar,
       Navbar,
+      ProjectMenu,
+      MapEditor,
    },
 
-   //data: function(){
-   //},
+   data: function(){
+      return {
+      }
+   },
 
    computed: {
+      projects: function(){
+         return this.$store.state.projects;
+      },
+      currentUser: function(){
+         return this.$store.state.sessionInfo.uk;
+      },
+      currentProject: function(){
+         return this.$store.state.currentProject;
+      },
    },
 
    methods: {
+      backToMenu: function(){
+         this.$store.dispatch("backToMenu")
+      },
+      logout: function(){
+         window.location = window.location + "accounts/logout"
+      }
    },
 
+   beforeMount: function(){
+      let sessionInfo = JSON.parse(document.getElementById("sessionInfo").textContent);
+      this.$store.commit("updateSessionInfo",sessionInfo);
 
-   mounted: function(){
       const csrfToken = this.$cookies.get("csrftoken");
-
       const apiDef = {
          url: "/api",
          header: {credentials: "include",
             headers: {"X-CSRFToken": csrfToken}
          }
       }
-
-      this.map = this.$refs.map;
-      let sessionInfo = JSON.parse(document.getElementById("sessionInfo").textContent);
-      this.$store.commit("updateSessionInfo",sessionInfo);
-
       this.$store.commit("initApi",apiDef)
-      this.$store.commit("initializeLocations")
-      this.$store.dispatch("initializeLayers",{})
 
-      // Csrftoken for AJAX  
-
-      // ****************************************************
-      // This is deprecated
-
-      //let data = JSON.parse(JSON.parse(document.getElementById("dat").textContent));
-
-      //let layers = data.map(function(obj){
-         //let layer = new Layer(
-            //obj.fields.geometry,
-            //obj.fields.intensity,
-            //obj.fields.confidence
-         //);
-         //layer.pk = obj.pk;
-         //return layer;
-      //})
-
-      //layers.forEach((layer) => this.$store.commit("pushLayer",layer))
-
-      // ****************************************************
    },
-   delimiters: ["[[","]]"]
+
+   mounted: function(){
+      this.$store.dispatch("initializeProjects")
+   },
 }
 </script>
 
 <style lang="sass">
-@import "./sass/variables.sass"
+   @import "./sass/variables.sass"
 
-#app 
-  -webkit-font-smoothing: antialiased
-  -moz-osx-font-smoothing: grayscale
-  color: #2c3e50
-  margin-right: 2vh
-
-#toolbar
-   margin: $gaps 
-
-#navbar
-   height: 10vh
-
-#content
-   height: 90vh 
-
-#map
-   border-radius: 25px
+   #toolbar
+      margin: $gaps 
 </style>

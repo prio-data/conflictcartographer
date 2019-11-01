@@ -12,10 +12,3 @@ class DrawnShape(models.Model):
     geometry = JSONField("geoJSON")
     def __str__(self):
         return "a shape"
-
-        
-
-    
-
-
-

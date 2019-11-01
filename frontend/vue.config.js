@@ -1,7 +1,9 @@
 const BundleTracker = require("webpack-bundle-tracker");
 
 module.exports = {
-   publicPath: "http://0.0.0.0:1337/",
+   //publicPath: "http://0.0.0.0:1337/",
+  
+   publicPath: "./frontend/dist/",
    outputDir: './dist/',
 
    lintOnSave: "warning",
@@ -12,10 +14,7 @@ module.exports = {
 
       config
          .plugin('BundleTracker')
-         .use(BundleTracker, [{filename: '../frontend/webpack-stats.json'}])
-
-      config.resolve.alias
-         .set('__STATIC__', 'static')
+         .use(BundleTracker, [{filename: './webpack-stats.json'}])
 
       config.devServer
          .public('http://0.0.0.0:1337')
@@ -29,7 +28,6 @@ module.exports = {
       config.plugin("html").delete()
       config.plugin("preload").delete()
       config.plugin("prefetch").delete()
-
       }
 
    };
