@@ -15,12 +15,12 @@ class CountryProjectSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = CountryProject
-        fields = ["url","pk","name","lat","lon","zoom","participants"]
+        fields = ["url","pk","name","participants"]
 
 class CountryProjectDetailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = CountryProject 
-        fields = ["shape","lat","lon","zoom","pk"]
+        fields = ["shape","pk"]
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     projects = CountryProjectSerializer(many = True, read_only = True)

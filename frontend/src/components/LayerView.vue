@@ -56,8 +56,7 @@
 @import "../sass/variables.sass"
 
 .layerview
-   width: inherit 
-   height: inherit 
+   width: 200px 
    background: $ui_gray
 
    margin-bottom: $gaps

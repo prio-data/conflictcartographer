@@ -1,5 +1,5 @@
 <template>
-<div>
+<div id="navbar">
    <div id = "headline" class = "row">
       <div class="maintitle">
          {{ title }} 
@@ -42,8 +42,10 @@
 <style scoped lang="sass" type="text/css" media="screen">
 @import "../sass/variables.sass"
 
-:root
+#navbar
    margin-left: 15px
+   height: 100px
+
 
 #headline
    font-size: 200%
@@ -67,6 +69,4 @@
 
 #menu button:hover
    background: $ui_highlight 
-
 </style>
-

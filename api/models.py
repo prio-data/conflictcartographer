@@ -13,9 +13,9 @@ class Shape(models.Model):
 
 class Country(models.Model):
     name = models.CharField(max_length = 150)
-    lat = models.FloatField("Latitude of centroid")
-    lon = models.FloatField("Longitude of centroid")
-    zoom = models.FloatField("Zoom level")
+    #lat = models.FloatField("Latitude of centroid")
+    #lon = models.FloatField("Longitude of centroid")
+    #zoom = models.FloatField("Zoom level")
     shape = JSONField("geoJSON",default = dict)
 
 # Models =========================================

@@ -55,10 +55,15 @@
 
 <style scoped lang="sass" type="text/css" media="screen">
 @import "../sass/variables.sass"
+
+$padding: 5px
+
 div.viewcontainer
-   height: $map_height 
-   width: inherit
+   height: $map_height - ($padding * 2) 
    overflow: auto
+   position: absolute
+   top: $navbar_height + $padding 
+   right: 0
 
 </style>
 

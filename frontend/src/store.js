@@ -164,6 +164,7 @@ const mutations = {
 
    unsetProject(state){
       state.currentProject = null
+      state.projectDetails = null
    },
 
    // UI stuff ============================

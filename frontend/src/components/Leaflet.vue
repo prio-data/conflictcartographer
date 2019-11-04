@@ -1,8 +1,7 @@
 
 <template> 
    <l-map ref="map" 
-      :zoom="mapZoom" 
-      :center="mapCenter" 
+      :options="mapOpts"
       id="map"
       zoomControl="false">
       <div v-for="layer in layers" v-bind:key="layer.pk">
@@ -16,24 +15,31 @@
 
 <script charset="utf-8">
 
-   import {LMap, LTileLayer, LMarker, LGeoJson} from "vue2-leaflet"
+   import {LMap, LTileLayer, LGeoJson} from "vue2-leaflet"
    import L from "leaflet"
    import "leaflet-draw" 
    import "leaflet-boundary-canvas"
    import Layer from "@/models/layer.js"
+   import bbox from "geojson-bbox"
 
    import * as R from "ramda"
 
 
    export default {
       name: "Leaflet",
-      components: {LMap,LTileLayer,LMarker, LGeoJson},
+      components: {LMap,LTileLayer,LGeoJson},
 
       data: function(){
          return{
-            url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
+            //url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
+            //url: "https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.png",
+            url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+            //url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
             attrib: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
             id: "mapbox.streets",
+            mapOpts: {
+               zoomSnap: 1
+            }
          }
       },
 
@@ -101,6 +107,8 @@
 
       mounted: function(){
          const map = this.$refs.map.mapObject;
+         map.zoomSnap = 0.1
+         const mask = this.$store.state.projectDetails.shape
          this.$nextTick(function(){
 
             const store = this.$store;
@@ -125,6 +133,12 @@
                   circle: false,
                   circlemarker: false,
                   polyline: false,
+                  marker: false,
+                  polygon: {
+                     shapeOptions: {
+                        color: "grey"
+                     }
+                  }
                },
                edit: {
                   featureGroup: this.drawnItems,
@@ -148,14 +162,73 @@
             id: "background"
          })
          map.addLayer(osm);
+
+         console.log(mask)
+         const masked = new L.TileLayer.BoundaryCanvas(this.url,{
+            boundary: mask,
+            id: "countrytiles"
+         })
+         map.addLayer(masked);
+         const box = bbox(mask)
+         console.log(box)
+         const padding = 10 
+         map.fitBounds([[box[3],box[0]],[box[1],box[2]]],{
+            paddingTopLeft: [padding,padding],
+            paddingBottomRight: [padding,padding]
+         })
       }
    }
 </script>
 
 <style lang="sass" type="text/css" media="screen">
+
    @import "../sass/variables.sass"
+
    #map
       height: $map_height 
       width: $map_width 
-      border: 1px solid lightgray 
+
+   .leaflet-tile-container img
+       //box-shadow: 0 0 10px rgba(0, 0, 0, 0.05)
+       filter: brightness(0.8)
+
+   .leaflet-tile-container canvas 
+       filter: saturate(5.5) brightness(0.9) contrast(1.1)
+
+   .leaflet-editing-icon
+      //width: 5px !important
+      //height: 5px !important
+      //top: 5px !important 
+      //left: 5px !important
+      border-radius: 10px
+      border: none
+      background: $drawcolor
+
+   .leaflet-touch .leaflet-control-zoom-display 
+     width: $tbsize + 8px
+     height: $tbsize + 8px
+     font-size: 18px
+     line-height: $tbsize - ($tbsize / 4) 
+
+   .leaflet-touch .leaflet-bar a, .leaflet-touch .leaflet-toolbar-0 > li > a 
+     width: $tbsize + 4px
+     height: $tbsize + 4px
+     font-size: $tbsize / 2 
+     line-height: $tbsize + 5px
+     background-size: 314px 30px
+
+   .leaflet-touch .leaflet-draw-toolbar.leaflet-bar a 
+     background-position-y: 6px
+
+   .leaflet-touch .leaflet-draw-actions a, .leaflet-touch .leaflet-control-toolbar .leaflet-toolbar-1 > li > .leaflet-toolbar-icon 
+     font-size: $tbsize / 2 
+     line-height: $tbsize + 4px
+     height: $tbsize + 4px
+
+   .leaflet-touch .leaflet-draw-actions, .leaflet-touch .leaflet-toolbar-1 
+     left: $tbsize + 5px
+
+   .leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar
+      border: none
+
 </style>

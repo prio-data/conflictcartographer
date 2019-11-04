@@ -1,7 +1,9 @@
 <template>
    <div id="mapeditor" class="row">
       <div id="mainwindow">
-         <Leaflet/> 
+         <Leaflet
+            v-if="projectDetails"
+            /> 
       </div>
       <div id="toolbar">
          <Toolbar/> 
@@ -29,7 +31,7 @@ export default {
    props: ["user","project"],
 
    computed: {
-      mask: function(){
+      projectDetails(){
          return this.$store.state.projectDetails;
       }
    },
@@ -47,11 +49,11 @@ export default {
 
 <style scoped lang="sass">
 @import "../sass/variables.sass"
-:root
+
+#mapeditor
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale
   color: #2c3e50
-  margin-right: 2vh
 
 #mainwindow
    float: left

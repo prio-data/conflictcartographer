@@ -17,8 +17,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 FRONTEND_DIR = os.path.join(BASE_DIR, "frontend")
 
+# ================================================
+# ================================================
+# ================================================
+# Auth stuff 
+
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
+
+SITE_ID = 1
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -41,6 +48,7 @@ STATIC_URL = '/frontend/dist/'
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "frontend/dist/"),
+    os.path.join(BASE_DIR, "static"),
 )
 
 WEBPACK_LOADER = {
@@ -65,8 +73,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "django.contrib.gis",
+    "django.contrib.sites",
     "rest_framework",
+    "invitations",
     "django_filters",
     "webpack_loader",
     "livereload",

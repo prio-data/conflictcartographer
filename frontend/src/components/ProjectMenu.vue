@@ -35,5 +35,5 @@ div.menu
    overflow-y: hidden 
    white-space: nowrap
    height: $map_height
-   width: $map_width + $toolbar_width + $gaps
+   width: 100%
 </style>

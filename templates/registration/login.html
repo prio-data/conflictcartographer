@@ -1,16 +1,33 @@
 
-<!DOCTYPE html>
-<html>
-   <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width" />
-      <title>Login</title>
-   </head>
-   <body>
-      <form method="post" accept-charset="utf-8">
-         {% csrf_token %}
-         {{ form.as_p }}
-         <button type="submit">Login</button>
-      </form>
-   </body>
-</html>
+{% extends "registration/base.html"%}
+
+{% block title %} Login {% endblock %}
+
+{% block content %}
+<h2>Login</h2>
+<form method="post" accept-charset="utf-8">
+   {% csrf_token %}
+   <table>
+      <tr>
+         <th>
+            Username
+         </th>
+         <th>
+            {{form.username}}
+         </th>
+      </tr>
+      <tr>
+         <th>
+            Password
+         </th>
+         <th>
+            {{form.password}}
+         </th>
+      </tr>
+   </table>
+   <button type="submit">Login</button>
+</form>
+<a href="../signup">
+   Sign up
+</a>
+{% endblock %}
