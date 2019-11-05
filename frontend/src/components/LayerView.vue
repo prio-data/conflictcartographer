@@ -10,7 +10,7 @@
             <p>Intensity</p>
             <vue-slider
                ref="slider1"
-               v-on:drag-end = "$emit('change')"
+               v-on:change = "$emit('change')"
                v-model="layer.intensity"
                :min="intensity_min"
                :max="intensity_max"
@@ -21,7 +21,7 @@
             <p>Confidence</p>
             <vue-slider
                ref="slider2"
-               v-on:drag-end = "$emit('change')"
+               v-on:change = "$emit('change')"
                v-model="layer.confidence"
                :min="confidence_min"
                :max="confidence_max"

@@ -3,6 +3,7 @@
       <Navbar 
          v-on:goback="backToMenu"
          v-on:logout="logout"
+         v-on:helpme="toggleMenuInfo"
          title="Conflict Cartographer"/> 
       <ProjectMenu 
          v-if="currentProject === null"         
@@ -12,6 +13,12 @@
          v-bind:user="currentUser"
          v-bind:project="currentProject"
          />
+      <Modal 
+         v-if="showMenuInfo"
+         v-on:toggle="toggleMenuInfo">
+         <menu_tutorial/>
+      </Modal>
+      <Monogram/>
    </div>
 </template>
 
@@ -21,6 +28,12 @@ import ProjectMenu from "./components/ProjectMenu.vue"
 import MapEditor from "./components/MapEditor.vue"
 import Navbar from "./components/Navbar.vue"
 
+import Modal from "./components/Modal.vue"
+
+import menu_tutorial from "./content/menu_tutorial.vue"
+
+import Monogram from "./components/Monogram.vue"
+
 import * as R from "ramda"
 
 export default {
@@ -29,10 +42,14 @@ export default {
       Navbar,
       ProjectMenu,
       MapEditor,
+      Modal,
+      Monogram,
+      menu_tutorial,
    },
 
    data: function(){
       return {
+         showMenuInfo: false,
       }
    },
 
@@ -54,6 +71,11 @@ export default {
       },
       logout: function(){
          window.location = window.location + "accounts/logout"
+      },
+
+      // Modal info stuff
+      toggleMenuInfo:  function(){
+         this.showMenuInfo = !this.showMenuInfo
       }
    },
 

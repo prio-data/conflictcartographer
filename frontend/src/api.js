@@ -27,8 +27,9 @@ const Api = function(url, header){
          .then(
             function(response){
                if(typeof(payload) !== "list"){
-                  payload.pk = Number(response.body)
+                  payload.url = response.body
                }
+               console.log(response.body)
             },
             function(error){
                console.log(error)
@@ -44,6 +45,45 @@ const Api = function(url, header){
             },
             function(error){
                console.log(error)
+            });
+   }
+
+   this.delAbs = function(url){
+      Vue.http.delete(url,this.header).then(
+            function(response){
+               //
+            },
+            function(error){
+               console.log(error)
+            });
+   }
+
+   this.putAbs = function(url,payload){
+      Vue.http.put(url,payload,this.header)
+         .then(
+            function(response){
+               if(typeof(payload) !== "list"){
+                  payload.pk = Number(response.body)
+               }
+            },
+            function(error){
+               console.log(error)
+               console.log(payload)
+            });
+   }
+
+   this.put = function(obj,payload,pk){
+      let url = this._path(this.url,obj,pk);
+      Vue.http.put(url,payload,this.header)
+         .then(
+            function(response){
+               if(typeof(payload) !== "list"){
+                  payload.pk = Number(response.body)
+               }
+            },
+            function(error){
+               console.log(error)
+               console.log(payload)
             });
    }
 };

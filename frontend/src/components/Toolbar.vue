@@ -1,7 +1,7 @@
 <template>
    <div>
       <div class="viewcontainer">
-         <div v-for="layer in layers" v-bind:key="layer.id">
+         <div v-for="layer in layers" v-bind:key="layer.url">
             <layer-view 
                v-on:mouseover = "focusOn(layer)"
                v-on:onmouseout = "unfocus"

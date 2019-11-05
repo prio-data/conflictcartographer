@@ -1,6 +1,7 @@
 import Vue from "vue"
 import Vuex from "vuex"
 import Api from "./api.js"
+import debounce from "@/debounce.js"
 
 Vue.use(Vuex);
 
@@ -52,19 +53,24 @@ const state = {
    // Used to figure out which layer to highlight
    vizId: 0,
 
+   // Colors for shapes
+   color_low: "#50bfca",
+   color_high: "#ff9524",
 };
 
 const actions = {
    createLayer(context,created){
       const withApi = (x) => [window.location,"api/users/",x,"/"].join("")
-      created.vizId = state.vizId
-
       created.author = withApi(state.sessionInfo.uk) 
-      created.project = state.currentProject.url
 
+      created.vizId = state.vizId
+      created.project = state.currentProject.url
+      
+      created.pk = 
+
+      //
       // Pushes to state and API
       context.commit("createLayer",created)
-
       context.commit("incrementVizId")
    },
 
@@ -81,7 +87,6 @@ const actions = {
          context.commit("setProjectDetails",details)
       }
       state.api.get("projectdetails/" + project.pk, setDetails, {})
-
    },
 
    backToMenu(context){
@@ -123,10 +128,10 @@ const mutations = {
       state.api.get("shapes",populate,filter)
    },
 
-   updateLayer(state,updated){
-      state.api.del("shapes",updated.pk)
-      state.api.post("shapes",updated)
-   },
+   updateLayer: debounce(function(state,updated){
+      //state.api.del("shapes",updated.pk)
+      state.api.putAbs(updated.url,updated)
+   },400),
    
    createLayer(state,created){
       state.layers.push(created)
@@ -135,9 +140,8 @@ const mutations = {
 
    deleteLayer(state,deleted){
       let i = state.layers.findIndex(layer => layer === deleted);
-      let id = deleted.pk
       state.layers.splice(i,1) 
-      state.api.del("shapes",id)
+      state.api.delAbs(deleted.url)
    },
    
    // Passed data from sesh, passed from django

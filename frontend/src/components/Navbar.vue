@@ -15,6 +15,10 @@
          v-on:click="$emit('logout')">
          Log out
       </button>
+      <button id="logout" 
+         v-on:click="$emit('helpme')">
+         ? 
+      </button>
    </div>
 </div>
 </template>
@@ -42,10 +46,22 @@
 <style scoped lang="sass" type="text/css" media="screen">
 @import "../sass/variables.sass"
 
+.imgwrapper
+   display: inline-block
+
+.imgcontainer
+   vertical-align: middle
+
+img
+   padding: 10px 20px
+   margin-left: auto
+   margin-right: 0
+   max-width: 100% 
+   height: auto
+
 #navbar
    margin-left: 15px
    height: 100px
-
 
 #headline
    font-size: 200%
@@ -69,4 +85,5 @@
 
 #menu button:hover
    background: $ui_highlight 
+
 </style>

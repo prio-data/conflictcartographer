@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse 
 
 from django.contrib.auth.models import User
 
@@ -31,7 +31,18 @@ class ShapeViewSet(ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return HttpResponse(serializer.data["pk"], status=status.HTTP_201_CREATED)
+        return HttpResponse(serializer.data["url"], status=status.HTTP_201_CREATED)
+
+    def put(self, request, pk, format = None):
+        layer = self.get_object(pk)
+        serializer = self.get_serializer(data = request.data)
+        print("doing something")
+        if serializer.is_valid():
+            serializer.save()
+            return HttpResponse(serializer.data["url"])
+        else:
+            return HttpResponse(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+
 
 class ProjectViewSet(ModelViewSet):
     queryset = CountryProject.objects.all()

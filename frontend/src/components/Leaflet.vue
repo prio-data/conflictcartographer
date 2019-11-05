@@ -4,7 +4,9 @@
       :options="mapOpts"
       id="map"
       zoomControl="false">
-      <div v-for="layer in layers" v-bind:key="layer.pk">
+      <div 
+         v-bind:key="layer.url"
+         v-for="layer in layers">
          <l-geo-json
            :geojson="layer.geometry"
            :optionsStyle="computeStyle(layer)">
@@ -21,9 +23,9 @@
    import "leaflet-boundary-canvas"
    import Layer from "@/models/layer.js"
    import bbox from "geojson-bbox"
+   import colorGradient from "@/colorGradient.js"
 
    import * as R from "ramda"
-
 
    export default {
       name: "Leaflet",
@@ -39,46 +41,23 @@
             id: "mapbox.streets",
             mapOpts: {
                zoomSnap: 1
-            }
+            },
          }
       },
 
       methods: {
          computeStyle: function(layer){
             let base = {
-               color: this.rgbToHex(layer.intensity,
-                                    -4,-4),
-
-               fillOpacity: ((layer.confidence + 5)/10)
+               color: colorGradient(((layer.intensity + 5)/10), this.color1, this.color2),
+               fillOpacity: (((layer.confidence + 5)/10)* 0.5 ) + 0.2
             }
             if(layer.vizId == this.focused){
-               base.weight = 2 
-               base.fillOpacity = base.fillOpacity + 0.2
+               base.weight = 5 
+               base.fillOpacity = base.fillOpacity + 0.1
             } else {
                base.weight = 0.1 
             }
             return base
-         },
-
-         scaleValueToHex: function(x){
-            // Turns a number between 0 and 100 into a hex value
-            x = ((x+5)/10) * 100
-
-            const ceil = (x,y) => x > y ? y : x;
-
-            const toHex = (x) => Number(x).toString(16)
-
-            const normalize = R.pipe((x) => x*2.55, 
-                                     R.curry(ceil)(R.__,255),
-                                     Math.round)
-
-            return toHex(normalize(x))
-
-         }, 
-
-         rgbToHex: function(r,g,b){
-            let hexValues = R.map(this.scaleValueToHex,[r,g,b])
-            return "#" + hexValues.join("")
          },
       },
 
@@ -102,6 +81,12 @@
 
          mapCenter: function(){
             return L.latLng(this.mapx,this.mapy)
+         },
+         color1: function(){
+            return this.$store.state.color_low
+         },
+         color2: function(){
+            return this.$store.state.color_high
          },
       },
 
@@ -163,14 +148,12 @@
          })
          map.addLayer(osm);
 
-         console.log(mask)
          const masked = new L.TileLayer.BoundaryCanvas(this.url,{
             boundary: mask,
             id: "countrytiles"
          })
          map.addLayer(masked);
          const box = bbox(mask)
-         console.log(box)
          const padding = 10 
          map.fitBounds([[box[3],box[0]],[box[1],box[2]]],{
             paddingTopLeft: [padding,padding],
@@ -188,6 +171,7 @@
       height: $map_height 
       width: $map_width 
 
+   // Tile stuff
    .leaflet-tile-container img
        //box-shadow: 0 0 10px rgba(0, 0, 0, 0.05)
        filter: brightness(0.8)
@@ -195,6 +179,7 @@
    .leaflet-tile-container canvas 
        filter: saturate(5.5) brightness(0.9) contrast(1.1)
 
+   // Editing dots
    .leaflet-editing-icon
       //width: 5px !important
       //height: 5px !important
@@ -203,6 +188,9 @@
       border-radius: 10px
       border: none
       background: $drawcolor
+
+   .leaflet-marker-pane div:nth-child(2)
+      background: $ui_highlight
 
    .leaflet-touch .leaflet-control-zoom-display 
      width: $tbsize + 8px
