@@ -4,3 +4,9 @@
 *.pyc
 *.log
 */migrations/*
+
+conflictcartographer/production.py
+dbinfo.json
+
+dist/*
+!dist/.gitkeep

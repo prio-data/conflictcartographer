@@ -101,14 +101,14 @@
 
 
             // Disable all movement 
-            this.map.touchZoom.disable();
-            this.map.doubleClickZoom.disable();
-            this.map.scrollWheelZoom.disable();
-            this.map.dragging.disable();
+            //this.map.touchZoom.disable();
+            //this.map.doubleClickZoom.disable();
+            //this.map.scrollWheelZoom.disable();
+            //this.map.dragging.disable();
 
             // Remove zoom control
 
-            this.map.zoomControl.remove();
+            //this.map.zoomControl.remove();
 
             // Add draw control
             this.drawnItems = new L.FeatureGroup();
@@ -132,7 +132,16 @@
                }
             }));
 
-            // Add tiles
+            // Disable dragging while drawing 
+            map.on(L.Draw.Event.DRAWSTART, function(e){
+               map.dragging.disable();
+               console.log("started!!")
+            })
+
+            map.on(L.Draw.Event.DRAWSTOP, function(e){
+               map.dragging.enable();
+               console.log("finished!!")
+            })
 
             // Add event listener
             map.on(L.Draw.Event.CREATED, function(e){
@@ -154,11 +163,18 @@
          })
          map.addLayer(masked);
          const box = bbox(mask)
-         const padding = 10 
-         map.fitBounds([[box[3],box[0]],[box[1],box[2]]],{
-            paddingTopLeft: [padding,padding],
-            paddingBottomRight: [padding,padding]
-         })
+         const getbox = (box) => [[box[3],box[0]],[box[1],box[2]]]
+         const latlng = L.latLngBounds(getbox(box))
+         console.log(box)
+         console.log(getbox(box))
+         console.log(latlng)
+
+         const padding = 0.2
+         map.fitBounds(latlng)
+         map.setMaxZoom(9)
+         map.setMinZoom(6)
+         map.setMaxBounds(latlng.pad(padding*2))
+         map.setZoom(7)
       }
    }
 </script>

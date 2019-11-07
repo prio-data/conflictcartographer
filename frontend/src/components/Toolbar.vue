@@ -1,6 +1,7 @@
 <template>
    <div>
       <div class="viewcontainer">
+         <h1>Drawn areas:</h1>
          <div v-for="layer in layers" v-bind:key="layer.url">
             <layer-view 
                v-on:mouseover = "focusOn(layer)"
@@ -57,13 +58,21 @@
 @import "../sass/variables.sass"
 
 $padding: 5px
+$darken: 0.4
+
+h1
+   color: white
 
 div.viewcontainer
-   height: $map_height - ($padding * 2) 
-   overflow: auto
+   padding: 0px $padding
+
+   height: $map_height
+   overflow-y: scroll 
    position: absolute
-   top: $navbar_height + $padding 
+   top: $navbar_height 
    right: 0
+
+   background: rgba(0,0,0,$darken)
 
 </style>
 

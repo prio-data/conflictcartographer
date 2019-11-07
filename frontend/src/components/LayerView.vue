@@ -3,7 +3,9 @@
       v-on:mouseenter ="$emit('mouseover')"
       v-on:mouseleave ="$emit('onmouseout')" class="layerview">
       <div class="header">
-         <button v-on:click="$emit('deleteMe')"></button>
+         <button v-on:click="$emit('deleteMe')">
+            <img class="trashicon" :src="trashicon">
+         </button>
       </div>
       <div class="controls">
          <div class="sliders">
@@ -35,12 +37,15 @@
 <script charset="utf-8">
    import vueSlider from "vue-slider-component" 
    import "vue-slider-component/theme/antd.css"
+   import trashicon from "../images/trash2.svg"
+
    export default {
       name: "layer-view",
       props: ["layer"],
       components: {vueSlider},
       data: function(){
          return {
+            trashicon: trashicon,
             confidence_min: -5,
             confidence_max: 5,
             confidence_interval: 1,
@@ -61,7 +66,6 @@
 
    margin-bottom: $gaps
    margin-top: $gaps
-   margin-right: $gaps
    padding: $gaps
 
    border-radius: $roundedness 
@@ -98,6 +102,16 @@
 
 .layerview:hover div.controls
    display: inline
+
+.trashicon
+   display:none
+   padding-top: 2px
+   max-width: 80%
+   max-height: 80%
+   filter: opacity(0)
+
+button:hover .trashicon
+   filter: opacity(0.4)
 
 </style>
 

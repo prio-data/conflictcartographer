@@ -1,10 +1,22 @@
 <template>
    <div class="base">
       <a href="http://www.github.com/peder2911">
-         <img src="/frontend/dist/img/monogram.svg" alt="Peder G. Landsverk">
+         <img :src="logo" alt="Peder G. Landsverk">
       </a>
    </div>
 </template>
+
+<script>
+import logo from "../images/landsverk.svg"
+export default {
+   data() {
+      return {
+         logo: logo
+      }
+   }
+}
+
+</script>
 
 <style scoped lang="sass"> 
 .base
@@ -17,6 +29,6 @@ img
    max-height: 100%
    max-width: 100%
    float:right
-   margin: 7px 12px
+   margin: 12px
 
 </style>

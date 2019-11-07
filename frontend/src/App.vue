@@ -13,12 +13,12 @@
          v-bind:user="currentUser"
          v-bind:project="currentProject"
          />
+      <Monogram/>
       <Modal 
          v-if="showMenuInfo"
          v-on:toggle="toggleMenuInfo">
          <menu_tutorial/>
       </Modal>
-      <Monogram/>
    </div>
 </template>
 
@@ -49,7 +49,7 @@ export default {
 
    data: function(){
       return {
-         showMenuInfo: false,
+         showMenuInfo: true,
       }
    },
 
