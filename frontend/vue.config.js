@@ -12,6 +12,12 @@ module.exports = {
       config.optimization
          .splitChunks(false)
 
+      // ##########################
+      // Custom CSS for other pages
+      config.entry("accounts")
+         .add("./src/css/accounts.css")
+         .end()
+
       config
          .plugin('BundleTracker')
          .use(BundleTracker, [{filename: './webpack-stats.json'}])

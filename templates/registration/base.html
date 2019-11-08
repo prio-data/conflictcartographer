@@ -1,4 +1,4 @@
-
+{% load render_bundle from webpack_loader %}
 <!DOCTYPE html>
 {%load static%}
 <html>
@@ -6,15 +6,19 @@
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width" />
       <title>{% block title %}{% endblock %}</title>
-      <link rel="stylesheet" href={% static "registration.css" %} type="text/css" media="screen" title="no title" charset="utf-8">
       <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css" type="text/css" media="screen" title="no title" charset="utf-8">
    </head>
    <body>
       <div class="container">
+         <h1>Conflict Cartographer 
+            <span style="color:red">{% block pagetype %}{% endblock%}</span>
+         </h1>
          <div class="content">
             {% block content %}
             {% endblock %}
          </div>
       </div>
+   <script src="{% static "/js/accounts.js"%}" charset="utf-8"></script>
    </body>
 </html>
