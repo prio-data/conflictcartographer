@@ -10,3 +10,5 @@ dbinfo.json
 
 dist/*
 !dist/.gitkeep
+
+frontend/webpack-stats.json
