@@ -17,6 +17,6 @@
             {% block content %}
             {% endblock %}
       </div>
-   <script src="{% static "/js/accounts.js"%}" charset="utf-8"></script>
+   {% render_bundle "accounts" %} 
    </body>
 </html>
