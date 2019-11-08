@@ -12,12 +12,10 @@
    <body>
       <div class="container">
          <h1>Conflict Cartographer 
-            <span style="color:red">{% block pagetype %}{% endblock%}</span>
+            <span>{% block pagetype %}{% endblock%}</span>
          </h1>
-         <div class="content">
             {% block content %}
             {% endblock %}
-         </div>
       </div>
    <script src="{% static "/js/accounts.js"%}" charset="utf-8"></script>
    </body>

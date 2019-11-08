@@ -10,5 +10,14 @@
 }
 
 .descr {
-   line-height: 50px
+   line-height: 50px;
+}
+
+.error {
+   margin-bottom: 20px;
+   color: #da4252;
+}
+
+span {
+   color: #da4252;
 }
