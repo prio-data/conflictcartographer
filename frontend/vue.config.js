@@ -7,6 +7,7 @@ module.exports = {
    outputDir: './dist/',
 
    lintOnSave: "warning",
+   filenameHashing: false,
 
    chainWebpack: config => {
       config.optimization
