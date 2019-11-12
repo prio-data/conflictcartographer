@@ -8,7 +8,7 @@
          v-bind:key="layer.url"
          v-for="layer in layers">
          <l-geo-json
-           :geojson="layer.geometry"
+           :geojson="layer.shape.geometry"
            :optionsStyle="computeStyle(layer)">
          </l-geo-json>
       </div>
@@ -135,19 +135,15 @@
             // Disable dragging while drawing 
             map.on(L.Draw.Event.DRAWSTART, function(e){
                map.dragging.disable();
-               console.log("started!!")
             })
 
             map.on(L.Draw.Event.DRAWSTOP, function(e){
                map.dragging.enable();
-               console.log("finished!!")
             })
 
             // Add event listener
             map.on(L.Draw.Event.CREATED, function(e){
                let layer = e.layer.toGeoJSON()
-               layer.intensity = 0
-               layer.confidence = 0
                store.dispatch("createLayer",layer);
             })
          });
@@ -165,9 +161,6 @@
          const box = bbox(mask)
          const getbox = (box) => [[box[3],box[0]],[box[1],box[2]]]
          const latlng = L.latLngBounds(getbox(box))
-         console.log(box)
-         console.log(getbox(box))
-         console.log(latlng)
 
          const padding = 0.2
          map.fitBounds(latlng)

@@ -49,9 +49,7 @@ export default {
    },
 
    mounted: function(){
-      this.$store.dispatch("initializeLayers",
-         {author: this.user,
-          project: this.project.pk})
+      this.$store.dispatch("initializeLayers")
    },
 }
 </script>

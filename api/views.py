@@ -1,77 +1,142 @@
-from django.shortcuts import render
-from django.http import HttpResponse 
 
-from django.contrib.auth.models import User
+from django.http import HttpResponse
 
-from django_filters import rest_framework as filters
+from django.db.models.query import QuerySet
 
-from rest_framework.viewsets import ModelViewSet 
+from rest_framework import viewsets, status, exceptions
+from rest_framework.decorators import api_view 
+from rest_framework.response import Response
 
-from rest_framework import permissions
-from rest_framework import status
+from api import serializers, models, permissions, util
+from datetime import datetime
 
-from rest_framework.decorators import api_view, permission_classes
+import os
+import json
 
-# Local
-from api.models import IntensityDrawnShape, CountryProject
-from api.serializers import UserSerializer, IntensityDrawnShapeSerializer, CountryProjectSerializer, CountryProjectDetailSerializer, RegSerializer
+# ================================================
+# Auth
+class UserViewSet(viewsets.ModelViewSet):
 
-from api.permissions import IsOwnerOrReadOnly
+    queryset = models.User.objects.all()
+    serializer_class = serializers.UserSerializer  
 
-class UserViewSet(ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+    permission_classes = [permissions.permissions.IsAdminUser]
 
-class ShapeViewSet(ModelViewSet):
-    queryset = IntensityDrawnShape.objects.all()
-    serializer_class = IntensityDrawnShapeSerializer
-    filterset_fields = [
-            "intensity",
-            "confidence",
-            "author",
-            "project"]
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
-            IsOwnerOrReadOnly]
-                            
+# ================================================
+# Project
+
+class ProjectViewSet(viewsets.ModelViewSet):
+    """
+    This view is restrictive to non-admin users in that it only returns
+    projects which the user is registered as a participant to. Also,
+    non-admin users can only view projects that are currently active.
+    """
+
+    queryset = models.Project.objects.all()
+    serializer_class = serializers.ProjectSerializer  
+
+    filterset_fields = ["participants","startdate","enddate","country"]
+
+    permission_classes = [permissions.permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        """
+        This override restricts the returned data if the user is not admin.
+        """
+
+        now = datetime.now()
+
+        queryset = self.queryset
+        if isinstance(queryset, QuerySet):
+            # Ensure queryset is re-evaluated on each request.
+            queryset = queryset.all()
+
+        if not self.request.user.is_staff:
+            queryset = queryset.filter(
+                startdate__lt = now, 
+                enddate__gt = now,
+                participants = self.request.user
+        )
+
+        return queryset
+
+class CountryViewSet(viewsets.ModelViewSet):
+
+    queryset = models.Country.objects.all()
+    serializer_class = serializers.CountrySerializer  
+
+    #filterset_fields = [
+    #]
+
+    permission_classes = [permissions.permissions.IsAuthenticated]
+
+# ================================================
+# Shape
+
+class ShapeViewSet(viewsets.ModelViewSet):
+    """
+    Strict viewset that only allows users to:
+    GET Shapes which they have authored
+    POST Shapes to projects they are part of
+    """
+
+    queryset = models.Shape.objects.all()
+    serializer_class = serializers.ShapeSerializer  
+
+    filterset_fields = ["project"]
+
+    # Latter permissions only apply to POST requests.
+    permission_classes = [permissions.permissions.IsAuthenticated]
+    user_permissions = [permissions.IsOnProject, permissions.ProjectIsActive]
+                          
+
+    def get_queryset(self):
+        """
+        This override restricts the returned data if the user is not admin.
+        """
+
+        queryset = self.queryset
+        if isinstance(queryset, QuerySet):
+            # Ensure queryset is re-evaluated on each request.
+            queryset = queryset.all()
+
+        if not self.request.user.is_staff:
+            queryset = queryset.filter(author = self.request.user)
+
+        return queryset
 
     def create(self,request,*args,**kwargs):
+
+        if not request.user.is_staff:
+            permitted = True
+            for p in self.user_permissions:
+                permitted &= p().has_permission(request, self)
+            if not permitted:
+                raise exceptions.PermissionDenied
+        
         domany = isinstance(request.data, list)
         serializer = self.get_serializer(data = request.data, many = domany)
-        serializer.is_valid(raise_exception=True)
 
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-
-        return HttpResponse(serializer.data["url"], status=status.HTTP_201_CREATED)
-
-    def put(self, request, pk, format = None):
-        layer = self.get_object(pk)
-        serializer = self.get_serializer(data = request.data)
         if serializer.is_valid():
-            serializer.save()
-            return HttpResponse(serializer.data["url"])
+            serializer.save(author = self.request.user)
+            return HttpResponse(serializer.data["url"], status=status.HTTP_201_CREATED)
+
         else:
             return HttpResponse(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
+    def put(self, request, pk, format = None):
+        shape = self.get_object(pk)
+        serializer = serializers.ShapeSerializer(shape,data = request.data)
 
-class ProjectViewSet(ModelViewSet):
-    queryset = CountryProject.objects.all()
-    serializer_class = CountryProjectSerializer
+        if serializer.is_valid():
+            serializer.save()
+            return HttpResponse(serializer.data["url"])
 
-class ProjectDetails(ModelViewSet):
-    queryset = CountryProject.objects.all()
-    serializer_class = CountryProjectDetailSerializer
+        else:
+            return HttpResponse(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
-@api_view(["POST"])
-@permission_classes([permissions.IsAdminUser])
-def create_auth(request):
-    serialized = RegSerializer(data = request.data)
-    if serialized.is_valid():
-        User.objects.create_user(
-                serialized.data["username"],
-                serialized.data["email"],
-                serialized.data["password"]
-        )
-        return HttpResponse(serialized.data, status = status.HTTP_201_CREATED)
-    else:
-        return HttpResponse(serialized._errors, status = status.HTTP_400_BAD_REQUEST)
+@api_view()
+def testview(request):
+    projects = models.Project.objects.all()
+    projectnumbers = [util.getUrl(p, serializers.ProjectSerializer, request) for p in projects]
+    return Response(projectnumbers)

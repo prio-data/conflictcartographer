@@ -1,37 +1,32 @@
 
-from django.contrib.auth.models import User 
-from api.models import IntensityDrawnShape, CountryProject, Country
 from rest_framework import serializers
+from api import models
 
-class IntensityDrawnShapeSerializer(serializers.HyperlinkedModelSerializer):
-    #author = serializers.ReadOnlyField(source = "author.username")
-    #project = serializers.ReadOnlyField(source = "project.name")
-    class Meta:
-        model = IntensityDrawnShape
-        fields = ["url","project","author","date","geometry","intensity","confidence",]
-
-class CountryProjectSerializer(serializers.HyperlinkedModelSerializer):
-    participants = serializers.PrimaryKeyRelatedField(
-            queryset = User.objects.all(),
-            many = True)
-
-    class Meta:
-        model = CountryProject
-        fields = ["url","pk","name","participants"]
-
-class CountryProjectDetailSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = CountryProject 
-        fields = ["shape","pk"]
+# ================================================
+# Auth
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-    projects = CountryProjectSerializer(many = True, read_only = True)
+     class Meta:
+          model = models.User 
+          fields = ["url","username","email","projects"]
 
-    class Meta:
-        model = User
-        fields = ["url","username","email","groups","projects"]
+# ================================================
+# Project 
 
-class RegSerializer(serializers.HyperlinkedModelSerializer):
+class ProjectSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = User
-        fields = ["username","email","password"]
+        model = models.Project
+        fields = ["url","country","name","participants","pk"]
+     
+class CountrySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.Country
+        fields = ["url","name","gwno","shape"]
+
+# ================================================
+# Shape 
+
+class ShapeSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.Shape
+        fields = ["url","project","author","shape","created","updated","intensity","confidence"]

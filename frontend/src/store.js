@@ -59,14 +59,18 @@ const state = {
 };
 
 const actions = {
-   createLayer(context,created){
+   createLayer(context,shape){
       const withApi = (x) => [window.location,"api/users/",x,"/"].join("")
+
+      let created = {shape: shape}
+
       created.author = withApi(state.sessionInfo.uk) 
+      created.project = state.currentProject.url
+
+      created.intensity = 0;
+      created.confidence = 0;
 
       created.vizId = state.vizId
-      created.project = state.currentProject.url
-      
-      created.pk = 
 
       //
       // Pushes to state and API
@@ -75,7 +79,7 @@ const actions = {
    },
 
    initializeLayers(context,filter){
-      context.commit("initializeLayers",filter)
+      context.commit("initializeLayers",{project: state.currentProject.pk})
       state.vizId = state.layers.length + 1
    },
 
@@ -86,7 +90,8 @@ const actions = {
       const setDetails = function(details){
          context.commit("setProjectDetails",details)
       }
-      state.api.get("projectdetails/" + project.pk, setDetails, {})
+
+      state.api.getAbs(project.country , setDetails, {})
    },
 
    backToMenu(context){

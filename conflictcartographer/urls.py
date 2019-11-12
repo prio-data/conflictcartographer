@@ -22,7 +22,7 @@ from cartographer.views import cartographer
 
 from core.views import signup
 
-from api.views import UserViewSet, create_auth
+from api.views import UserViewSet#, create_auth
 from api.router import router as apiRouter
 
 urlpatterns = [
@@ -32,5 +32,5 @@ urlpatterns = [
     path("invitations/",include("invitations.urls",namespace = "invitations")),
     path("accounts/",include("django.contrib.auth.urls")),
     path("accounts/signup",signup,name = "signup"),
-    path("reg/", create_auth)
+    #path("reg/", create_auth)
 ]

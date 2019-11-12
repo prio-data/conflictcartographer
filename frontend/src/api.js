@@ -21,6 +21,17 @@ const Api = function(url, header){
             });
    }
 
+   this.getAbs = function(url, callback, parameters){
+      Vue.http.get(url,{params: {format: "json", ...parameters}},this.header)
+         .then(
+            function(response){
+               callback(response.body);
+            },
+            function(error){
+               console.log(error)
+            });
+   }
+
    this.post = function(obj,payload){
       let url = this._path(this.url,obj);
       Vue.http.post(url,payload,this.header)
@@ -29,7 +40,6 @@ const Api = function(url, header){
                if(typeof(payload) !== "list"){
                   payload.url = response.body
                }
-               console.log(response.body)
             },
             function(error){
                console.log(error)

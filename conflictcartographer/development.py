@@ -42,7 +42,7 @@ DATABASES = {
         "PORT":"2345",
         "USER":"postgres",
         "PASSWORD":"letmein",
-        'NAME': "conflictcartographer" 
+        'NAME': "conflictcartographer_beta" 
     }
 }
 

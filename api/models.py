@@ -1,50 +1,74 @@
+
 from django.db import models
-from django.contrib.postgres.fields import JSONField
-from django.contrib.auth.models import User
-from django.core.validators import MaxValueValidator, MinValueValidator
+
+from django.core import validators
+
+from django.contrib import auth
+from django.contrib.postgres import fields 
 
 from datetime import datetime
 
+# ================================================
+# Util
 
-# Base classes ===================================
 
-class Shape(models.Model):
-    geometry = JSONField("geoJSON")
+# ================================================
+# Auth
 
-class Country(models.Model):
+User = auth.models.User
+
+# ================================================
+# Project
+
+class Project(models.Model):
     name = models.CharField(max_length = 150)
-    shape = JSONField("geoJSON",default = dict)
 
-# Models =========================================
+    participants = models.ManyToManyField(User,
+        related_name = "projects")
 
-class CountryProject(Country):
+    country = models.ForeignKey("Country",
+       related_name = "Projects",
+       on_delete = models.CASCADE)
+
     startdate = models.DateTimeField()
     enddate = models.DateTimeField()
-    participants = models.ManyToManyField("auth.User", related_name="projects", blank = True) 
-    importance = models.PositiveIntegerField(default = 5,
-            validators = [MinValueValidator(1), MaxValueValidator(10)])
+
     def __str__(self):
-        return f"{self.name}"
+        fixdate = lambda x: datetime.strftime(x, format = "%d/%m/%Y")
+        return f"{self.pk} {self.name} ({self.country.name}) [{fixdate(self.startdate)} - {fixdate(self.enddate)}]: {len(self.participants.all())} participant(s)"
 
-class DrawnShape(Shape):
+class Country(models.Model):
+    name = models.CharField(max_length = 150) 
+    gwno = models.IntegerField(default = -1) #TODO restrict?
 
-    author = models.ForeignKey("auth.User", 
-            related_name = "shapes",
-            on_delete = models.CASCADE)
-
-    project = models.ForeignKey(CountryProject,
-            related_name = "shapes",
-            on_delete = models.CASCADE)
-
-    date = models.DateTimeField(auto_now = True)
-
-class IntensityDrawnShape(DrawnShape):
-
-    intensity = models.IntegerField("Expected intensity")
-    confidence = models.IntegerField("Confidence in prediction")
-    def __str__(self):
-        return f"{self.author.username} @ {self.project.name} {datetime.strftime(self.date,'%d/%m/%Y')}"
+    shape = fields.JSONField(default = dict) #GEOJSON
+    capital_lat = models.IntegerField(default = 0)
+    capital_lon = models.IntegerField(default = 0)
 
     class Meta:
-        verbose_name = "Drawn shape"
-        verbose_name_plural = "Drawn shapes"
+        verbose_name_plural = "countries"
+
+    def __str__(self):
+        return f"{self.gwno}-{self.name}"
+
+# ================================================
+# Shape
+
+class Shape(models.Model):
+    author = models.ForeignKey(User,
+       related_name = "Shapes",
+       on_delete = models.CASCADE, default = None)
+    project = models.ForeignKey("Project",
+        related_name = "Shapes",
+        on_delete = models.CASCADE, default = None)
+
+    shape =  fields.JSONField(default = dict) #GEOJSON
+    created = models.DateTimeField(auto_now_add = True)
+    updated = models.DateTimeField(auto_now = True)
+
+    intensity = models.IntegerField(default = 0) #TODO make more flexible?
+    confidence = models.IntegerField(default = 0)
+
+    def __str__(self):
+        timestamp = lambda x: datetime.strftime(x, format = "%d/%m/%Y %H:%M:%S")
+        return f"{self.author.username}, {timestamp(self.created)} ({self.project.pk})"

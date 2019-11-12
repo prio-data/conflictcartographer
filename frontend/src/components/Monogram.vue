@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import logo from "../images/landsverk.svg"
+import logo from "../images/landsverk_small.png"
 export default {
    data() {
       return {
@@ -23,7 +23,7 @@ export default {
    position: absolute 
    top: 0
    right: 0
-   height: 90px
+   height: 50px
 
 img
    max-height: 100%
