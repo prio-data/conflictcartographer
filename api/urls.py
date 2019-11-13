@@ -1,5 +1,7 @@
 
-from api.views import testview 
+from api.views import whoami
 from django.urls import path 
 
-urlpatterns = []
+urlpatterns = [
+    path("api/whoami/", whoami)
+]

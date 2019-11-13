@@ -1,10 +1,13 @@
 
+from collections import defaultdict
+
 from django.http import HttpResponse
 
 from django.db.models.query import QuerySet
+from django.utils import timezone
 
 from rest_framework import viewsets, status, exceptions
-from rest_framework.decorators import api_view 
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 from api import serializers, models, permissions, util
@@ -12,6 +15,48 @@ from datetime import datetime
 
 import os
 import json
+
+# ================================================
+# Utility viewsets
+
+@api_view()
+@permission_classes([permissions.permissions.IsAuthenticated])
+def whoami(request):
+    defaultdate = lambda y,m,d: datetime(y,m,d, tzinfo = timezone.get_current_timezone())
+    mindate = lambda: defaultdate(1,1,1) 
+    maxdate = lambda: defaultdate(9999,1,1) 
+    def fixDefault(date):
+        if (date == mindate()) | (date == maxdate()):
+            return None
+        else:
+            return date 
+
+    workdone = defaultdict(int) 
+    lastworked = defaultdict(mindate)
+    firstworked = defaultdict(maxdate)
+
+    shapes = models.Shape.objects.filter(author = request.user)
+    assignedProjects = models.Project.objects.filter(participants = request.user)
+    assignedProjects = set([p.pk for p in assignedProjects])
+
+    for s in shapes:
+        workdone[s.project.pk] += 1
+        lastworked[s.project.pk] = max(lastworked[s.project.pk], s.updated)
+        firstworked[s.project.pk] = min(firstworked[s.project.pk], s.updated)
+
+    projects = {}
+    for k in assignedProjects:
+        projects[k] = {
+            "shapes": workdone[k],
+            "first": fixDefault(firstworked[k]),
+            "last": fixDefault(lastworked[k])
+        }
+
+    profile = {
+        "name": request.user.username,
+        "projects": projects
+    }
+    return Response(profile)
 
 # ================================================
 # Auth
@@ -134,9 +179,3 @@ class ShapeViewSet(viewsets.ModelViewSet):
 
         else:
             return HttpResponse(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
-
-@api_view()
-def testview(request):
-    projects = models.Project.objects.all()
-    projectnumbers = [util.getUrl(p, serializers.ProjectSerializer, request) for p in projects]
-    return Response(projectnumbers)

@@ -3,6 +3,9 @@
 import os
 import sys
 
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
+
 
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'conflictcartographer.development')

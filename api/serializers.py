@@ -30,3 +30,4 @@ class ShapeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Shape
         fields = ["url","project","author","shape","created","updated","intensity","confidence"]
+

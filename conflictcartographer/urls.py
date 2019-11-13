@@ -24,6 +24,7 @@ from core.views import signup
 
 from api.views import UserViewSet#, create_auth
 from api.router import router as apiRouter
+import api.urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -34,3 +35,5 @@ urlpatterns = [
     path("accounts/signup",signup,name = "signup"),
     #path("reg/", create_auth)
 ]
+
+urlpatterns += api.urls.urlpatterns
