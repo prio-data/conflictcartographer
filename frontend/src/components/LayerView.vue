@@ -61,7 +61,7 @@
 @import "../sass/variables.sass"
 
 .layerview
-   width: 200px 
+   max_width: 100%
    background: $ui_gray
 
    margin-bottom: $gaps

@@ -67,7 +67,8 @@ div.viewcontainer
    padding: 0px $padding
 
    height: $map_height
-   overflow-y: scroll 
+   width: 220px 
+
    position: absolute
    top: $navbar_height 
    right: 0

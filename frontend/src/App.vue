@@ -6,13 +6,17 @@
          v-on:helpme="toggleMenuInfo"
          title="Conflict Cartographer"/> 
       <ProjectMenu 
-         v-if="currentProject === null"         
-         v-bind:projects="projects"/>
+         :projects="projects"
+         v-if="menustatus === 0 && projects && currentProject === null"/>
+
       <MapEditor
-         v-else
-         v-bind:user="currentUser"
+         v-else-if="currentProject !== null"
          v-bind:project="currentProject"
          />
+      <div
+         v-else>
+      </div>
+
       <Monogram/>
       <Modal 
          v-if="showMenuInfo"
@@ -27,14 +31,10 @@
 import ProjectMenu from "./components/ProjectMenu.vue"
 import MapEditor from "./components/MapEditor.vue"
 import Navbar from "./components/Navbar.vue"
-
 import Modal from "./components/Modal.vue"
-
-import menu_tutorial from "./content/menu_tutorial.vue"
-
 import Monogram from "./components/Monogram.vue"
 
-import * as R from "ramda"
+import menu_tutorial from "./content/menu_tutorial.vue"
 
 export default {
    name: 'app',
@@ -49,20 +49,24 @@ export default {
 
    data: function(){
       return {
-         showMenuInfo: true,
+         showMenuInfo: false,
       }
    },
 
    computed: {
-      projects: function(){
-         return this.$store.state.projects;
-      },
       currentUser: function(){
          return this.$store.state.sessionInfo.uk;
       },
       currentProject: function(){
          return this.$store.state.currentProject;
       },
+      menustatus: function(){
+         return this.$store.state.menustatus;
+      },
+
+      projects: function(){
+         return this.$store.state.projects
+      }
    },
 
    methods: {
@@ -80,9 +84,6 @@ export default {
    },
 
    beforeMount: function(){
-      let sessionInfo = JSON.parse(document.getElementById("sessionInfo").textContent);
-      this.$store.commit("updateSessionInfo",sessionInfo);
-
       const csrfToken = this.$cookies.get("csrftoken");
       const apiDef = {
          url: "/api",
@@ -90,12 +91,17 @@ export default {
             headers: {"X-CSRFToken": csrfToken}
          }
       }
+
       this.$store.commit("initApi",apiDef)
+
+      let sessionInfo = JSON.parse(document.getElementById("sessionInfo").textContent);
+      this.$store.commit("setSessionInfo",sessionInfo);
+
+      this.$store.dispatch("awaitProjectMenu")
 
    },
 
    mounted: function(){
-      this.$store.dispatch("initializeProjects")
    },
 }
 </script>

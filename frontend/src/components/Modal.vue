@@ -35,11 +35,12 @@ export default {
 
 <style scoped lang="sass">
 .modalwrapper
-   position: absolute 
+   position: absolute !important
+   overflow: auto !important
    top: 0
    left: 0
-   width: 100%
-   height: 100%
+   width: 100vw
+   height: 100vh
    text-align: center
    background: rgba(0,0,0,0.5)
 

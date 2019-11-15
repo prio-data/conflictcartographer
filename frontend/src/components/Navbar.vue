@@ -19,15 +19,30 @@
          v-on:click="$emit('helpme')">
          ? 
       </button>
+      <img 
+         id="spinner"
+         v-if="anyLoading"
+         :src="spinner" 
+         alt="" 
+         height=32 width=32>
    </div>
 </div>
 </template>
 
 <script charset="utf-8">
+   import spinner from "../images/spinner.gif"
+
    export default {
 
       name: "Toolbar",
       props: ["title"],
+
+      components:{
+      },
+
+      data(){
+         return {spinner: spinner}
+      },
 
       computed: {
          username: function(){
@@ -37,6 +52,9 @@
             let project = this.$store.state.currentProject
             return project ? project.name : "Menu"
 
+         },
+         anyLoading: function(){
+            return this.$store.state.menustatus != 0
          }
       }
 
@@ -51,13 +69,6 @@
 
 .imgcontainer
    vertical-align: middle
-
-img
-   padding: 10px 20px
-   margin-left: auto
-   margin-right: 0
-   max-width: 100% 
-   height: auto
 
 #navbar
    margin-left: 15px
@@ -85,5 +96,9 @@ img
 
 #menu button:hover
    background: $ui_highlight 
+
+#spinner
+   position: absolute
+   margin-left: 10px
 
 </style>

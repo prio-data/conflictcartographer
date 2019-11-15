@@ -7,8 +7,7 @@ import "leaflet/dist/leaflet.css"
 import "leaflet-draw/dist/leaflet.draw.css"
 
 import App from './App.vue'
-import store from "./store"
-
+import store from "./store/store.js"
 
 import "./skeleton/skeleton.css"
 import "./skeleton/normalize.css"

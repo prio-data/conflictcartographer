@@ -16,7 +16,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class ProjectSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Project
-        fields = ["url","country","name","participants","pk"]
+        fields = ["url","country","name","startdate","enddate","participants","pk"]
      
 class CountrySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

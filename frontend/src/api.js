@@ -32,13 +32,27 @@ const Api = function(url, header){
             });
    }
 
-   this.post = function(obj,payload){
-      let url = this._path(this.url,obj);
-      Vue.http.post(url,payload,this.header)
+   this.put = function(obj,payload,pk){
+      let url = this._path(this.url,obj,pk);
+      Vue.http.put(url,payload,this.header)
          .then(
             function(response){
                if(typeof(payload) !== "list"){
-                  payload.url = response.body
+                  payload.pk = Number(response.body)
+               }
+            },
+            function(error){
+               console.log(error)
+               console.log(payload)
+            });
+   }
+
+   this.putAbs = function(url,payload){
+      Vue.http.put(url,payload,this.header)
+         .then(
+            function(response){
+               if(typeof(payload) !== "list"){
+                  payload.pk = Number(response.body)
                }
             },
             function(error){
@@ -68,12 +82,13 @@ const Api = function(url, header){
             });
    }
 
-   this.putAbs = function(url,payload){
-      Vue.http.put(url,payload,this.header)
+   this.post = function(obj,payload){
+      let url = this._path(this.url,obj);
+      Vue.http.post(url,payload,this.header)
          .then(
             function(response){
                if(typeof(payload) !== "list"){
-                  payload.pk = Number(response.body)
+                  payload.url = response.body
                }
             },
             function(error){
@@ -82,20 +97,6 @@ const Api = function(url, header){
             });
    }
 
-   this.put = function(obj,payload,pk){
-      let url = this._path(this.url,obj,pk);
-      Vue.http.put(url,payload,this.header)
-         .then(
-            function(response){
-               if(typeof(payload) !== "list"){
-                  payload.pk = Number(response.body)
-               }
-            },
-            function(error){
-               console.log(error)
-               console.log(payload)
-            });
-   }
 };
 
 export default Api

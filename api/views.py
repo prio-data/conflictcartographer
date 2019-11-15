@@ -5,6 +5,7 @@ from django.http import HttpResponse
 
 from django.db.models.query import QuerySet
 from django.utils import timezone
+from django.contrib import auth
 
 from rest_framework import viewsets, status, exceptions
 from rest_framework.decorators import api_view, permission_classes
@@ -21,7 +22,14 @@ import json
 
 @api_view()
 @permission_classes([permissions.permissions.IsAuthenticated])
-def whoami(request):
+def profile(request,pk):
+    q = auth.models.User.objects.filter(pk = int(pk))
+
+    if len(q) > 0:
+        user = q[0]
+    else:
+        raise exceptions.NotFound
+
     defaultdate = lambda y,m,d: datetime(y,m,d, tzinfo = timezone.get_current_timezone())
     mindate = lambda: defaultdate(1,1,1) 
     maxdate = lambda: defaultdate(9999,1,1) 
@@ -35,8 +43,8 @@ def whoami(request):
     lastworked = defaultdict(mindate)
     firstworked = defaultdict(maxdate)
 
-    shapes = models.Shape.objects.filter(author = request.user)
-    assignedProjects = models.Project.objects.filter(participants = request.user)
+    shapes = models.Shape.objects.filter(author = user)
+    assignedProjects = models.Project.objects.filter(participants = user)
     assignedProjects = set([p.pk for p in assignedProjects])
 
     for s in shapes:
@@ -53,7 +61,7 @@ def whoami(request):
         }
 
     profile = {
-        "name": request.user.username,
+        "name": user.username,
         "projects": projects
     }
     return Response(profile)

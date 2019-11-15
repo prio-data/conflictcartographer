@@ -68,20 +68,6 @@
          focused: function(){
             return this.$store.state.infocus;
          },
-         mapZoom: function(){
-            return this.$store.state.zoomlvl;
-         },
-         mapx: function(){
-            return this.$store.state.mapx;
-         },
-
-         mapy: function(){
-            return this.$store.state.mapy;
-         },
-
-         mapCenter: function(){
-            return L.latLng(this.mapx,this.mapy)
-         },
          color1: function(){
             return this.$store.state.color_low
          },
@@ -93,7 +79,9 @@
       mounted: function(){
          const map = this.$refs.map.mapObject;
          map.zoomSnap = 0.1
-         const mask = this.$store.state.projectDetails.shape
+
+         const mask = this.$store.getters.projectShape
+
          this.$nextTick(function(){
 
             const store = this.$store;
