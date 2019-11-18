@@ -1,42 +1,58 @@
 <template>
-   <div> 
-      <div class="menu six columns">
-         <div class="row">
+   <div class="menucontainer"> 
+      <div class="menu" v-if="loaded">
+         <div class = "container">
             <div class="profile six columns">
                <h1>Hello {{profile.name}}!</h1>
                <p>
                You are participating in {{nProjects}} projects.
                </p>
+               The variables to code are 
+               <span class="emphasis">intensity</span>
+               and
+               <span class="emphasis">confidence</span>.
+               Please refer to the documentation regarding the definition of these variables.
             </div>
 
             <div class="projects six columns">
                <ProjectView 
                   v-for="project in projects"
+                  :key="project.url"
                   :project="project"
                   v-on:chosen="chosen(project)">
                </ProjectView>
             </div>
          </div>
       </div>
-      <div class="six columns"></div>
+      <Spinner v-else/>
    </div>
 </template>
 
 <script charset="utf-8">
    import ProjectView from "./ProjectView.vue"
+   import Spinner from "@/components/Spinner"
 
    export default {
       name: "ProjectMenu",
 
-      props: ["projects"],
+      data(){
+         return {
+            profile: {
+               "name":"",
+               "projects":[]
+            },
+            loaded: false,
+         }
+      },
 
       components: {
          ProjectView,
+         Spinner,
       },
 
       computed: {
-         profile(){
-            return this.$store.state.profile
+         projects(){
+            return this.profile.projects
          },
          nProjects(){
             return this.projects.length
@@ -48,21 +64,49 @@
             this.$store.dispatch("chooseProject",project)
          }
       },
+
+      mounted(){
+         let user = this.$store.state.sessionInfo.uk
+         let api = this.$store.state.apiURL
+         let url = `${api}profile/${user}/`
+
+         this.$http.get(url)
+            .then(function(response){
+               this.profile = response.body
+               this.loaded = true 
+            })
+            .catch(function(){
+               this.profile = {"name":"","projects":[]} 
+            })
+      }
    }
 </script>
 <style lang="sass" scoped> 
 @import "../sass/variables.sass"
-div.projects
-   overflow-y: scroll
+
+span.emphasis
+   color: $ui_highlight
+
+.container
+   padding: 10px 20px
+   width: 100%
+   max-width: 85vw
+
+.menucontainer
+   width: 100vw
    height: $map_height / 1.1
+
+div.projects
+   height: $map_height / 1.1 - ($gaps * 4)
+   overflow-y: scroll
    background: white
-   padding: 15px
    border-radius: $roundedness
    border: 1px solid lightgray
+   padding: 10px 20px
 
 div.menu
+   height: 100%
    width: 100%
-   padding: 50px
    background: $ui_gray 
-   height: $map_height
+
 </style>

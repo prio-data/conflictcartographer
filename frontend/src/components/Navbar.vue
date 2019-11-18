@@ -19,30 +19,15 @@
          v-on:click="$emit('helpme')">
          ? 
       </button>
-      <img 
-         id="spinner"
-         v-if="anyLoading"
-         :src="spinner" 
-         alt="" 
-         height=32 width=32>
    </div>
 </div>
 </template>
 
 <script charset="utf-8">
-   import spinner from "../images/spinner.gif"
-
    export default {
 
       name: "Toolbar",
       props: ["title"],
-
-      components:{
-      },
-
-      data(){
-         return {spinner: spinner}
-      },
 
       computed: {
          username: function(){
@@ -53,6 +38,7 @@
             return project ? project.name : "Menu"
 
          },
+
          anyLoading: function(){
             return this.$store.state.menustatus != 0
          }

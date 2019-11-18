@@ -1,5 +1,3 @@
-import Vue from "vue"
-
 const actions = {
   
    // INITIALIZATION 
@@ -7,33 +5,8 @@ const actions = {
    // Creates a layer, giving it default values and pushing
    // it to the API / Vuex state.
    
-   initializeLayers(context,filter){
+   initializeLayers(context){
       context.commit("initializeLayers")
-   },
-
-   async initializeProjectMenu({state, dispatch, commit}){
-
-      let getProjects = function(){
-         return Vue.http.get(
-            `${state.apiURL}projects`
-         )
-      }
-
-      let getProfile = function(){
-         return Vue.http.get(
-            `${state.apiURL}profile/${state.sessionInfo.uk}/`
-         )
-      }
-
-      let prof = await getProfile()
-      commit("initializeProfile", await getProfile())
-      commit("initializeProjects", await getProjects())
-   },
-
-   async awaitProjectMenu({dispatch,commit}){
-      commit("projectMenuWaiting")
-      await dispatch("initializeProjectMenu")
-      commit("projectMenuLoaded")
    },
 
    // SESSION STATE
@@ -45,9 +18,8 @@ const actions = {
 
    },
 
-   async backToMenu({commit, dispatch}){
-      await dispatch("awaitProjectMenu")
-      commit("unsetProject")
+   backToMenu(context){
+      context.commit("unsetProject")
    },
    
    // MANIPULATION

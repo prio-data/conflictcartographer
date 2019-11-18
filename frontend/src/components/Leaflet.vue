@@ -3,7 +3,7 @@
    <l-map ref="map" 
       :options="mapOpts"
       id="map"
-      zoomControl="false">
+      :zoomAnimation="false">
       <div 
          v-bind:key="layer.url"
          v-for="layer in layers">
@@ -17,19 +17,19 @@
 
 <script charset="utf-8">
 
-   import {LMap, LTileLayer, LGeoJson} from "vue2-leaflet"
+   import {LMap, LGeoJson} from "vue2-leaflet"
    import L from "leaflet"
    import "leaflet-draw" 
    import "leaflet-boundary-canvas"
-   import Layer from "@/models/layer.js"
    import bbox from "geojson-bbox"
-   import colorGradient from "@/colorGradient.js"
-
-   import * as R from "ramda"
+   import colorGradient from "@/util/colorGradient.js"
 
    export default {
       name: "Leaflet",
-      components: {LMap,LTileLayer,LGeoJson},
+      components: {
+         LMap,
+         LGeoJson
+      },
 
       data: function(){
          return{
@@ -120,12 +120,13 @@
                }
             }));
 
+            // =======================================
             // Disable dragging while drawing 
-            map.on(L.Draw.Event.DRAWSTART, function(e){
+            map.on(L.Draw.Event.DRAWSTART, function(){
                map.dragging.disable();
             })
 
-            map.on(L.Draw.Event.DRAWSTOP, function(e){
+            map.on(L.Draw.Event.DRAWSTOP, function(){
                map.dragging.enable();
             })
 
@@ -150,11 +151,10 @@
          const getbox = (box) => [[box[3],box[0]],[box[1],box[2]]]
          const latlng = L.latLngBounds(getbox(box))
 
-         const padding = 0.2
          map.fitBounds(latlng)
          map.setMaxZoom(9)
          map.setMinZoom(6)
-         map.setMaxBounds(latlng.pad(padding*2))
+         map.setMaxBounds(latlng.pad(2))
          map.setZoom(7)
       }
    }

@@ -2,53 +2,44 @@
    <div 
       v-on:click="$emit('chosen')" 
       class="card">
+
       <p class="projecttitle">{{ project.name }}</p>
-      <span
-         v-if="profileInfo">
-         <p>You have drawn {{ shapes }} shapes.</p>
-         <div
-            v-if="hasDrawn"
-            class="checkmark">
-            &#x2714;
-         </div>
-         <p>This project ends on {{ ends }}</p>
-      </span>
+      <p>You have drawn {{ shapes }} shapes.</p>
+
+      <div
+         v-if="hasDrawn"
+         class="checkmark">
+         &#x2714;
+      </div>
+
+      <p>This project ends on {{ ends }}</p>
+
    </div>
 </template>
 
 <script charset="utf-8">
    export default {
       name: "ProjectView",
-
       props: ["project"],
 
-      components: {
-      },
-
       computed: {
-         profileInfo(){
-            return this.$store.state.profile.projects[this.project.pk.toFixed()]
-         },
          shapes(){
-            return this.profileInfo.shapes
+            return this.project.shapes
          },
          hasDrawn(){
             return this.shapes > 0
          },
          last(){
-            return this.profileInfo.last
+            return this.project.last
          },
          first(){
-            return this.profileInfo.first
+            return this.project.first
          },
          ends(){
             let dt = new Date(this.project.startdate)
             return dt.toDateString()
          }
       },
-
-      methods: {
-      }, 
    }
 </script>
 

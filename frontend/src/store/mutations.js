@@ -2,10 +2,6 @@
 import debounce from "@/util/debounce"
 import Api from "@/api"
 
-import * as R from "ramda"
-
-import STATUS from "@/STATUS.js"
-
 const mutations = {
    
    // INITIALIZATION  
@@ -16,28 +12,8 @@ const mutations = {
       state.api = new Api(api.url,api.header);
    },
    
-   initializeProjects(state, projects){
-      // Handle response errors here!!
-      state.projects = projects.body
-      console.log("I got the projects!")
-   },
-
-   initializeProfile(state,profile){
-      // Handle response errors here!!
-      state.profile = profile.body
-      console.log("I got the profile!!")
-   },
-
-   projectMenuWaiting(state){
-      state.menustatus = STATUS.WAITING
-      console.log("waiting for data...")
-   },
-
-   projectMenuLoaded(state){
-      state.menustatus = STATUS.LOADED
-      console.log("loaded!")
-   },
-
+   // Get layers
+   // ======================
    initializeLayers(state){
       let filter = {
          project: state.currentProject.pk
@@ -52,7 +28,8 @@ const mutations = {
       state.api.get("shapes",populate,filter)
    },
    
-   // Just a setter?
+   // Merging setter
+   // ======================
    setSessionInfo(state,data){
       state.sessionInfo = {...data, ...state.sessionInfo}  
    },
