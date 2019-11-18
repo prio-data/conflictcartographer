@@ -6,7 +6,7 @@ module.exports = {
    publicPath: "/frontend/dist/",
    outputDir: './dist/',
 
-   lintOnSave: "warning",
+   //lintOnSave: "warning",
    filenameHashing: false,
 
    chainWebpack: config => {

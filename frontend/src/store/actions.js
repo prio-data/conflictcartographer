@@ -1,5 +1,3 @@
-import Vue from "vue"
-
 const actions = {
   
    // INITIALIZATION 
@@ -7,34 +5,37 @@ const actions = {
    // Creates a layer, giving it default values and pushing
    // it to the API / Vuex state.
    
-   initializeLayers(context,filter){
+   initializeLayers(context){
       context.commit("initializeLayers")
    },
 
-   async initializeProjectMenu({state, dispatch, commit}){
+   //async initializeProjectMenu({state, commit}){
 
-      let getProjects = function(){
-         return Vue.http.get(
-            `${state.apiURL}projects`
-         )
-      }
+      //let getProjects = function(){
+         //return Vue.http.get(`${state.apiURL}projects`)
+            //.then(function(response){return response.body})
+            //.catch(function(){
+               //return []
+            //})
+      //}
+//
+      //let getProfile = function(){
+         //return Vue.http.get(`${state.apiURL}profile/${state.sessionInfo.uk}/`)
+            //.then(function(response){return response.body})
+            //.catch(function(){
+               //return {name:"NONAME",projects:[]}
+            //})
+      //}
+//
+      //commit("initializeProfile", await getProfile())
+      //commit("initializeProjects", await getProjects())
+   //},
 
-      let getProfile = function(){
-         return Vue.http.get(
-            `${state.apiURL}profile/${state.sessionInfo.uk}/`
-         )
-      }
-
-      let prof = await getProfile()
-      commit("initializeProfile", await getProfile())
-      commit("initializeProjects", await getProjects())
-   },
-
-   async awaitProjectMenu({dispatch,commit}){
-      commit("projectMenuWaiting")
-      await dispatch("initializeProjectMenu")
-      commit("projectMenuLoaded")
-   },
+   //async awaitProjectMenu({dispatch,commit}){
+      //commit("projectMenuWaiting")
+      //await dispatch("initializeProjectMenu")
+      //commit("projectMenuLoaded")
+   //},
 
    // SESSION STATE
    // ================================================
@@ -45,8 +46,8 @@ const actions = {
 
    },
 
-   async backToMenu({commit, dispatch}){
-      await dispatch("awaitProjectMenu")
+   backToMenu({commit, dispatch}){
+      //await dispatch("awaitProjectMenu")
       commit("unsetProject")
    },
    

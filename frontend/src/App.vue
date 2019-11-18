@@ -5,18 +5,14 @@
          v-on:logout="logout"
          v-on:helpme="toggleMenuInfo"
          title="Conflict Cartographer"/> 
-      <ProjectMenu 
-         :projects="projects"
-         v-if="menustatus === 0 && projects && currentProject === null"/>
 
       <MapEditor
-         v-else-if="currentProject !== null"
+         v-if="currentProject !== null"
          v-bind:project="currentProject"
          />
-      <div
-         v-else>
-      </div>
-
+      <ProjectMenu 
+         :projects="projects"
+         v-else/>
       <Monogram/>
       <Modal 
          v-if="showMenuInfo"
@@ -54,12 +50,15 @@ export default {
    },
 
    computed: {
+
       currentUser: function(){
          return this.$store.state.sessionInfo.uk;
       },
+
       currentProject: function(){
          return this.$store.state.currentProject;
       },
+
       menustatus: function(){
          return this.$store.state.menustatus;
       },
@@ -67,12 +66,14 @@ export default {
       projects: function(){
          return this.$store.state.projects
       }
+
    },
 
    methods: {
       backToMenu: function(){
          this.$store.dispatch("backToMenu")
       },
+
       logout: function(){
          window.location = window.location + "accounts/logout"
       },
@@ -96,9 +97,6 @@ export default {
 
       let sessionInfo = JSON.parse(document.getElementById("sessionInfo").textContent);
       this.$store.commit("setSessionInfo",sessionInfo);
-
-      this.$store.dispatch("awaitProjectMenu")
-
    },
 
    mounted: function(){

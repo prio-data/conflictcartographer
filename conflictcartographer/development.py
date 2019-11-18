@@ -42,7 +42,8 @@ DATABASES = {
         "PORT":"2345",
         "USER":"postgres",
         "PASSWORD":"letmein",
-        'NAME': "conflictcartographer_beta" 
+        'NAME': "conflictcartographer_beta",
+        "CONN_MAX_AGE": 3600 
     }
 }
 

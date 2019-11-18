@@ -11,7 +11,7 @@ from rest_framework import viewsets, status, exceptions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
-from api import serializers, models, permissions, util
+from api import serializers, models, permissions, util, filters
 from datetime import datetime
 
 import os
@@ -23,6 +23,8 @@ import json
 @api_view()
 @permission_classes([permissions.permissions.IsAuthenticated])
 def profile(request,pk):
+    if not request.user.pk == int(pk) and not request.user.is_staff:
+        raise exceptions.PermissionDenied
     q = auth.models.User.objects.filter(pk = int(pk))
 
     if len(q) > 0:
@@ -33,36 +35,44 @@ def profile(request,pk):
     defaultdate = lambda y,m,d: datetime(y,m,d, tzinfo = timezone.get_current_timezone())
     mindate = lambda: defaultdate(1,1,1) 
     maxdate = lambda: defaultdate(9999,1,1) 
+
+    workdone = defaultdict(int) 
+    lastworked = defaultdict(mindate)
+    firstworked = defaultdict(maxdate)
+
     def fixDefault(date):
         if (date == mindate()) | (date == maxdate()):
             return None
         else:
             return date 
 
-    workdone = defaultdict(int) 
-    lastworked = defaultdict(mindate)
-    firstworked = defaultdict(maxdate)
-
     shapes = models.Shape.objects.filter(author = user)
-    assignedProjects = models.Project.objects.filter(participants = user)
-    assignedProjects = set([p.pk for p in assignedProjects])
+    projects = models.Project.objects.filter(participants = user)
+    projects = filters.active(projects, request)
+
+    serialize = lambda p: serializers.ProjectSerializer(p, context = {"request":request})
+    get_repr = lambda p: serialize(p).data
+
+    projects = [get_repr(p) for p in projects]
+    projects = {p["pk"]:p for p in projects}
 
     for s in shapes:
         workdone[s.project.pk] += 1
         lastworked[s.project.pk] = max(lastworked[s.project.pk], s.updated)
         firstworked[s.project.pk] = min(firstworked[s.project.pk], s.updated)
 
-    projects = {}
-    for k in assignedProjects:
-        projects[k] = {
+    projectKeys = [*projects.keys()] 
+    for k in projectKeys:
+        projects[k].update({
             "shapes": workdone[k],
             "first": fixDefault(firstworked[k]),
             "last": fixDefault(lastworked[k])
-        }
+        })
 
     profile = {
         "name": user.username,
-        "projects": projects
+        "pk": user.pk,
+        "projects": [*projects.values()],
     }
     return Response(profile)
 

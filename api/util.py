@@ -1,4 +1,3 @@
-
 # ================================================
 # Getting the URL of an object:
 # It needs to be serialized!

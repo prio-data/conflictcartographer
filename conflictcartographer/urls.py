@@ -17,23 +17,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from django.views.generic import TemplateView
+# MAIN
 from cartographer.views import cartographer
 
-from core.views import signup
-
-from api.views import UserViewSet#, create_auth
-from api.router import router as apiRouter
 import api.urls
+import core.urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", cartographer, name = "conflictcartographer"),
-    path("api/",include(apiRouter.urls)),
-    path("invitations/",include("invitations.urls",namespace = "invitations")),
-    path("accounts/",include("django.contrib.auth.urls")),
-    path("accounts/signup",signup,name = "signup"),
-    #path("reg/", create_auth)
+    path("", cartographer, name = "conflictcartographer"), # MAIN
 ]
 
 urlpatterns += api.urls.urlpatterns
+urlpatterns += core.urls.urlpatterns

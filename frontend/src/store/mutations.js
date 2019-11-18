@@ -2,8 +2,6 @@
 import debounce from "@/util/debounce"
 import Api from "@/api"
 
-import * as R from "ramda"
-
 import STATUS from "@/STATUS.js"
 
 const mutations = {
@@ -16,28 +14,29 @@ const mutations = {
       state.api = new Api(api.url,api.header);
    },
    
+   // project menu 
+   // ======================
+
+   // Just two setters
    initializeProjects(state, projects){
-      // Handle response errors here!!
-      state.projects = projects.body
-      console.log("I got the projects!")
+      state.projects = projects
    },
-
    initializeProfile(state,profile){
-      // Handle response errors here!!
-      state.profile = profile.body
-      console.log("I got the profile!!")
+      state.profile = profile
    },
 
+   // Is it loading?
    projectMenuWaiting(state){
       state.menustatus = STATUS.WAITING
-      console.log("waiting for data...")
+      state.nowloading.menu = true 
    },
-
    projectMenuLoaded(state){
       state.menustatus = STATUS.LOADED
-      console.log("loaded!")
+      state.nowloading.menu = false
    },
 
+   // Get layers
+   // ======================
    initializeLayers(state){
       let filter = {
          project: state.currentProject.pk
@@ -52,7 +51,8 @@ const mutations = {
       state.api.get("shapes",populate,filter)
    },
    
-   // Just a setter?
+   // Merging setter
+   // ======================
    setSessionInfo(state,data){
       state.sessionInfo = {...data, ...state.sessionInfo}  
    },

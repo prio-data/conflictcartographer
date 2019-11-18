@@ -1,6 +1,6 @@
 <template>
    <div> 
-      <div class="menu six columns">
+      <div class="menu six columns" v-if="loaded">
          <div class="row">
             <div class="profile six columns">
                <h1>Hello {{profile.name}}!</h1>
@@ -12,31 +12,42 @@
             <div class="projects six columns">
                <ProjectView 
                   v-for="project in projects"
+                  :key="project.url"
                   :project="project"
                   v-on:chosen="chosen(project)">
                </ProjectView>
             </div>
          </div>
       </div>
-      <div class="six columns"></div>
+      <Spinner v-else/>
    </div>
 </template>
 
 <script charset="utf-8">
    import ProjectView from "./ProjectView.vue"
+   import Spinner from "@/components/Spinner"
 
    export default {
       name: "ProjectMenu",
 
-      props: ["projects"],
+      data(){
+         return {
+            profile: {
+               "name":"",
+               "projects":[]
+            },
+            loaded: false,
+         }
+      },
 
       components: {
          ProjectView,
+         Spinner,
       },
 
       computed: {
-         profile(){
-            return this.$store.state.profile
+         projects(){
+            return this.profile.projects
          },
          nProjects(){
             return this.projects.length
@@ -48,10 +59,26 @@
             this.$store.dispatch("chooseProject",project)
          }
       },
+
+      mounted(){
+         let user = this.$store.state.sessionInfo.uk
+         let api = this.$store.state.apiURL
+         let url = `${api}profile/${user}/`
+
+         this.$http.get(url)
+            .then(function(response){
+               this.profile = response.body
+               this.loaded = true 
+            })
+            .catch(function(){
+               this.profile = {"name":"","projects":[]} 
+            })
+      }
    }
 </script>
 <style lang="sass" scoped> 
 @import "../sass/variables.sass"
+
 div.projects
    overflow-y: scroll
    height: $map_height / 1.1

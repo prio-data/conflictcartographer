@@ -15,14 +15,28 @@ const store = new Vuex.Store({
 
    // Initialization
    state: {
+      
+      // ================================================
+      // ================================================
+      // IMMUTABLE 
+      // ================================================
+      // ================================================
+      
+      color_low: "#2b83ba",
+      color_high: "#d7191c",
 
       // API 
       // ================================================
       // API object and details about the API 
       api: {},
       apiURL: "/api/",
-      menustatus: STATUS.INIT,
 
+      // ================================================
+      // ================================================
+      // MUTABLE 
+      // ================================================
+      // ================================================
+      
       // SESSION
       // ================================================
       // Display personalized info?
@@ -50,13 +64,15 @@ const store = new Vuex.Store({
       // ================================================
       // Colors, currently focused, "vizId", etc. 
       infocus: null,
-
       vizId: 0,
 
-      color_low: "#50bfca",
-      color_high: "#ff9524",
+      // AJAX state
+      // ================================================
+      // Used to control what is shown when, when to show
+      // a spinner, etc.
+      menustatus: STATUS.INIT,
+      nowloading: {},
    },
-
    actions,
    mutations,
    getters,
