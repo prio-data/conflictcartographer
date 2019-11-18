@@ -9,34 +9,6 @@ const actions = {
       context.commit("initializeLayers")
    },
 
-   //async initializeProjectMenu({state, commit}){
-
-      //let getProjects = function(){
-         //return Vue.http.get(`${state.apiURL}projects`)
-            //.then(function(response){return response.body})
-            //.catch(function(){
-               //return []
-            //})
-      //}
-//
-      //let getProfile = function(){
-         //return Vue.http.get(`${state.apiURL}profile/${state.sessionInfo.uk}/`)
-            //.then(function(response){return response.body})
-            //.catch(function(){
-               //return {name:"NONAME",projects:[]}
-            //})
-      //}
-//
-      //commit("initializeProfile", await getProfile())
-      //commit("initializeProjects", await getProjects())
-   //},
-
-   //async awaitProjectMenu({dispatch,commit}){
-      //commit("projectMenuWaiting")
-      //await dispatch("initializeProjectMenu")
-      //commit("projectMenuLoaded")
-   //},
-
    // SESSION STATE
    // ================================================
    // Sets project number AND requests project details
@@ -46,9 +18,8 @@ const actions = {
 
    },
 
-   backToMenu({commit, dispatch}){
-      //await dispatch("awaitProjectMenu")
-      commit("unsetProject")
+   backToMenu(context){
+      context.commit("unsetProject")
    },
    
    // MANIPULATION

@@ -151,11 +151,10 @@
          const getbox = (box) => [[box[3],box[0]],[box[1],box[2]]]
          const latlng = L.latLngBounds(getbox(box))
 
-         const padding = 0.2
          map.fitBounds(latlng)
          map.setMaxZoom(9)
          map.setMinZoom(6)
-         map.setMaxBounds(latlng.pad(padding*2))
+         map.setMaxBounds(latlng.pad(2))
          map.setZoom(7)
       }
    }

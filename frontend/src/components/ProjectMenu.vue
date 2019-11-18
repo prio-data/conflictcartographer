@@ -1,12 +1,17 @@
 <template>
-   <div> 
-      <div class="menu six columns" v-if="loaded">
-         <div class="row">
+   <div class="menucontainer"> 
+      <div class="menu" v-if="loaded">
+         <div class = "container">
             <div class="profile six columns">
                <h1>Hello {{profile.name}}!</h1>
                <p>
                You are participating in {{nProjects}} projects.
                </p>
+               The variables to code are 
+               <span class="emphasis">intensity</span>
+               and
+               <span class="emphasis">confidence</span>.
+               Please refer to the documentation regarding the definition of these variables.
             </div>
 
             <div class="projects six columns">
@@ -79,17 +84,29 @@
 <style lang="sass" scoped> 
 @import "../sass/variables.sass"
 
-div.projects
-   overflow-y: scroll
+span.emphasis
+   color: $ui_highlight
+
+.container
+   padding: 10px 20px
+   width: 100%
+   max-width: 85vw
+
+.menucontainer
+   width: 100vw
    height: $map_height / 1.1
+
+div.projects
+   height: $map_height / 1.1 - ($gaps * 4)
+   overflow-y: scroll
    background: white
-   padding: 15px
    border-radius: $roundedness
    border: 1px solid lightgray
+   padding: 10px 20px
 
 div.menu
+   height: 100%
    width: 100%
-   padding: 50px
    background: $ui_gray 
-   height: $map_height
+
 </style>

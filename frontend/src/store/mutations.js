@@ -2,8 +2,6 @@
 import debounce from "@/util/debounce"
 import Api from "@/api"
 
-import STATUS from "@/STATUS.js"
-
 const mutations = {
    
    // INITIALIZATION  
@@ -14,27 +12,6 @@ const mutations = {
       state.api = new Api(api.url,api.header);
    },
    
-   // project menu 
-   // ======================
-
-   // Just two setters
-   initializeProjects(state, projects){
-      state.projects = projects
-   },
-   initializeProfile(state,profile){
-      state.profile = profile
-   },
-
-   // Is it loading?
-   projectMenuWaiting(state){
-      state.menustatus = STATUS.WAITING
-      state.nowloading.menu = true 
-   },
-   projectMenuLoaded(state){
-      state.menustatus = STATUS.LOADED
-      state.nowloading.menu = false
-   },
-
    // Get layers
    // ======================
    initializeLayers(state){
