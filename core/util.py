@@ -2,9 +2,14 @@
 from django.contrib.auth.forms import UserCreationForm 
 from django.contrib.auth.models import User
 
+from django.conf import settings
+from django.core import mail
+
 from hashlib import md5
 
 from api.models import Project
+from core.models import Invitation
+
 
 SALT = "beagoodboy"
 
@@ -16,13 +21,45 @@ def userExists(uname):
     else:
         return True
 
-def makePassword(entry):
+def generateRefKey(email):
+    salted = "pleasewelcome"+email+settings.SECRET_KEY
+    hashed = md5(email.encode()).hexdigest()
+    print(hashed)
+    return hashed 
 
-    pw = entry["username"]+SALT
-    pw = md5(pw.encode()).hexdigest()
-    print(pw)
+def createInvite(email, projects, cohort = False):
+    key = generateRefKey(email)
+    projects = Project.objects.filter(pk__in = projects)
 
-    return pw
+    i = Invitation(email = email, refkey = key)
+
+    if cohort:
+        i.cohort = cohort
+
+    i.save()
+    i.projects.set(projects)
+    i.save()
+
+    return i
+
+def dispatchInvite(invite):
+
+    try:
+        res = mail.send_mail("Your invitation",
+            f"Please go to localhost:8000/accounts/ref/{invite.refkey}/",
+            settings.EMAIL_HOST_USER,
+            [invite.email])
+
+    except ConnectionRefusedError:
+        invite.reached = False 
+        invite.save()
+        return False
+
+    else:
+        invite.reached = True
+        invite.save()
+        return True
+
  
 def bulkCreateUsers(data):
     
