@@ -104,58 +104,6 @@
       <div class="row">
          <h1 class="title">Thank you for your contribution!</h1>
       </div>
-
-      <div class="row">
-         <h1>
-            Til testerne:
-         </h1>
-         <p>
-            Hei! Tusen takk for at dere har tatt dere tid til dette. Jeg er spent
-            på hva dere synes. Med denne runden med testing er vi ute etter å
-            finne ut hvordan det oppleves å bruke applikasjonen: Det er altså ikke
-            så viktig hvor "riktige" dataene dere legger inn blir. Formålet med
-            prosjektet denne applikasjonen er skrevet til er som nevnt å samle inn
-            geografisk informasjon om konfliktrisiko, men formålet med testingen
-            er bare å finne ut hvor lett applikasjonen er å bruke, og om det
-            finnes noen skjulte bugs. 
-         </p>
-
-         <p>
-            Bruk litt tid på å legge inn områder i de ulike landene. Hvis noe
-            er uklart, sjekk denne hjelpesiden, men om det ikke står her er det
-            viktig at jeg får vite hva dere lurer på! Prøv også gjerne å herje
-            litt med de ulike funksjonene, og se om det lar seg gjøre å skape
-            noe trøbbel for applikasjonen. 
-         </p>
-
-         <p>
-            Det er kjent at applikasjonen kan "misse" data noen ganger, selv om
-            jeg tror dette problemet har blitt løst nå. For å sjekke om dette
-            skjer kan dere tegne inn noen områder, og så gå ut og inn av det
-            samme landprosjektet og se om endringene deres ble registrert.
-            Dette gjelder også for endringer i variabel-sliderene på siden.
-         </p>
-         <p>
-            Det er helt supert om dere oppdager problemer med applikasjonen,
-            for det betyr at vi får fikset problemene før den skal ut i "felt"!
-            Derfor blir jeg veldig glad for å høre fra dere om dere opplever
-            noe som er feil. Om dere har mulighet til det, la gjerne vinduet
-            stå oppe og ta kontakt med meg (om dere vil fortsette å teste kan
-            dere åpne en ny fane imens). Jeg kan nåes på epost
-            (pglandsverk@gmail.com), og jeg sitter på kontoret i andre etasje
-            mellom ni og fem. 
-         </p>
-
-         <p>
-            Jeg tar også gjerne en prat med hver av dere når dere har fått
-            testet litt, så jeg finner litt ut av hvordan det oppleves å bruke
-            applikasjonen.
-         </p>
-
-         <p>
-            Takk igjen! Mvh. Peder :)
-         </p>
-      </div>
    </div>
 </template>
 
