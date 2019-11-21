@@ -1,12 +1,11 @@
 const BundleTracker = require("webpack-bundle-tracker");
 
 module.exports = {
-   //publicPath: "http://0.0.0.0:1337/",
   
    publicPath: "/frontend/dist/",
    outputDir: './dist/',
 
-   //lintOnSave: "warning",
+   lintOnSave: "warning",
    filenameHashing: false,
 
    chainWebpack: config => {
