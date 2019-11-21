@@ -1,12 +1,188 @@
 
+import psycopg2
+
 from django.contrib.auth.forms import UserCreationForm 
 from django.contrib.auth.models import User
+
+from django.conf import settings
+from django.core import mail
+
+from django.template.loader import render_to_string
 
 from hashlib import md5
 
 from api.models import Project
+from core.models import Invitation, Cohort
 
-SALT = "beagoodboy"
+import json
+
+
+# ================================================
+# INVITE STUFF
+
+def generateRefKey(email):
+    """
+    Creates a unique indentifier key that is used to recieve
+    users that have been invited.
+    """
+
+    salted = email+settings.SECRET_KEY
+    hashed = md5(email.encode()).hexdigest()
+    return hashed 
+
+def createInvite(email, projects, cohort = False):
+    """
+    Creates and pushes an invite object to the database from 
+    raw data.
+    """
+
+    key = generateRefKey(email)
+    projects = Project.objects.filter(pk__in = projects)
+
+    try:
+        Invitation.objects.get(refkey = key)
+    except Invitation.DoesNotExist:
+        i = Invitation(email = email, refkey = key)
+
+        if cohort:
+            i.cohort = cohort
+
+        i.save()
+        i.projects.set(projects)
+        i.save()
+
+    else:
+        print(f"Invitation for {email} ({key}) already exists!")
+        i = None
+
+    return i
+
+def bulkCreateInvite(data, cohort = None):
+    """
+    Takes a list of dicts with the following data:
+    email: User email
+    projects: A list of project numbers (pk's)
+
+    Also takes an optional cohort argument (a cohort object).
+    If none is supplied, a new cohort is created. 
+    """
+
+    if cohort is None:
+        stamp = md5(json.dumps(data).encode()).hexdigest()[0:10]
+
+        isnew = ""
+        try :
+            cohort = Cohort.objects.get(stamp = stamp)
+        except Cohort.DoesNotExist:
+            cohort = Cohort(stamp = stamp)
+            cohort.save()
+            isnew = "new "
+
+    invitations = [createInvite(d["email"],d["projects"],cohort) for d in data]
+    invitations = [i for i in invitations if i is not None]
+
+    return f"created {len(invitations)} in {isnew}cohort {cohort.name} ({cohort.stamp})"
+
+def dispatchInvite(invitation):
+    """
+    Sends an invitation to an invitationd user by email, containing the unique
+    link used to log on.
+
+    This function should CASE, based on what the invitation status is.
+    """
+    print(invitation.invitation_status())
+
+    key = invitation.refkey
+    link = settings.INVITATION_LINK_BASE.format(key = key) 
+
+    msg_plain = render_to_string("mail/invitation.txt",{"uniquelink":link})
+    msg_html = render_to_string("mail/invitation.html",{"uniquelink":link})
+
+    try:
+        res = mail.send_mail("Your invitation",
+            msg_plain,
+            settings.EMAIL_HOST_USER,
+            [invitation.email], html_message = msg_html)
+
+    except ConnectionRefusedError:
+        invitation.reached = False 
+        invitation.save()
+        return False
+
+    else:
+        invitation.reached = True
+        invitation.save()
+        return True
+
+def dispatchCohort(cohort):
+    """
+    Emails all of the invitations in a Cohort (object).
+    """
+
+    invitations = cohort.invitations.all()
+
+    results = [dispatchInvite(i) for i in invitations]
+    results = zip(invitations,results)
+    
+    succeeded = [i for i,res in results if res] 
+    failed = [i for i,res in results if not res] 
+
+    for i in succeeded:
+        print(f"Sent email to {i.email}")
+
+    for i in failed:
+        print(f"Failed to email {i.email}")
+
+#def bulkCreateUsers(data):
+    #
+    #for d in data:
+#
+        #d["username"] = d["email"]
+#
+        #pw = makePassword(d)
+        #for k in ["password1","password2"]:
+            #d[k] = pw
+#
+    #usernames = [d["username"] for d in data]
+#
+    #exists = []
+    #new = []
+    #for name in usernames:
+        #if userExists(name):
+            #exists.append(name)
+        #else:
+            #new.append(name)
+    #
+    ## Create new users
+    #newUserData = [d for d in data if d["username"] in new] 
+    #forms = [UserCreationForm(d) for d in newUserData]
+    #forms = [f for f in forms if f.is_valid()]
+#
+    #newusers = [f.save() for f in forms]
+#
+    ## Get existing users
+    #existingusers = [User.objects.get(username = name) for name in exists]
+    #users = newusers + existingusers
+    #
+    ## Update all users
+    #for user in users:
+        #userdata = [d for d in data if d["username"] == user.username][0]
+        #user.email = userdata["email"]
+        #print(f"""
+            #{user.username}
+            #{user.email}
+        #""")
+        ## projects
+        #projects = Project.objects.filter(pk__in = userdata["projects"])
+        #user.projects.set(projects)
+#
+        #user.save()
+        ##user.delete()
+#
+    #return f"created {len(newusers)} users | updated {len(existingusers)} users"
+
+# ================================================
+# Utility functions
 
 def userExists(uname):
     try:
@@ -15,60 +191,4 @@ def userExists(uname):
         return False
     else:
         return True
-
-def makePassword(entry):
-
-    pw = entry["username"]+SALT
-    pw = md5(pw.encode()).hexdigest()
-    print(pw)
-
-    return pw
- 
-def bulkCreateUsers(data):
-    
-    for d in data:
-
-        d["username"] = d["email"]
-
-        pw = makePassword(d)
-        for k in ["password1","password2"]:
-            d[k] = pw
-
-    usernames = [d["username"] for d in data]
-
-    exists = []
-    new = []
-    for name in usernames:
-        if userExists(name):
-            exists.append(name)
-        else:
-            new.append(name)
-    
-    # Create new users
-    newUserData = [d for d in data if d["username"] in new] 
-    forms = [UserCreationForm(d) for d in newUserData]
-    forms = [f for f in forms if f.is_valid()]
-
-    newusers = [f.save() for f in forms]
-
-    # Get existing users
-    existingusers = [User.objects.get(username = name) for name in exists]
-    users = newusers + existingusers
-    
-    # Update all users
-    for user in users:
-        userdata = [d for d in data if d["username"] == user.username][0]
-        user.email = userdata["email"]
-        print(f"""
-            {user.username}
-            {user.email}
-        """)
-        # projects
-        projects = Project.objects.filter(pk__in = userdata["projects"])
-        user.projects.set(projects)
-
-        user.save()
-        #user.delete()
-
-    return f"created {len(newusers)} users | updated {len(existingusers)} users"
 

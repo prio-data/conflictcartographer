@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "django.contrib.sites",
     "rest_framework",
-    "invitations",
+    "core",
+    #"invitations", # Maybe deprecated
     "django_filters",
     "webpack_loader",
     "livereload",

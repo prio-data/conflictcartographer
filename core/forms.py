@@ -1,9 +1,7 @@
 
-SignUpForm(UserCreationForm):
-    first_name = forms.CharField(max_length=30)
-    last_name = forms.CharField(max_length=30)
-    email = forms.EmailField(max_length = 254) 
+from django.contrib.auth.forms import UserCreationForm 
+from django import forms
 
-    class Meta:
-        model = User
-        fields("username","first_name","last_name","email","password1","password2")
+class ReferredSignupForm(UserCreationForm):
+    email = forms.EmailField(max_length = 254)  
+    username = forms.CharField(max_length = 254)

@@ -1,0 +1,5 @@
+You have been invited to participate in a study.
+We are collecting expert opinion on conflict risk, using a mapping tool.
+
+Please go to this link to participate in the study:
+{{ uniquelink }}

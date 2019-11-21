@@ -37,9 +37,9 @@
             this.$store.commit("unfocus")
          },
          
-         valueChange(){
-            console.log("something changed")
-         }
+         //valueChange(){
+            //console.log("something changed")
+         //}
       },
 
       computed: {
@@ -64,6 +64,7 @@ h1
    color: white
 
 div.viewcontainer
+   overflow-y: scroll
    padding: 0px $padding
 
    height: $map_height

@@ -1,13 +1,24 @@
 {% load render_bundle from webpack_loader %}
+{% load static %}
+
 <!DOCTYPE html>
-{%load static%}
 <html>
    <head>
+      <title>{% block title %}{% endblock %}</title>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width" />
-      <title>{% block title %}{% endblock %}</title>
+
+      <!-- Style and font -->
       <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css" type="text/css" media="screen" title="no title" charset="utf-8">
+
+      <!-- Favicon -->
+      <link rel="apple-touch-icon" sizes="180x180" href={% static "/apple-touch-icon.png" %}>
+      <link rel="icon" type="image/png" sizes="32x32" href={% static "/favicon-32x32.png" %}>
+      <link rel="icon" type="image/png" sizes="16x16" href={% static "/favicon-16x16.png" %}>
+      <link rel="manifest" href={% static "/site.webmanifest" %}>
+
+
    </head>
    <body>
       <div class="container">
