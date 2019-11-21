@@ -6,14 +6,25 @@ from api.models import Project
 from datetime import datetime
 from hashlib import md5
 
+import names
+
 def makeStamp():
-    return md5(str(datetime.now().date()).encode()).hexdigest()[0:10]
-    
+    md5(str(datetime.now().date()).encode()).hexdigest()
+
 class Cohort(models.Model):
-   stamp = models.CharField(
-      max_length = 10, 
-      unique = True,
-      default = makeStamp)
+    stamp = models.CharField(
+       max_length = 10, 
+       unique = True)
+
+    name = models.CharField(
+       max_length = 100,
+       default = names.get_full_name)
+
+    created = models.DateField(auto_now = True)
+
+    def __str__(self):
+        return f"Cohort \"{self.name}\" ({self.stamp}) {len(self.invitations.all())} invitation(s)"
+
 
 class Invitation(models.Model):
     refkey = models.CharField(max_length = 32, unique = True) # Should be a hashed version of something
@@ -44,7 +55,7 @@ class Invitation(models.Model):
         elif self.reached:
             status = "reached"
         else:
-            status = "failed"
+            status = "..."
         return status
 
     def __str__(self):

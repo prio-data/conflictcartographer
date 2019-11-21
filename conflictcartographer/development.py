@@ -57,3 +57,5 @@ AUTH_PASSWORD_VALIDATORS = [
 EMAIL_HOST = "localhost"
 EMAIL_HOST_USER = "testing@testing.test"
 EMAIL_PORT = 1202
+
+INVITATION_LINK_BASE = "localhost:8000/accounts/ref/{key}/"
