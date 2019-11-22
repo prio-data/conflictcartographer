@@ -34,10 +34,15 @@
       data: function(){
          return{
             //url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
+            //url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png',
+            //url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.png',
             //url: "https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.png",
-            url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+            //url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
             //url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
-            attrib: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+            //url:"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
+            //url: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+            attrib: "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community",
             id: "mapbox.streets",
             mapOpts: {
                zoomSnap: 1
@@ -137,9 +142,11 @@
             })
          });
 
-         const osm = new L.TileLayer(this.url,{
-            id: "background"
+         const osm = new L.TileLayer(this.url, {
+            id: "background",
+            attribution: this.attrib,
          })
+
          map.addLayer(osm);
 
          const masked = new L.TileLayer.BoundaryCanvas(this.url,{
@@ -150,6 +157,8 @@
          const box = bbox(mask)
          const getbox = (box) => [[box[3],box[0]],[box[1],box[2]]]
          const latlng = L.latLngBounds(getbox(box))
+
+         map.attributionControl.setPosition("bottomleft")
 
          map.fitBounds(latlng)
          map.setMaxZoom(9)
@@ -170,11 +179,10 @@
 
    // Tile stuff
    .leaflet-tile-container img
-       //box-shadow: 0 0 10px rgba(0, 0, 0, 0.05)
        filter: brightness(0.8)
 
    .leaflet-tile-container canvas 
-       filter: saturate(5.5) brightness(0.9) contrast(1.1)
+       filter: brightness(0.9) contrast(1.1) //saturate(5.5) 
 
    // Editing dots
    .leaflet-editing-icon
