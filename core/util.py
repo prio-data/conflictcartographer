@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
 from django.conf import settings
-from django.core import mail
+from django.core import mail, exceptions, validators
 
 from django.template.loader import render_to_string
 
@@ -15,6 +15,7 @@ from api.models import Project
 from core.models import Invitation, Cohort
 
 import json
+import time
 
 
 # ================================================
@@ -67,6 +68,31 @@ def bulkCreateInvite(data, cohort = None):
     If none is supplied, a new cohort is created. 
     """
 
+    def formatIsValid(d):
+        try: 
+            d["email"]
+            d["projects"]
+        except KeyError: 
+            print("An entry did not have enough keys")
+            res = False
+        else:
+            res = True
+        return res
+
+    def emailIsValid(d):
+        e = d["email"]
+        try: 
+            validators.validate_email(e)
+        except exceptions.ValidationError:
+            print(f"{e} is not a valid email address")
+            res = False
+        else:
+            res = True
+        return res
+
+    for check in [formatIsValid, emailIsValid]:
+        data = [d for d in data if check(d)]
+
     if cohort is None:
         stamp = md5(json.dumps(data).encode()).hexdigest()[0:10]
 
@@ -81,7 +107,9 @@ def bulkCreateInvite(data, cohort = None):
     invitations = [createInvite(d["email"],d["projects"],cohort) for d in data]
     invitations = [i for i in invitations if i is not None]
 
-    return f"created {len(invitations)} in {isnew}cohort {cohort.name} ({cohort.stamp})"
+    print(f"created {len(invitations)} in {isnew}cohort {cohort.name} ({cohort.stamp})")
+
+    return cohort
 
 def dispatchInvite(invitation):
     """
@@ -94,6 +122,10 @@ def dispatchInvite(invitation):
 
     key = invitation.refkey
     link = settings.INVITATION_LINK_BASE.format(key = key) 
+    try:
+        interval = settings.EMAIL_INTERVAL
+    except AttributeError:
+        interval = 1
 
     msg_plain = render_to_string("mail/invitation.txt",{"uniquelink":link})
     msg_html = render_to_string("mail/invitation.html",{"uniquelink":link})
@@ -105,13 +137,12 @@ def dispatchInvite(invitation):
             [invitation.email], html_message = msg_html)
 
     except ConnectionRefusedError:
-        invitation.reached = False 
-        invitation.save()
         return False
 
     else:
-        invitation.reached = True
+        invitation.reached = True 
         invitation.save()
+        time.sleep(interval)
         return True
 
 def dispatchCohort(cohort):
