@@ -131,7 +131,7 @@ def dispatchInvite(invitation):
     msg_html = render_to_string("mail/invitation.html",{"uniquelink":link})
 
     try:
-        res = mail.send_mail("Your invitation",
+        res = mail.send_mail("Invitation to participate in a geo-spatial expert survey",
             msg_plain,
             settings.EMAIL_HOST_USER,
             [invitation.email], html_message = msg_html)

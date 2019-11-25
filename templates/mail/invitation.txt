@@ -1,5 +1,21 @@
-You have been invited to participate in a study.
-We are collecting expert opinion on conflict risk, using a mapping tool.
 
-Please go to this link to participate in the study:
-{{ uniquelink }}
+We are a group of researchers at the Peace Research Institute Oslo (PRIO), and would like to invite you to participate in a pilot exercise on the use of experts to improve early warning predictions of conflict escalation.
+
+The survey involves drawing on a map where you believe violent conflicts are likely to escalate or de-escalate during 2020. You have been assigned to a (few) country project(s), based on your academic or professional focus. For the purpose of this study, we need you to submit your predictions within the end of 2019.
+
+It does not take long time to submit your predictions (approx. 10-15 minutes per country).
+
+If you would like to participate, please follow the link below. The link takes you to a web-application where you can read more about the project, and share your conflict-risk predictions for 2020.
+
+{{ uniquelink }}
+
+The survey is done as part of the EU-LISTCO project, which is funded under the Horizon 2020 EU programme. If you have any questions, do not hesitate to ask us, either using conflictcartographer@prio.org, or any of our emails (see below).
+
+Best,
+the conflict cartographer team at PRIO
+
+Håvard M. Nygård, research director, (havnyg@prio.org)
+Siri Aas Rustad, senior researcher, (sirir@prio.org)
+Jonas Vestby, senior researcher, (jonves@prio.org)
+Andreas F. Tollefsen, senior researcher, (andreas@prio.org)
+Peder Landsverk, research assistant, web-application author (pedlan@prio.org)
