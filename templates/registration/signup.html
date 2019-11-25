@@ -1,5 +1,6 @@
 
 {% extends "registration/base.html"%}
+{% load static %}
 
 {% block title %} Sign up {% endblock %}
 
@@ -13,7 +14,7 @@
    </div>
    <div class="row">
       <div class="twelve columns">
-         <table>
+         <table style="padding-top:15px">
             <tr>
                <td><p id="fieldname">Password:</p></td>
                <td>{{ form.password1 }}</td>
@@ -34,6 +35,12 @@
    </div>
    <div class="row">
       <button type="submit">Sign up</button>
+   </div>
+   <div class="row">
+      <hr>
+      <a href="https://www.prio.org/Projects/Project/?x=1835"><img height=50 style="padding-right: 25px" src={% static "priologo.png" %} alt=""></a>
+      <a href="https://www.eu-listco.net/"><img height=29 style="padding-bottom: 8px" src={% static "eulistcologo.png" %} alt=""></a>
+
    </div>
 </form>
 {% endblock %}
