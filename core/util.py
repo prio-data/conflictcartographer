@@ -133,7 +133,7 @@ def dispatchInvite(invitation):
     try:
         res = mail.send_mail("Invitation to participate in a geo-spatial expert survey",
             msg_plain,
-            settings.EMAIL_HOST_USER,
+            settings.EMAIL_FROM_ADDRESS,
             [invitation.email], html_message = msg_html)
 
     except ConnectionRefusedError:
