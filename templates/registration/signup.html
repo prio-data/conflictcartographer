@@ -4,18 +4,26 @@
 {% block title %} Sign up {% endblock %}
 
 {% block content %}
-<h2>Sign up</h2>
-<form method="post">
+<h2 id="subtitle">Sign up</h2>
+<form method="post" class="content">
    {% csrf_token %}
    <div class="row">
       Welcome {{ uname }}.
-      Please create a password (enter it twice). 
+      Please create a password. 
    </div>
    <div class="row">
-      {{ form.password2 }}
-   </div>
-   <div class="row">
-      {{ form.password1 }}
+      <div class="twelve columns">
+         <table>
+            <tr>
+               <td><p id="fieldname">Password:</p></td>
+               <td>{{ form.password1 }}</td>
+            </tr>
+            <tr>
+               <td><p id="fieldname">Repeat password:</p></td>
+               <td>{{ form.password2 }}</td>
+            </tr>
+         </table>
+      </div>
    </div>
    <div class="row">
       {{ form.username.as_hidden }}

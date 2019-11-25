@@ -1,4 +1,8 @@
 
+td {
+   border: none;
+}
+
 .container {
    margin-top: 100px;
    text-align: center;
@@ -20,4 +24,12 @@
 
 span {
    color: #da4252;
+}
+
+#subtitle {
+   color: #da4252;
+}
+
+p#fieldname {
+    font-weight: bold;
 }
