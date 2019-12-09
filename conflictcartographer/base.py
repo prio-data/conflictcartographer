@@ -91,12 +91,27 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+# ================================================
+# ================================================
+# REST framework 
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }
 
+# ================================================
+# ================================================
+# EMAIL STUFF 
+
 EMAIL_INTERVAL = 1
+
+PLAINTEXT_MAIL_TEMPLATE = "mail/invitation.txt"
+HTML_MAIL_TEMPLATE = "mail/invitation.html"
+
+# ================================================
+# ================================================
+# APP 
 
 LOGGING = {
     'version': 1,
