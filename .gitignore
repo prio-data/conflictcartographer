@@ -15,3 +15,6 @@ dist/*
 
 frontend/webpack-stats.json
 frontend/package.json
+
+logs/*
+!logs/.gitkeep
