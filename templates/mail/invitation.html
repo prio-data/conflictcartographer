@@ -7,7 +7,35 @@
    on the use of experts to improve early warning predictions of conflict escalation.
 </p></span>
 
-<span><p>You have been chosen because you have country or regional expertise on the countries that we are working on.</p></span>
+<span><p>
+{% if status == "drawn" %}
+
+Thank you for your contribution so far. If you would like to add even more
+predictions, go to the link below.
+
+{% elif status == "registered" %}
+
+You have not yet added any data in the application. If you have questions about
+how to use the tool, or about how your data is handled, do not hesitate to get
+in touch using one of the email addresses below. Your expertise and experience
+is valuable, and would make an important contribution to the dataset in
+production. Please follow the link below if you would like to add your
+predictions.
+
+{% elif status == "opened" or status == "reached" %}
+
+You have not yet registered to participate. Please consider that your expertise
+and experience would make a valuable contribution to the dataset, and thereby
+to research on conflict prediction and prevention. If you would still like to
+join the effort, follow the link below.
+
+{% else %}
+
+You have been chosen because you have country or regional expertise on the
+countries that we are working on.
+
+{% endif %}
+</p></span>
 
 <span><p>
 If you take part, you will draw on a map where you believe violent conflicts are likely to escalate or de-escalate during 2020. You have been assigned to a (few) country project(s), based on your academic or professional focus. 
@@ -21,7 +49,7 @@ If you take part, you will draw on a map where you believe violent conflicts are
 <span><p>If you would like to participate, please follow the link below. The link takes you to a web-application where you can read more about the project, and share your conflict-risk predictions for 2020. You will be prompted to create a password the first time you access the application.</p></span>
 
 <p class="callout">
-   <a href="{{ uniquelink }}">conflictcartographer.prio.org &raquo;</a>
+   <a href="{{ link }}">conflictcartographer.prio.org &raquo;</a>
 </p>
 
 <span><p>The survey is done as part of the EU-LISTCO project, which is funded under the Horizon 2020 EU programme. If you have any questions, do not hesitate to ask us, either using conflictcartographer@prio.org, or any of our emails (see below). </p></span>
