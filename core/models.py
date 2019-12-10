@@ -9,11 +9,17 @@ from core.util import hasDrawn, referralKeygen
 
 from django.core import mail 
 from django.template.loader import render_to_string
+from django.db.utils import IntegrityError
 
 from datetime import datetime
 from hashlib import md5
 
 import names
+
+import logging
+import time
+
+logger = logging.getLogger(__name__)
 
 class Cohort(models.Model):
     stamp = models.CharField(
@@ -29,7 +35,8 @@ class Cohort(models.Model):
     def dispatch(self):
         todo = [i for i in self.invitations.all() if not i.taskAccomplished()]
         for invitation in todo:
-            invitation.dispatch()
+            res = invitation.dispatch()
+            time.sleep(settings.EMAIL_INTERVAL)
 
     def __str__(self):
         return f"Cohort \"{self.name}\" ({self.stamp}) {len(self.invitations.all())} invitation(s)"
@@ -70,8 +77,16 @@ class Invitation(models.Model):
         refkey = referralKeygen(email)
         
         i = cls(email = email, refkey = refkey, cohort = cohort)
-        i.save()
-        i.projects.set(projects)
+
+        try:
+            i.save()
+        except IntegrityError:
+            logger.warning(f"Invitation for {email} already exists!")
+            i = None
+        else:
+            i.projects.set(projects)
+            i.save()
+            logger.debug(f"Successfully created invitation for {email}")
 
         return i
 
@@ -101,9 +116,11 @@ class Invitation(models.Model):
                 html_message = emails["html"])
 
         except ConnectionRefusedError:
+            logger.error(f"Failed to send email, connection refused!")
             return False
 
         else:
+            logger.info(f"Sent email to {self.email}")
             self.reached = True
             self.save()
             return True
@@ -114,7 +131,7 @@ class Invitation(models.Model):
         based on what the invitee has so far done.
         """
         title = "Invitation to participate in a geo-spatial expert survey"
-        if self.invitation_status() == "...":
+        if self.invitation_status() != "...":
             title = "REMINDER: " + title
         return title
 
@@ -127,6 +144,7 @@ class Invitation(models.Model):
         """
 
         if self.user is not None:
+            logger.warning(f"Did not send email to {self.email}; task completed.")
             return hasDrawn(self.user)
 
         else:
