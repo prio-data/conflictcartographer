@@ -17,3 +17,5 @@ frontend/package.json
 
 logs/*
 !logs/.gitkeep
+venv/
+docker.sh
