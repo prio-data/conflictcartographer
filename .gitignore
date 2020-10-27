@@ -13,9 +13,10 @@ dist/*
 !dist/.gitkeep
 
 frontend/webpack-stats.json
-frontend/package.json
 
 logs/*
 !logs/.gitkeep
 venv/
 docker.sh
+
+app/frontend/webpack-stats.json
