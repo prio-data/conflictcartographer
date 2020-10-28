@@ -8,7 +8,7 @@ warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
 
 
 def main():
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'conflictcartographer.development')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'conflictcartographer.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

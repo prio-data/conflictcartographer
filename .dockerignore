@@ -8,3 +8,5 @@ app/logs/*
 
 app/static/*
 !app/static/.keep
+app/compiled/*
+!app/compiled/.keep

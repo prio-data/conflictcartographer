@@ -13,6 +13,7 @@ RUN apt install gdal-bin -y
 COPY ./app /app
 WORKDIR /app
 RUN pip install -r requirements.txt
-COPY --from=nodebuilder /frontend/dist /app/static
+COPY --from=nodebuilder /frontend/dist /app/compiled
+RUN ./manage.py collectstatic --noinput
 
 CMD ["/app/manage.py","runserver"]

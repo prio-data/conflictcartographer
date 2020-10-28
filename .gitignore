@@ -20,3 +20,5 @@ app/static/*
 !app/static/.keep
 frontend/.cache
 frontend/webpack-stats.json
+app/compiled/*
+!app/compiled/.keep

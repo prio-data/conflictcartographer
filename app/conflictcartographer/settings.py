@@ -12,6 +12,50 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 
+# ================================================
+# ================================================
+# ================================================
+# DYNAMIC CONFIG
+# These settings are overridden by env variables,
+# and typically vary between dev. and prod. 
+# settings.
+# ================================================
+# ================================================
+# ================================================
+
+SECRET_KEY = os.getenv("SECRET_KEY","fgsfds")
+DEBUG = False if os.getenv("PRODUCTION") else True 
+
+DATABASES = {
+        "default":{
+            "ENGINE":"django.db.backends.postgresql_psycopg2",
+            "HOST":os.getenv("DB_HOST","0.0.0.0"),
+            "PORT":os.getenv("DB_PORT","5432"),
+            "USER":os.getenv("DB_USER","conflictcartographer"),
+            "PASSWORD":os.getenv("DB_PASSWORD","letmein"),
+            "NAME":os.getenv("DB_NAME","cc"),
+            "CONN_MAX_AGE": 3600
+        }
+}
+
+EMAIL_HOST = os.getenv("EMAIL_HOST") 
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASSWORD") 
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER") 
+EMAIL_FROM_ADDRESS = os.getenv("EMAIL_SENDER") 
+EMAIL_PORT = int(os.getenv("EMAIL_PORT",0)) 
+EMAIL_USE_TLS = False if os.getenv("EMAIL_NO_TLS") else True
+
+# ================================================
+# ================================================
+# ================================================
+# STATIC CONFIG
+# These settings do not change between dev. 
+# and prod.
+# ================================================
+# ================================================
+# ================================================
+
+ALLOWED_HOSTS = ["*"]
 
 # ================================================
 # ================================================
@@ -111,6 +155,8 @@ EMAIL_INTERVAL = 1
 PLAINTEXT_MAIL_TEMPLATE = "mail/invitation.txt"
 HTML_MAIL_TEMPLATE = "mail/invitation.html"
 
+INVITATION_LINK_BASE = "https://conflictcartographer.prio.org/accounts/ref/{key}/"
+
 # ================================================
 # ================================================
 # APP 
@@ -155,12 +201,29 @@ LOGGING = {
     },
 }
 
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
 # ================================================
 # ================================================
 # STATIC 
 
-STATIC_ROOT = os.path.join(BASE_DIR,"collect")
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+
+STATIC_ROOT = os.path.join(BASE_DIR,"static")
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-        os.path.join(BASE_DIR,"static")
-        ]
+    os.path.join(BASE_DIR,"compiled")
+    ]

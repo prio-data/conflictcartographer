@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.core import serializers
 from django.http import HttpResponse
 from django.shortcuts import redirect
+from  django.conf import settings
 #from .models import DrawnShape
 import json
 
@@ -15,6 +16,7 @@ def cartographer(request):
 
             context = {#"data": serializers.serialize("json",shapes),
                     "sessionInfo": {"username":request.user.username,
+                                    "isdebug":settings.DEBUG,
                                     "uk":request.user.pk}} 
             return render(request,"cartographer/index.html",context)
         elif request.method == "POST":
