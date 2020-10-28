@@ -21,7 +21,7 @@
 
 import Leaflet from './Leaflet.vue'
 import Toolbar from "./Toolbar.vue"
-import Spinner from "@/components/Spinner"
+import Spinner from "../components/Spinner"
 
 import {mapGetters} from "vuex"
 

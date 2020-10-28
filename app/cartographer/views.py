@@ -16,7 +16,7 @@ def cartographer(request):
             context = {#"data": serializers.serialize("json",shapes),
                     "sessionInfo": {"username":request.user.username,
                                     "uk":request.user.pk}} 
-            return render(request,"cartographer.html",context)
+            return render(request,"cartographer/index.html",context)
         elif request.method == "POST":
             #DrawnShape.objects.all().delete()
             data = request.body.decode()

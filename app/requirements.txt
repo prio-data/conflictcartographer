@@ -1,11 +1,8 @@
 astroid==2.4.2
 beautifulsoup4==4.8.1
-Django==2.2.6
 django-filter==2.4.0
 django-livereload-server==0.3.2
-django-rest-framework==0.1.0
 django-webpack-loader==0.6.0
-djangorestframework==3.12.1
 isort==5.6.4
 jedi==0.17.2
 lazy-object-proxy==1.4.3
@@ -22,3 +19,7 @@ toml==0.10.1
 tornado==6.0.3
 typed-ast==1.4.1
 wrapt==1.12.1
+whitenoise==5.2.0
+
+Django
+djangorestframework

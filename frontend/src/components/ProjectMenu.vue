@@ -30,7 +30,7 @@
 
 <script charset="utf-8">
    import ProjectView from "./ProjectView.vue"
-   import Spinner from "@/components/Spinner"
+   import Spinner from "../components/Spinner"
 
    export default {
       name: "ProjectMenu",

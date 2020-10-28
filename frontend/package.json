@@ -6,11 +6,13 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --mode production",
     "watch": "vue-cli-service build --watch",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "pb": "parcel build index.html"
   },
   "dependencies": {
     "core-js": "3.4.1",
-    "vue": "2.6.10"
+    "vue": "2.6.10",
+    "vue-cli": "^2.9.6"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "4.0.5",
@@ -26,6 +28,7 @@
     "leaflet-draw": "1.0.4",
     "leaflet-freedraw": "2.12.0",
     "node-sass": "4.13.0",
+    "parcel": "^1.12.4",
     "rainbowvis.js": "1.0.1",
     "ramda": "^0.26.1",
     "sass": "1.23.3",

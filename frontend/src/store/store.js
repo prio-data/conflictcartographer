@@ -6,7 +6,7 @@ import actions from './actions'
 import mutations from './mutations'
 import getters from './getters'
 
-import STATUS from "@/STATUS.js"
+import STATUS from "../STATUS.js"
 
 Vue.use(Vuex);
 

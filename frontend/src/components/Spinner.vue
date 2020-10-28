@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import spinner from "@/images/spinner.gif"
+import spinner from "../images/spinner.gif"
 
 export default {
    name: 'Spinner',

@@ -1,6 +1,6 @@
 
-import debounce from "@/util/debounce"
-import Api from "@/api"
+import debounce from "../util/debounce"
+import Api from "../api"
 
 const mutations = {
    

@@ -11,18 +11,7 @@ DEBUG = True
 # ?# ? # ? # ? # ? # ? # ? # ?  
 ALLOWED_HOSTS = ["*"]
 
-# ================================================
-# ================================================
-# STATIC 
-
-STATIC_ROOT = ""
-STATIC_URL = '/frontend/dist/'
-
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "frontend/dist/"),
-    os.path.join(BASE_DIR, "static"),
-)
-
+"""
 WEBPACK_LOADER = {
     "DEFAULT": {
         "CACHE": not DEBUG,
@@ -30,6 +19,7 @@ WEBPACK_LOADER = {
         "STATS_FILE": os.path.join(FRONTEND_DIR,"webpack-stats.json"),
     }
 }
+"""
 
 # ================================================
 # ================================================
@@ -39,10 +29,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         "HOST":"0.0.0.0",
-        "PORT":"2345",
-        "USER":"postgres",
+        "PORT":"5432",
+        "USER":"conflictcartographer",
         "PASSWORD":"letmein",
-        'NAME': "conflictcartographer_beta",
+        'NAME': "cc",
         "CONN_MAX_AGE": 3600 
     }
 }

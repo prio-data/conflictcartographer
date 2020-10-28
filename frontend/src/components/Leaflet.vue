@@ -22,7 +22,7 @@
    import "leaflet-draw" 
    import "leaflet-boundary-canvas"
    import bbox from "geojson-bbox"
-   import colorGradient from "@/util/colorGradient.js"
+   import colorGradient from "../util/colorGradient.js"
 
    export default {
       name: "Leaflet",
