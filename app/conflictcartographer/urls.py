@@ -22,6 +22,7 @@ from cartographer.views import cartographer
 
 import api.urls
 import core.urls
+import adminext.urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,3 +31,4 @@ urlpatterns = [
 
 urlpatterns += api.urls.urlpatterns
 urlpatterns += core.urls.urlpatterns
+urlpatterns += adminext.urls.urls

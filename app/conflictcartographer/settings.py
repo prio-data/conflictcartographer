@@ -86,7 +86,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "django.contrib.sites",
     "rest_framework",
     "core",
     #"invitations", # Maybe deprecated
@@ -95,6 +94,7 @@ INSTALLED_APPS = [
     "livereload",
     "cartographer",
     "api",
+    "adminext",
 ]
 
 MIDDLEWARE = [

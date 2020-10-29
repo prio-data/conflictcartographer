@@ -1,0 +1,70 @@
+{% extends "admin/index.html" %}
+{% block extrastyle %} 
+{{ block.super }}
+<style>
+   #content-custom {
+      float: left;
+      width: 100%;
+   }
+   #custom-actions {
+      display: grid;
+      width: 100%;
+   }
+  
+   #custom-actions > .card {
+      margin: 10px 0px 10px 0px;
+      background: #75A6C2;
+      border-top: 1px solid #f2f2f2;
+      border-bottom: 1px solid #f2f2f2;
+      background: #f8f8f8;
+   }
+
+   .card > form {
+      margin-left: 10px;
+      margin-right: 10px;
+      background: #ffffff;
+      padding: 4px 0px 4px 0px;
+      border-top: 1px solid #f2f2f2;
+      border-bottom: 1px solid #f2f2f2
+   }
+   .card > * {
+      margin-top: 12px;
+   }
+
+   .card > form > input[type=submit] {
+      background: #f3f3f3;
+      border: 1px solid gray;
+      border-radius: 3px;
+      color: black;
+      height: 10px;
+      line-height: 1px;
+   }
+
+   .card > h1 {
+      background: #79AEC8;
+      color: white;
+      font-size: 15px;
+      font-weight: 400;
+      padding: 8px;
+      margin: 0px;
+   }
+
+</style>
+{% endblock %}
+{% block content %}
+{{ block.super }}
+<h1>Data import</h1>
+<div id="content-custom"> 
+   <div id="custom-actions" class="module" width="100%" display="grid">
+      <div class="card" id="excel-upload">
+         <h1>EXCEL UPLOAD</h1>
+         <p>Upload an excel file with invitations. </p>
+         <form action="/uploadexcel/" method="post" enctype="multipart/form-data">
+            <input name="datafile" type="file">
+            <input type="submit">
+            {% csrf_token %}
+         </form>
+      </div>
+   </div>
+</div>
+{% endblock %}

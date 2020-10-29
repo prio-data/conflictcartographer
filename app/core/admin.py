@@ -3,12 +3,25 @@ from core.models import Invitation, Cohort
 from django.urls import reverse
 from django.utils.html import format_html
 
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import User
+
 # Register your models here.
 
 def makeLink(url, text=None):
     if text is None:
         text = url
     return f"<p><b><a href={url}>{text}</a></b></p>"
+
+class InvitationInline(admin.StackedInline):
+    model = Invitation
+
+admin.site.unregister(User)
+@admin.register(User)
+class UserAdmin(BaseUserAdmin):
+    inlines = (InvitationInline,)
+
 
 @admin.register(Invitation)
 class InvitationAdmin(admin.ModelAdmin):
