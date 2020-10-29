@@ -16,4 +16,4 @@ RUN pip install -r requirements.txt
 COPY --from=nodebuilder /frontend/dist /app/compiled
 RUN ./manage.py collectstatic --noinput
 
-CMD ["/app/manage.py","runserver"]
+CMD ["gunicorn","conflictcartographer.wsgi:application"]
