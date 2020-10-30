@@ -22,3 +22,4 @@ frontend/webpack-stats.json
 app/compiled/*
 !app/compiled/.keep
 note
+.vim/
