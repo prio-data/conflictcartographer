@@ -1,64 +1,72 @@
 
 from collections import defaultdict
 
-from django.http import HttpResponse
+from django.http import HttpResponse,HttpRequest
 
 from django.db.models.query import QuerySet
 from django.utils import timezone
 from django.contrib import auth
 
-from rest_framework import viewsets, status, exceptions
+from rest_framework import viewsets, status, exceptions, serializers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
-from api import serializers, models, permissions, filters
+from api import models, permissions, filters
+from api.models import Country
 from datetime import datetime
 
-# ================================================
-# Utility viewsets
-
-@api_view()
-@permission_classes([permissions.permissions.IsAuthenticated])
-def profile(request,pk):
-    """
-    Returns a user-profile, which is used to determine:
-    * Which projects to show
-    * What PK to use when posting shapes
-    * Which username to show
-    """
-    if not request.user.pk == int(pk) and not request.user.is_staff:
-        raise exceptions.PermissionDenied
-    q = auth.models.User.objects.filter(pk = int(pk))
-
-    if len(q) > 0:
-        user = q[0]
-    else:
-        raise exceptions.NotFound
-
-    shapes = models.Shape.objects.filter(author = user)
-    countries = models.Country.objects.filter(assignees = user)
-
-    serialize = lambda p: serializers.ProjectSerializer(p, context = {"request":request})
-    get_repr = lambda p: serialize(p).data
-
-    profile = {
-        "name": user.username,
-        "pk": user.pk,
-        "countries": [c.gwno for c in countries]
-    }
-
-    return Response(profile)
+from cartographer.services import currentQuarter,currentYear
 
 # ================================================
 # Countries 
+     
+class CountryMetaSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.Country
+        fields = ["url","name","gwno"]
+
+class CountryShapeSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.Country
+        fields = ["url","shape"]
 
 class CountryViewSet(viewsets.ModelViewSet):
+    """
+    Yields shape in detail view.
+    """
     queryset = models.Country.objects.all()
-    serializer_class = serializers.CountrySerializer  
+    serializer_class = CountryMetaSerializer  
     permission_classes = [permissions.permissions.IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return CountryShapeSerializer
+        else:
+            return CountryMetaSerializer
+
+@api_view(("GET",))
+def projects(request:HttpRequest)->HttpResponse:
+    """
+    Get list of countries assigned to current user.
+    """
+    countries = Country.objects.all().filter(assignees__pk = request.user.pk)
+    return Response(CountryMetaSerializer(countries,many=True,context={"request":request}).data)
 
 # ================================================
 # Shape
+
+def prepRequestData(request:HttpRequest):
+    NONVAR = ("year","shape","quarter","author","country","vizId")
+
+    request.data["year"] = currentYear()
+    request.data["quarter"] = currentQuarter()
+    request.data["values"] = {k:v for k,v in request.data.items() if k not in NONVAR}
+
+class ShapeSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.Shape
+        fields = ["url","country","shape","year","quarter","values"]
 
 class ShapeViewSet(viewsets.ModelViewSet):
     """
@@ -66,8 +74,9 @@ class ShapeViewSet(viewsets.ModelViewSet):
     GET Shapes which they have authored
     POST Shapes to projects they are part of
     """
+
     queryset = models.Shape.objects.all()
-    serializer_class = serializers.ShapeSerializer  
+    serializer_class = ShapeSerializer  
 
     filterset_fields = ["country"]
 
@@ -100,6 +109,8 @@ class ShapeViewSet(viewsets.ModelViewSet):
             if not permitted:
                 raise exceptions.PermissionDenied
         
+        prepRequestData(request)
+
         domany = isinstance(request.data, list)
         serializer = self.get_serializer(data = request.data, many = domany)
 
@@ -111,11 +122,7 @@ class ShapeViewSet(viewsets.ModelViewSet):
             return HttpResponse(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk, format = None):
+        shape.values = request.data["values"]
         shape = self.get_object(pk)
-        serializer = serializers.ShapeSerializer(shape,data = request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return HttpResponse(serializer.data["url"])
-        else:
-            return HttpResponse(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+        shape.save()
+        return HttpResponse(serializer.data["url"])

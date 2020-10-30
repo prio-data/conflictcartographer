@@ -20,6 +20,8 @@ const mutations = {
       }
       let populate = function(layers){
          layers.forEach(function(layer,index){
+            layer.intensity = layer.values.intensity
+            layer.confidence = layer.values.confidence
             layer.vizId = index
          })
          state.layers = layers
@@ -48,7 +50,7 @@ const mutations = {
       const setDetails = function(details){
          state.projectDetails = details
       }
-      state.api.getAbs(project.country, setDetails, {})
+      state.api.getAbs(project.url, setDetails, {})
    },
 
    // Sets project to null (returns user to menu)
@@ -72,11 +74,19 @@ const mutations = {
       created.country = state.currentProject.url
       created.vizId = state.vizId
 
+      created.values = {
+         intensity: created.intensity,
+         confidence: created.confidence
+      }
       state.layers.push(created)
       state.api.post("shapes",created)
    },
 
    updateLayer: debounce(function(state,updated){
+      updated.values = {
+         intensity: updated.intensity,
+         confidence: updated.confidence
+      }
       state.api.putAbs(updated.url,updated)
    },400),
 

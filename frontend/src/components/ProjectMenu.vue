@@ -52,7 +52,7 @@
 
       computed: {
          projects(){
-            return this.profile.countries
+            return this.profile.projects
          },
       },
 
@@ -64,16 +64,11 @@
 
       mounted(){
          let user = this.$store.state.sessionInfo.uk
-         let api = this.$store.state.apiURL
-         let url = `${api}profile/${user}/`
-         this.$http.get(url)
-            .then(function(response){
-               this.profile = response.body
-               this.loaded = true 
-            })
-            .catch(function(){
-               this.profile = {"name":"","projects":[]} 
-            })
+         let api = this.$store.state.api
+         api.get("assigned",(r)=>{
+            this.profile = {"name":"noname","projects": r}
+            this.loaded = true
+         })
       }
    }
 </script>

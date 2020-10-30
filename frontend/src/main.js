@@ -34,5 +34,3 @@ new Vue({
    delimiters: ["[[","]]"],
    render: h => h(App),
 }).$mount('#app')
-
-console.log("it works!")
