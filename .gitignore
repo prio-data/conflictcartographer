@@ -10,7 +10,6 @@ __pycache__/
 *.log
 
 app/conflictcartographer/production.py
-app/*/migrations
 
 frontend/dist/*
 !frontend/dist/.keep
