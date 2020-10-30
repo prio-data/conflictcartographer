@@ -1,11 +1,11 @@
 from django.contrib import admin
-from core.models import Invitation, Cohort
 from django.urls import reverse
 from django.utils.html import format_html
 
-from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
+
+from invitations.models import Invitation
 
 # Register your models here.
 
@@ -62,34 +62,3 @@ class InvitationAdmin(admin.ModelAdmin):
 def makeInvitationLink(inv):
     url = f"{reverse('admin:index')}core/invitation/{inv.pk}"
     return f"<p><a href=\"{url}\">{str(inv)}</a></p>"
-
-@admin.register(Cohort)
-class CohortAdmin(admin.ModelAdmin):
-    readonly_fields = [
-        "stamp",
-        "number_of_invitations",     
-        "invitations_registered",
-        "invitations_reached",
-        "invitations_opened",
-        "cohort_invitation_links"
-    ]
-
-    def cohort_invitations(self,obj):
-        return obj.invitations.all()
-
-    def cohort_invitation_links(self,obj):
-        invitations = self.cohort_invitations(obj)
-        links = "\n".join([makeInvitationLink(i) for i in invitations])
-        return format_html(links)
-
-    def number_of_invitations(self,obj):
-        return len(self.cohort_invitations(obj))
-
-    def invitations_reached(self,obj):
-        return sum([i.reached for i in self.cohort_invitations(obj)])
-
-    def invitations_opened(self,obj):
-        return sum([i.opened for i in self.cohort_invitations(obj)]) 
-
-    def invitations_registered(self,obj):
-        return sum([i.registered for i in self.cohort_invitations(obj)])

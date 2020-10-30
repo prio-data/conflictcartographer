@@ -1,8 +1,9 @@
 import csv
-from adminext.models import InvitationRow,CountryAssignment
-from core.models import Invitation
 import logging
 from pydantic import ValidationError
+
+from invitations.models import Invitation
+from adminext.models import InvitationRow,CountryAssignment
 
 logger = logging.getLogger(__name__)
 

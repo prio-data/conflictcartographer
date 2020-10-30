@@ -8,15 +8,10 @@ from api import models
 class UserSerializer(serializers.HyperlinkedModelSerializer):
      class Meta:
           model = models.User 
-          fields = ["url","username","email","projects"]
+          fields = ["url","username","email","profile"]
 
 # ================================================
-# Project 
-
-class ProjectSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = models.Project
-        fields = ["url","country","name","startdate","enddate","pk"]
+# CountrySerializer 
      
 class CountrySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -29,5 +24,4 @@ class CountrySerializer(serializers.HyperlinkedModelSerializer):
 class ShapeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Shape
-        fields = ["url","project","author","shape","created","updated","intensity","confidence"]
-
+        fields = ["url","country","shape","year","quarter","values"]

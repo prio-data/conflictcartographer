@@ -4,18 +4,12 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login,authenticate
 from django.contrib.auth.forms import UserCreationForm 
 
-from django.http import JsonResponse, HttpResponse
-
-from django.views.decorators.csrf import csrf_exempt
-
-from core import authentication, util
-from core.models import Invitation
-
-import json
+from django.http import HttpResponse
+from invitations.models import Invitation
 
 def referralRedirect(request,refkey):
     try:
-        invitation = Invitation.objects.get(refkey = refkey)
+        Invitation.objects.get(refkey = refkey)
     except Invitation.DoesNotExist:
         return HttpResponse(status = 404)
     else: 
@@ -34,11 +28,9 @@ def referralSignup(request):
 
     if invitation.registered:
         return redirect("/")
-
     elif request.method == "POST":
         form = UserCreationForm(request.POST)
         form.fields["username"].initial = invitation.email
-
         if form.is_valid():
             form.save()
 
@@ -58,7 +50,6 @@ def referralSignup(request):
             invitation.registered = True
             invitation.save()
             return redirect("/") 
-
     else: 
         form = UserCreationForm()
         form.fields["username"].initial = invitation.email

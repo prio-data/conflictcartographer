@@ -21,7 +21,7 @@ from django.urls import path, include
 from cartographer.views import cartographer
 
 import api.urls
-import core.urls
+import invitations.urls
 import adminext.urls
 
 urlpatterns = [
@@ -30,5 +30,5 @@ urlpatterns = [
 ]
 
 urlpatterns += api.urls.urlpatterns
-urlpatterns += core.urls.urlpatterns
+urlpatterns += invitations.urls.urlpatterns
 urlpatterns += adminext.urls.urls

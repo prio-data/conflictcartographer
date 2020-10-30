@@ -4,7 +4,6 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 from  django.conf import settings
 #from .models import DrawnShape
-import json
 
 # Create your views here.
 
@@ -26,7 +25,6 @@ def cartographer(request):
             shapes = serializers.deserialize("json",data)
             for shape in shapes: 
                 shape.save()
-
             return HttpResponse("You posted!!")
     else:
         return redirect("accounts/login")

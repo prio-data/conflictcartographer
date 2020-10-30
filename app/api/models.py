@@ -1,74 +1,42 @@
 
-from django.db import models
+from django.contrib.auth.models import User 
+from django.db.models import JSONField,IntegerField,CharField,ForeignKey,Model
+from django.db.models import ManyToManyField,OneToOneField,CASCADE
 
-from django.core import validators
-
-from django.contrib import auth
-from django.contrib.postgres import fields 
-
-from datetime import datetime
-
-# ================================================
-# Util
-
-
-# ================================================
-# Auth
-
-User = auth.models.User
-
-# ================================================
-# Project
-
-class Project(models.Model):
-    name = models.CharField(max_length = 150)
-
-    participants = models.ManyToManyField(User,
-        related_name = "projects")
-
-    country = models.ForeignKey("Country",
-       related_name = "Projects",
-       on_delete = models.CASCADE)
-
-    startdate = models.DateTimeField()
-    enddate = models.DateTimeField()
-
-    def __str__(self):
-        fixdate = lambda x: datetime.strftime(x, format = "%d/%m/%Y")
-        return f"{self.pk} {self.name} ({self.country.name}) [{fixdate(self.startdate)} - {fixdate(self.enddate)}]: {len(self.participants.all())} participant(s)"
-
-class Country(models.Model):
-    name = models.CharField(max_length = 150) 
-    gwno = models.IntegerField(default = -1) #TODO restrict?
-
-    shape = fields.JSONField(default = dict) #GEOJSON
-    capital_lat = models.IntegerField(default = 0)
-    capital_lon = models.IntegerField(default = 0)
-
+class Country(Model):
     class Meta:
         verbose_name_plural = "countries"
 
+    gwno = IntegerField(null = False,primary_key=True)
+    name = CharField(max_length = 150, null = False)
+    shape = JSONField(default = dict, null = False)
+    assignees = ManyToManyField(User,related_name="countries")
+
     def __str__(self):
-        return f"{self.gwno}-{self.name}"
+        return f"{self.gwno} - {self.name}"
 
-# ================================================
-# Shape
+class Profile(Model):
+    meta = JSONField(default = dict, null = False)
+    user = OneToOneField(User,on_delete=CASCADE, null=False)
 
-class Shape(models.Model):
-    author = models.ForeignKey(User,
+    def __str__(self):
+        return f"profile of {self.user.username}" # pylint: disable=no-member
+
+class Shape(Model):
+    author = ForeignKey(User,
        related_name = "Shapes",
-       on_delete = models.CASCADE, default = None)
-    project = models.ForeignKey("Project",
-        related_name = "Shapes",
-        on_delete = models.CASCADE, default = None)
+       on_delete = CASCADE, null = False)
 
-    shape =  fields.JSONField(default = dict) #GEOJSON
-    created = models.DateTimeField(auto_now_add = True)
-    updated = models.DateTimeField(auto_now = True)
+    country = ForeignKey(Country, 
+            related_name = "Shapes", 
+            on_delete = CASCADE, 
+            null = False)
 
-    intensity = models.IntegerField(default = 0) #TODO make more flexible?
-    confidence = models.IntegerField(default = 0)
+    shape =  JSONField(default = dict, null = False)
+    year = IntegerField(null=False)
+    quarter = IntegerField(null=False)
+
+    values = JSONField(default = dict)
 
     def __str__(self):
-        timestamp = lambda x: datetime.strftime(x, format = "%d/%m/%Y %H:%M:%S")
-        return f"{self.author.username}, {timestamp(self.created)} ({self.project.pk})"
+        return f"Shape {self.quarter}/{self.year}@{self.country.name}"
