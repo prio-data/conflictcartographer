@@ -16,7 +16,7 @@ const mutations = {
    // ======================
    initializeLayers(state){
       let filter = {
-         project: state.currentProject.pk
+         country: state.currentProject.pk
       }
       let populate = function(layers){
          layers.forEach(function(layer,index){
@@ -69,7 +69,7 @@ const mutations = {
       
       // Populate with information from state
       created.author = `${window.location}api/users/${state.sessionInfo.uk}/`
-      created.project = state.currentProject.url
+      created.country = state.currentProject.url
       created.vizId = state.vizId
 
       state.layers.push(created)
@@ -77,7 +77,6 @@ const mutations = {
    },
 
    updateLayer: debounce(function(state,updated){
-      //state.api.del("shapes",updated.pk)
       state.api.putAbs(updated.url,updated)
    },400),
 

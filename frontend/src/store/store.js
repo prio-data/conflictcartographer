@@ -9,6 +9,7 @@ import getters from './getters'
 import STATUS from "../STATUS.js"
 
 Vue.use(Vuex);
+Vue.config.devtools = true;
 
 const store = new Vuex.Store({
    strict: false,

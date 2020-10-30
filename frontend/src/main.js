@@ -23,6 +23,7 @@ Icon.Default.mergeOptions({
 });
 
 Vue.config.productionTip = false
+Vue.config.devtools = true
 Vue.use(VueResource)
 Vue.use(VueCookies)
 Vue.use(vueDebounce)
@@ -34,3 +35,4 @@ new Vue({
    render: h => h(App),
 }).$mount('#app')
 
+console.log("it works!")

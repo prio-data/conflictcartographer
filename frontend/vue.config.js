@@ -25,6 +25,15 @@ module.exports = {
       config.plugin("html").delete()
       config.plugin("preload").delete()
       config.plugin("prefetch").delete()
+
+      config.devServer
+         .public('http://0.0.0.0:1337')
+         .host('0.0.0.0')
+         .port(1337)
+         //.hotOnly(true)
+         .watchOptions({poll: 1000})
+         .https(false)
+         .headers({"Access-Control-Allow-Origin": ["\*"]})
       }
 
    };

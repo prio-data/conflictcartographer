@@ -3,9 +3,9 @@
       <div class="menu" v-if="loaded">
          <div class = "container">
             <div class="profile six columns">
-               <h1>Hello {{profile.name}}!</h1>
+               <h1>Greetings {{profile.name}}!</h1>
                <p>
-               You are participating in {{nProjects}} projects.
+               <!-- You are participating in {{nProjects}} projects.-->
                </p>
                The variables to code are 
                <span class="emphasis">intensity</span>
@@ -52,11 +52,8 @@
 
       computed: {
          projects(){
-            return this.profile.projects
+            return this.profile.countries
          },
-         nProjects(){
-            return this.projects.length
-         }
       },
 
       methods: {
@@ -69,7 +66,6 @@
          let user = this.$store.state.sessionInfo.uk
          let api = this.$store.state.apiURL
          let url = `${api}profile/${user}/`
-
          this.$http.get(url)
             .then(function(response){
                this.profile = response.body

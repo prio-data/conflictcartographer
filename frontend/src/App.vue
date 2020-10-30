@@ -91,7 +91,6 @@ export default {
             headers: {"X-CSRFToken": csrfToken}
          }
       }
-
       this.$store.commit("initApi",apiDef)
 
       let sessionInfo = JSON.parse(document.getElementById("sessionInfo").textContent);

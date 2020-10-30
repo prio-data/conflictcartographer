@@ -38,12 +38,15 @@ DATABASES = {
         }
 }
 
+EMAIL_TITLE = "Invitation to participate in an expert survey"
+
 EMAIL_HOST = os.getenv("EMAIL_HOST") 
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASSWORD") 
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER") 
 EMAIL_FROM_ADDRESS = os.getenv("EMAIL_SENDER") 
 EMAIL_PORT = int(os.getenv("EMAIL_PORT",0)) 
 EMAIL_USE_TLS = False if os.getenv("EMAIL_NO_TLS") else True
+
 
 # ================================================
 # ================================================
@@ -87,11 +90,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "rest_framework",
-    "core",
-    #"invitations", # Maybe deprecated
+    "invitations",
     "django_filters",
     "webpack_loader",
-    "livereload",
+    #"livereload",
     "cartographer",
     "api",
     "adminext",
@@ -106,7 +108,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "livereload.middleware.LiveReloadScript",
+    #"livereload.middleware.LiveReloadScript",
 ]
 
 ROOT_URLCONF = 'conflictcartographer.urls'
@@ -221,9 +223,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # STATIC 
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-
 STATIC_ROOT = os.path.join(BASE_DIR,"static")
-STATIC_URL = '/static/'
+STATIC_HOST = 'http://0.0.0.0:1337' if DEBUG else ''
+STATIC_URL = STATIC_HOST + "/static/" 
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR,"compiled")
     ]
