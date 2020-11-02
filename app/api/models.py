@@ -19,7 +19,7 @@ class Country(Model):
 
 class Profile(Model):
     meta = JSONField(default = dict, null = True, blank = True)
-    user = OneToOneField(User,on_delete=CASCADE, null=False)
+    user = OneToOneField(User,on_delete=CASCADE)
     countries = ManyToManyField(Country,related_name="assignees")
 
     def __str__(self):

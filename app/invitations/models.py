@@ -1,10 +1,11 @@
+import os
 from typing import List
 
 import logging
 
 from django.conf import settings
 
-from django.db.models import CharField,Model,OneToOneField
+from django.db.models import CharField,Model,OneToOneField,ManyToManyField
 from django.db.models import BooleanField,JSONField,EmailField,CASCADE
 
 from django.contrib.auth.models import User
@@ -13,7 +14,7 @@ from django.core import mail
 from django.template.loader import render_to_string
 from django.db.utils import IntegrityError
 
-from api.models import Country
+from api.models import Country,Profile
 
 from invitations.util import referralKeygen
 
@@ -30,14 +31,23 @@ class Invitation(Model):
         User, related_name = "invitation", null = True, blank = True,
         on_delete = CASCADE)
 
-    refkey = CharField(max_length = 32, unique = True)
-
-    mailed = BooleanField()
+    mailed = BooleanField(default=False)
     metadata = JSONField(default=dict,blank=True)
 
-    def save(self,*args,**kwargs):
-        self.refkey = referralKeygen(self.email)
-        super().save(self,*args,**kwargs)
+    countries = ManyToManyField(Country,related_name="invited_assignees")
+
+    refkey = CharField(max_length = 32, null = True)
+
+
+    def makeProfile(self,user):
+        profile = Profile(
+            meta = self.metadata,
+            user = user
+        )
+        profile.save()
+        profile.countries.set(self.countries.all())
+        return profile
+
 
     @classmethod
     def create(cls, email: str, countries: List[int]):
@@ -45,9 +55,7 @@ class Invitation(Model):
         Create an invite from an email and a list of countries 
         """
         countries = Country.objects.filter(pk__in = countries)
-        #refkey = referralKeygen(email)
-        
-        invite = cls(email = email, refkey = refkey)
+        invite = cls(email = email)
 
         try:
             invite.save()
@@ -63,19 +71,25 @@ class Invitation(Model):
 
         return invite
 
+    def invitationLink(self):
+        return os.path.join(settings.INVITATION_LINK_BASE,self.refkey)
+
     def dispatch(self):
         """
         Sends the invitation by email 
         """
 
-        link = settings.INVITATION_LINK_BASE.format(key = self.refkey)
+        if self.refkey is None:
+            self.refkey = referralKeygen(self.email)
+            self.save()
+
         title = settings.EMAIL_TITLE 
 
         emails = [
             ("plain",settings.PLAINTEXT_MAIL_TEMPLATE),
             ("html",settings.HTML_MAIL_TEMPLATE)]
 
-        emails = {k:render_to_string(template,{"link":link})
+        emails = {k:render_to_string(template,{"link":self.invitationLink()})
             for k,template in emails}
 
         try:

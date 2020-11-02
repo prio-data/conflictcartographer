@@ -23,6 +23,7 @@ import os
 # ================================================
 # ================================================
 
+
 SECRET_KEY = os.getenv("SECRET_KEY","fgsfds")
 DEBUG = False if os.getenv("PRODUCTION") else True 
 
@@ -157,7 +158,8 @@ EMAIL_INTERVAL = 1
 PLAINTEXT_MAIL_TEMPLATE = "mail/invitation.txt"
 HTML_MAIL_TEMPLATE = "mail/invitation.html"
 
-INVITATION_LINK_BASE = "https://conflictcartographer.prio.org/accounts/ref/{key}/"
+PUBLIC_URL = "https://conflictcartographer.prio.org"
+INVITATION_LINK_BASE = os.path.join(PUBLIC_URL,"accounts","ref")
 
 # ================================================
 # ================================================

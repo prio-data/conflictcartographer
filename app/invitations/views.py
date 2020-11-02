@@ -22,13 +22,12 @@ def referralSignup(request):
     if not refkey:
         return HttpResponse(status = 403)
 
-    invitation = Invitation.objects.get(refkey = refkey)
-    invitation.opened = True
-    invitation.save()
-
-    if invitation.registered:
+    try:
+        invitation = Invitation.objects.get(refkey = refkey)
+    except Invitation.DoesNotExist:
         return redirect("/")
-    elif request.method == "POST":
+
+    if request.method == "POST":
         form = UserCreationForm(request.POST)
         form.fields["username"].initial = invitation.email
         if form.is_valid():
@@ -38,21 +37,19 @@ def referralSignup(request):
             raw_password = form.cleaned_data.get("password1")
 
             user = authenticate(username = username, password = raw_password)
-            user.email = invitation.email
-            user.projects.set(invitation.projects.all())
-            invitation.user = user
+            profile = invitation.makeProfile(user)
+            profile.save()
 
-            invitation.save()
+            user.email = invitation.email
+            invitation.delete()
             user.save()
 
             login(request,user)
-
-            invitation.registered = True
-            invitation.save()
             return redirect("/") 
     else: 
         form = UserCreationForm()
         form.fields["username"].initial = invitation.email
+
     # And then
     return render(request, "registration/signup.html",
         {"form":form, "uname":invitation.email})
