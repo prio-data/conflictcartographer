@@ -3,6 +3,8 @@ from typing import List
 
 import logging
 
+from pydantic import BaseModel,EmailStr,constr
+
 from django.conf import settings
 
 from django.db.models import CharField,Model,OneToOneField,ManyToManyField
@@ -48,29 +50,6 @@ class Invitation(Model):
         profile.countries.set(self.countries.all())
         return profile
 
-
-    @classmethod
-    def create(cls, email: str, countries: List[int]):
-        """
-        Create an invite from an email and a list of countries 
-        """
-        countries = Country.objects.filter(pk__in = countries)
-        invite = cls(email = email)
-
-        try:
-            invite.save()
-
-        except IntegrityError:
-            logger.warning("Invitation for %s already exists!",email)
-            invite = None
-
-        else:
-            invite.countries.set(countries)
-            invite.save()
-            logger.debug("Successfully created invitation for %s",email)
-
-        return invite
-
     def invitationLink(self):
         return os.path.join(settings.INVITATION_LINK_BASE,self.refkey)
 
@@ -110,3 +89,13 @@ class Invitation(Model):
 
     def __str__(self):
         return f"Invitation for {self.email}"
+
+class CountryAssignment(BaseModel):
+    name: constr(strip_whitespace=True,regex="^[a-zA-Z -]+$")
+    assigned: bool
+
+class InvitationRow(BaseModel):
+    position: str
+    affiliation: str
+    email: EmailStr 
+    countries: List[str] 

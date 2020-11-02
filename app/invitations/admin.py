@@ -25,6 +25,14 @@ class UserAdmin(BaseUserAdmin):
             ProfileInline,
         )
 
+def dispatch_invitation(modeladmin, request, queryset):
+    """
+    Send invitation email
+    """
+    for m in queryset:
+        m.dispatch()
+dispatch_invitation.short_description=dispatch_invitation.__doc__
+
 @admin.register(Invitation)
 class InvitationAdmin(admin.ModelAdmin):
     exclude = [
@@ -38,6 +46,8 @@ class InvitationAdmin(admin.ModelAdmin):
     readonly_fields =[
         "referral_link",
     ]
+
+    actions = [dispatch_invitation]
     
     def referral_link(self,obj):
         try:
