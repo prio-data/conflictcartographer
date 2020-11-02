@@ -33,7 +33,11 @@ class Invitation(Model):
     refkey = CharField(max_length = 32, unique = True)
 
     mailed = BooleanField()
-    metadata = JSONField()
+    metadata = JSONField(default=dict,blank=True)
+
+    def save(self,*args,**kwargs):
+        self.refkey = referralKeygen(self.email)
+        super().save(self,*args,**kwargs)
 
     @classmethod
     def create(cls, email: str, countries: List[int]):
@@ -41,7 +45,7 @@ class Invitation(Model):
         Create an invite from an email and a list of countries 
         """
         countries = Country.objects.filter(pk__in = countries)
-        refkey = referralKeygen(email)
+        #refkey = referralKeygen(email)
         
         invite = cls(email = email, refkey = refkey)
 
@@ -91,4 +95,4 @@ class Invitation(Model):
             return True
 
     def __str__(self):
-        return f"Invitation for {self.email} ({self.invitation_status()})"
+        return f"Invitation for {self.email}"
