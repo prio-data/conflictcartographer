@@ -11,8 +11,9 @@ from rest_framework import viewsets, status, exceptions, serializers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework import permissions
 
-from api import models, permissions, filters
+from api import models, filters
 from api.models import Country
 from datetime import datetime
 
@@ -50,7 +51,7 @@ def projects(request:HttpRequest)->HttpResponse:
     """
     Get list of countries assigned to current user.
     """
-    countries = Country.objects.all().filter(assignees__pk = request.user.pk)
+    countries = Country.objects.all().filter(assignees__pk = request.user.profile.pk)
     return Response(CountryMetaSerializer(countries,many=True,context={"request":request}).data)
 
 # ================================================
