@@ -38,7 +38,7 @@ class CountryViewSet(viewsets.ModelViewSet):
     """
     queryset = models.Country.objects.all()
     serializer_class = CountryMetaSerializer  
-    permission_classes = [permissions.permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_serializer_class(self):
         if self.action == "retrieve":
@@ -58,16 +58,18 @@ def projects(request:HttpRequest)->HttpResponse:
 # Shape
 
 def prepRequestData(request:HttpRequest):
+    """
+    Puts all "non-variable" data into a JSON field "values".
+    Makes the schema really flexible.
+    """
     NONVAR = ("year","shape","quarter","author","country","vizId")
-
-    request.data["year"] = currentYear()
-    request.data["quarter"] = currentQuarter()
     request.data["values"] = {k:v for k,v in request.data.items() if k not in NONVAR}
+    return request
 
 class ShapeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Shape
-        fields = ["url","country","shape","year","quarter","values"]
+        fields = ["url","country","shape","values"]
 
 class ShapeViewSet(viewsets.ModelViewSet):
     """
@@ -81,10 +83,7 @@ class ShapeViewSet(viewsets.ModelViewSet):
 
     filterset_fields = ["country"]
 
-    # Latter permissions only apply to POST requests.
-    permission_classes = [permissions.permissions.IsAuthenticated]
-
-    #user_permissions = [permissions.IsOnProject, permissions.ProjectIsActive]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         """
@@ -102,19 +101,9 @@ class ShapeViewSet(viewsets.ModelViewSet):
         return queryset
 
     def create(self,request,*args,**kwargs):
-
-        if not request.user.is_staff:
-            permitted = True
-            for p in self.user_permissions:
-                permitted &= p().has_permission(request, self)
-            if not permitted:
-                raise exceptions.PermissionDenied
-        
         prepRequestData(request)
 
-        domany = isinstance(request.data, list)
-        serializer = self.get_serializer(data = request.data, many = domany)
-
+        serializer = self.get_serializer(data = request.data)
         if serializer.is_valid():
             serializer.save(author = self.request.user)
             return HttpResponse(serializer.data["url"], status=status.HTTP_201_CREATED)
@@ -123,7 +112,10 @@ class ShapeViewSet(viewsets.ModelViewSet):
             return HttpResponse(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk, format = None):
-        shape.values = request.data["values"]
+        request = prepRequestData(request)
+
         shape = self.get_object(pk)
+        shape.values = request.data["values"]
         shape.save()
+
         return HttpResponse(serializer.data["url"])

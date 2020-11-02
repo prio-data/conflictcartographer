@@ -39,7 +39,17 @@ class Shape(Model):
     year = IntegerField(null=False)
     quarter = IntegerField(null=False)
 
+    date = DateField(auto_now_add=True)
+
     values = JSONField(default = dict)
+
+    @property
+    def quarter(self):
+        return getQuarter(self.date)
+
+    @property
+    def year(self):
+        return self.date.year 
 
     def __str__(self):
         return f"Shape {self.quarter}/{self.year}@{self.country.name}"
