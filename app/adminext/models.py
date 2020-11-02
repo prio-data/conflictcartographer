@@ -1,4 +1,6 @@
-
+"""
+Pydantic-models for parsing input data
+"""
 from typing import List
 from pydantic import BaseModel,EmailStr,constr # pylint: disable=no-name-in-module
 
