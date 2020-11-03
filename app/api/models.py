@@ -11,8 +11,10 @@ class Country(Model):
 
     gwno = IntegerField(null = False,primary_key=True)
     name = CharField(max_length = 150, null = False)
-    shape = JSONField(default = dict, null = False)
-    #assignees = ManyToManyField(User,related_name="countries")
+    iso2c = CharField(max_length=2,null = True)
+
+    shape = JSONField(null = False)
+    simpleshape = JSONField(null=False)
 
     def __str__(self):
         return f"{self.gwno} - {self.name}"

@@ -1,11 +1,15 @@
-
+import json
+from datetime import datetime
 from collections import defaultdict
 
-from django.http import HttpResponse,HttpRequest
+import pydantic
+
+from django.http import HttpResponse,HttpRequest,JsonResponse
 
 from django.db.models.query import QuerySet
 from django.utils import timezone
 from django.contrib import auth
+from django.views.decorators.http import require_http_methods
 
 from rest_framework import viewsets, status, exceptions, serializers
 from rest_framework.decorators import api_view, permission_classes
@@ -15,9 +19,9 @@ from rest_framework import permissions
 
 from api import models, filters
 from api.models import Country
-from datetime import datetime
 
 from cartographer.services import currentQuarter,currentYear
+from api.validation import CountryFeatureCollection
 
 # ================================================
 # Countries 
@@ -119,3 +123,44 @@ class ShapeViewSet(viewsets.ModelViewSet):
         shape.save()
 
         return HttpResponse(serializer.data["url"])
+
+@require_http_methods(["POST"])
+def updateCountries(request):
+    if not request.user.is_staff:
+        return JsonResponse({"status":"error","messages":"permission denied"},status=status.HTTP_403_FORBIDDEN)
+
+    class CountryDataUpload(pydantic.BaseModel):
+        small: CountryFeatureCollection 
+        large: CountryFeatureCollection
+    try:
+        uploaded = CountryDataUpload(**json.loads(request.body.decode()))
+        getCountries = lambda fc: {c.properties.CNTRY_NAME for c in fc.features}
+        assert len(uploaded.small.features) == len(uploaded.large.features)
+        assert getCountries(uploaded.small) == getCountries(uploaded.large)
+    except Exception as e:
+        return JsonResponse({"status":"error","messages":str(e)},status=status.HTTP_400_BAD_REQUEST)
+
+    saved = 0
+    updated = 0
+
+    for small,large in zip(uploaded.small.features,uploaded.large.features):
+        try:
+            c = Country.objects.get(gwno = small.properties.GWCODE)
+        except Country.DoesNotExist:
+            c = Country(
+                    gwno = small.properties.GWCODE,
+                    name = small.properties.CNTRY_NAME,
+                    iso2c = small.properties.ISO1AL2,
+                    shape = dict(large.geometry),
+                    simpleshape = dict(small.geometry)
+                )
+            saved += 1
+        else:
+            c.iso2c = small.properties.ISO1AL2
+            c.name = small.properties.CNTRY_NAME
+            c.shape = dict(large.geometry),
+            c.simpleshape = dict(small.geometry)
+            updated += 1
+        c.save()
+
+    return JsonResponse({"status":"success","saved":saved,"updated":updated})

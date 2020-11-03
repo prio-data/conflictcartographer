@@ -3,7 +3,7 @@ from django.urls import path, include
 from rest_framework.urls import path
 from rest_framework import routers
 
-from api.views import ShapeViewSet, CountryViewSet, projects
+from api.views import ShapeViewSet, CountryViewSet, projects, updateCountries
 
 router = routers.DefaultRouter()
 
@@ -16,4 +16,5 @@ urlpatterns = [
     #path("api/profile/<int:pk>/", profile),
     path("api/assigned/", projects),
     path("api/",include(router.urls)),
+    path("api/updatecountries/",updateCountries,name="updatecountries")
 ]
