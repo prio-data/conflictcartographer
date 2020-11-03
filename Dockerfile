@@ -16,4 +16,6 @@ RUN pip install -r requirements.txt
 COPY --from=nodebuilder /frontend/dist /app/compiled
 RUN ./manage.py collectstatic --noinput
 
+COPY ./cert/ /cert
+
 CMD ["gunicorn","conflictcartographer.wsgi:application"]

@@ -39,6 +39,17 @@ DATABASES = {
         }
 }
 
+if os.getenv("DB_SSL"):
+    DATABASES["default"].update({
+        "OPTIONS":{
+            "sslmode":"verify-full",
+            "sslrootcert":os.getenv("DB_SSL_CERT","/cert/BaltimoreCyberTrustRoot.crt.pem")
+            }
+        })
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') # ???
+
 EMAIL_TITLE = "Invitation to participate in an expert survey"
 
 EMAIL_HOST = os.getenv("EMAIL_HOST") 
@@ -232,3 +243,5 @@ STATIC_URL = STATIC_HOST + "/static/"
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR,"compiled")
     ]
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880

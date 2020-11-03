@@ -11,3 +11,4 @@ app/static/*
 app/compiled/*
 !app/compiled/.keep
 note
+penv.env

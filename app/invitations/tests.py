@@ -38,7 +38,7 @@ class InvitationTest(TestCase):
         Long-form test that tests creating and sending an invite, and then
         registering a user by following the referral link in the invitation email.
         """
-        countries = [Country(gwno=i,name=str(i)) for i in range(5)]
+        countries = [Country(gwno=i,name=str(i),shape={},simpleshape={}) for i in range(5)]
         for c in countries:
             c.save()
 
@@ -114,7 +114,7 @@ class InvitationTest(TestCase):
         Tests importing and dispatching invites from a csv
         """
         N = ("one","two","thr","fou","fiv","six","sev","eig")
-        countries = [Country(gwno=i+1,name=n) for i,n in zip(range(8),N)]
+        countries = [Country(gwno=i+1,name=n,shape={},simpleshape={}) for i,n in zip(range(8),N)]
         for c in countries:
             c.save()
 
