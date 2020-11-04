@@ -33,17 +33,26 @@ class Invitation(Model):
     """
     The invitation class
     """
-    email = EmailField(unique = True)
+    email = EmailField(unique = True,
+            help_text="Email to send invite to")
         
     # Added when user completes registration
     user = OneToOneField(
         User, related_name = "invitation", null = True, blank = True,
         on_delete = CASCADE)
 
-    mailed = BooleanField(default=False)
-    metadata = JSONField(default=dict,blank=True)
+    mailed = BooleanField(default=False,editable=False)
 
-    countries = ManyToManyField(Country,related_name="invited_assignees")
+    metadata = JSONField(default=dict,blank=True,
+            help_text="Metadata that will be added to the user profile "
+                      "once they register. (occupation/sex/age/...) "
+                      "<a href='https://en.wikipedia.org/wiki/json' target='_blank'>"
+                      "JSON Formatted."
+                      "</a>")
+
+    countries = ManyToManyField(Country,related_name="invited_assignees",
+            help_text="Countries that will be assigned to the user "
+                      "once they complete registration")
 
     refkey = CharField(max_length = 32, null = True, editable=False)
 
@@ -114,14 +123,26 @@ class EmailTemplate(Model):
         INVITATION  = "inv", gettext_lazy("invitation")
         REMINDER = "rem", gettext_lazy("reminder")
 
-    subject = CharField(max_length=1024,default=settings.DEFAULT_EMAIL_TITLE)
-    message = TextField(default="[{{link}}](Click this link to participate)")
+    subject = CharField(max_length=1024,default=settings.DEFAULT_EMAIL_TITLE,
+            help_text="Subject-field of email")
+    message = TextField(default="[{{link}}](Click this link to participate)",
+            help_text="Message-body of text. "
+                      "<a href='https://en.wikipedia.org/wiki/markdown' target='_blank'>"
+                      "Markdown formatted"
+                      "</a> "
+                      "Do not delete the weird-looking [{{link}}](click me) "
+                      "tag!")
 
-    active = BooleanField(default=False)
+    active = BooleanField(default=False,
+            help_text="Is template active? "
+                      "When sending mail, one of the active templates will be used. "
+                      "It is probably a good idea to only keep one template active.")
     email_type = CharField(
             max_length=3,
             choices=EmailTypes.choices,
-            default=EmailTypes.INVITATION)
+            default=EmailTypes.INVITATION,
+            help_text="What kind of email is this? "
+                      "Determines when this email is sent.")
 
     def render(self,context):
         md = markdown.Markdown()
