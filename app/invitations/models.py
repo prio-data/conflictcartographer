@@ -45,7 +45,7 @@ class Invitation(Model):
 
     countries = ManyToManyField(Country,related_name="invited_assignees")
 
-    refkey = CharField(max_length = 32, null = True)
+    refkey = CharField(max_length = 32, null = True, editable=False)
 
 
     def makeProfile(self,user):
