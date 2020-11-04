@@ -158,7 +158,7 @@ def updateCountries(request):
         else:
             c.iso2c = small.properties.ISO1AL2
             c.name = small.properties.CNTRY_NAME
-            c.shape = dict(large.geometry),
+            c.shape = dict(large.geometry)
             c.simpleshape = dict(small.geometry)
             updated += 1
         c.save()
