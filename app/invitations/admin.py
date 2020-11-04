@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User,Group
@@ -69,4 +70,19 @@ def makeInvitationLink(inv):
 @admin.register(EmailTemplate)
 class EmailTemplateAdmin(admin.ModelAdmin):
     list_display=("subject","active","email_type")
-    pass
+    readonly_fields=["preview"]
+
+    def preview(self,obj):
+        rendered = obj.render({"link":"invitation_link"})
+        return mark_safe("""
+            <style>
+            #preview {
+                height: 792px;
+                width: 545px;
+                box-shadow: 5px 5px gray;
+                border: 1px solid gray;
+                background: #fcfcfb;
+                padding:50px;
+            }
+            </style>
+            <div id="preview">"""+rendered+"</div>")
