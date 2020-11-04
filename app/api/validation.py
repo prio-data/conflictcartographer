@@ -1,17 +1,21 @@
-from typing import List,Union,Any,Optional
+from typing import List,Union,Any,Optional,Literal
 
 from pydantic import BaseModel
-from utility.geojsontypes import Feature,FeatureCollection,Polygon,MultiPolygon
+
+class CountryGeom(BaseModel):
+    coordinates: Any 
+    type: Literal["MultiPolygon","Polygon"]
 
 class CountryProps(BaseModel):
     CNTRY_NAME: str # Restrict this?
     GWCODE: int
     ISO1AL2: Optional[str]
 
-class CountryFeature(Feature):
-    geometry: Any #Union[Polygon,MultiPolygon]
+class CountryFeature(BaseModel):
+    type: Literal["Feature"]
+    geometry: CountryGeom
     properties: CountryProps
 
-class CountryFeatureCollection(FeatureCollection):
+class CountryFeatureCollection(BaseModel):
+    type: Literal["FeatureCollection"]
     features: List[CountryFeature]
-        
