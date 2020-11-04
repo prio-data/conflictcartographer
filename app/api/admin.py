@@ -3,6 +3,7 @@ from api.models import Shape, Country
 
 # Register your models here.
 
+"""
 @admin.register(Shape)
 class DrawnShapeAdmin(admin.ModelAdmin):
     pass
@@ -10,4 +11,4 @@ class DrawnShapeAdmin(admin.ModelAdmin):
 @admin.register(Country)
 class DrawnShapeAdmin(admin.ModelAdmin):
     pass
-
+"""

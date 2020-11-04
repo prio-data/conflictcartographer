@@ -3,12 +3,13 @@ from django.urls import reverse
 from django.utils.html import format_html
 
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User,Group
 
 from invitations.models import Invitation,EmailTemplate
 from api.models import Profile
 
 # Register your models here.
+admin.site.unregister(Group)
 
 def makeLink(url, text=None):
     if text is None:
