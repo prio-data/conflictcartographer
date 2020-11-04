@@ -50,7 +50,6 @@ if os.getenv("DB_SSL"):
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') # ???
 
-EMAIL_TITLE = "Invitation to participate in an expert survey"
 
 EMAIL_HOST = os.getenv("EMAIL_HOST") 
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASSWORD") 
@@ -164,10 +163,13 @@ REST_FRAMEWORK = {
 # ================================================
 # EMAIL STUFF 
 
+EMAIL_FROM = "noreply@prio.org"
+
 EMAIL_INTERVAL = 1
 
-PLAINTEXT_MAIL_TEMPLATE = "mail/invitation.txt"
-HTML_MAIL_TEMPLATE = "mail/invitation.html"
+DEFAULT_EMAIL_TITLE = "Invitation to participate in an expert survey"
+DEFAULT_PLAINTEXT_MAIL_TEMPLATE = "mail/invitation.txt"
+DEFAULT_HTML_MAIL_TEMPLATE = "mail/invitation.html"
 
 PUBLIC_URL = "https://conflictcartographer.prio.org"
 INVITATION_LINK_BASE = os.path.join(PUBLIC_URL,"accounts","ref")

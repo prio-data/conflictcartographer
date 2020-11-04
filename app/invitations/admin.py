@@ -5,7 +5,7 @@ from django.utils.html import format_html
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 
-from invitations.models import Invitation
+from invitations.models import Invitation,EmailTemplate
 from api.models import Profile
 
 # Register your models here.
@@ -64,3 +64,8 @@ class InvitationAdmin(admin.ModelAdmin):
 def makeInvitationLink(inv):
     url = f"{reverse('admin:index')}core/invitation/{inv.pk}"
     return f"<p><a href=\"{url}\">{str(inv)}</a></p>"
+
+@admin.register(EmailTemplate)
+class EmailTemplateAdmin(admin.ModelAdmin):
+    list_display=("subject","active","email_type")
+    pass

@@ -1,9 +1,13 @@
 import csv
 import io
+import pickle
 
+import unittest
 from typing import Dict
-
 import hashlib
+
+import re
+
 from bs4 import BeautifulSoup
 
 from django.core import mail
@@ -13,9 +17,7 @@ from django import urls
 
 from django.contrib.auth.models import User
 
-import re
-
-from invitations.models import Invitation
+from invitations.models import Invitation,EmailTemplate
 from invitations.util import referralKeygen
 from invitations.services import bulkCreateInvites,parseInviteFile
 from api.models import Country
@@ -53,7 +55,7 @@ class InvitationTest(TestCase):
         self.assertTrue(i.mailed)
 
         # Email has proper title
-        self.assertEqual(m.subject, settings.EMAIL_TITLE)
+        self.assertEqual(m.subject, settings.DEFAULT_EMAIL_TITLE)
 
         # Email contains ref. key
         self.assertIsNotNone(re.search(i.refkey,m.body))
@@ -157,3 +159,31 @@ class InvitationTest(TestCase):
         r = self.client.post(url,data,follow=True)
         self.assertEqual(r.status_code,200)
         self.assertEqual(len(invites),len(mail.outbox))
+
+class TestEmailRendering(TestCase):
+    def test_rendered_email(self):
+        et = EmailTemplate(
+                active=True,
+                subject="An invitation",
+                message="""
+# You are hereby invited to my survey
+
+Please fill it out!
+
+[here]({{link}})
+
+Best regards
+The Team
+                """)
+        et.save()
+        inv = Invitation(email="name@nameson.com")
+        inv.dispatch()
+        self.assertEqual(len(mail.outbox),1)
+        m = mail.outbox[0]
+        with open("/tmp/m.pckl","wb") as f:
+            pickle.dump(m,f)
+        self.assertEqual(m.subject,et.subject)
+        self.assertIsNotNone(re.search(inv.refkey,m.body))
+        self.assertIsNotNone(re.search(
+            "You are hereby invited to my survey",
+            m.body))

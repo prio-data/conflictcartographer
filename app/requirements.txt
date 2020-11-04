@@ -28,3 +28,4 @@ email-validator==1.1.1
 gunicorn==20.0.4
 bs4==0.0.1
 requests==2.24.0
+Markdown==3.3.3
