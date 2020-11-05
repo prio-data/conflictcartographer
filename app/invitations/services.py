@@ -3,9 +3,13 @@ import logging
 
 from typing import List,Iterable,Dict
 
+import pydantic
+
 from django.conf import settings
 from django.core import exceptions, validators
 from django.db import IntegrityError
+
+from django.contrib.auth.models import User
 
 import json
 
@@ -26,38 +30,56 @@ def parseInviteFile(lod: Iterable[Dict[str,str]])->List[InvitationRow]:
     countries = [h for h in first.keys() if h not in NONCOUNTRIES]
 
     def parseRow(row):
+        fixval = lambda x: False if "" else x
         ncrow = {k:v for k,v in row.items() if k in NONCOUNTRIES}
-        ctries = [CountryAssignment(name=k,assigned=v) for k,v in row.items() if k not in NONCOUNTRIES]
-        return InvitationRow(**ncrow,countries = [c.name for c in ctries if c.assigned])
+
+        ctries = []
+        for key,val in row.items():
+            try:
+                ctries.append(CountryAssignment(name=key, assigned=val))
+            except pydantic.ValidationError:
+                pass
+        try:
+            return InvitationRow(**ncrow,countries = [c.name for c in ctries if c.assigned])
+        except pydantic.ValidationError:
+            return None
 
     inviteRows = [parseRow(first)]+[parseRow(r) for r in lod]
+    inviteRows = [ir for ir in inviteRows if ir is not None]
     return inviteRows 
 
 def bulkCreateInvites(data: List[InvitationRow], cohort = None)->List[Invitation]:
-    invitations = []
+    res = {"messages":[],"data":{"updated":0,"added":0}}
     for entry in data:
         try:
-            Invitation.objects.get(email=entry.email)
+            User.objects.get(username = entry.email)
+        except User.DoesNotExist:
+            pass
+        else:
+            res["messages"].append(f"User {entry.email} already exists")
+            continue
+
+        try:
+            invitation = Invitation.objects.get(email=entry.email)
         except Invitation.DoesNotExist:
             invitation = Invitation(
-                    email = entry.email,
-                    metadata = {"position": entry.position,"affiliation": entry.affiliation}
+                    email = entry.email
                 )
             invitation.save()
-            
-            countries = []
-            for cname in entry.countries:
-                try:
-                    c = Country.objects.get(name=cname)
-                except Country.DoesNotExist:
-                    logger.warning(f"Did not find country {cname} while creating invite for {entry.email}")
-                else:
-                    countries.append(c)
-
-            invitation.countries.set(countries)
-
-            invitations.append(invitation)
+            res["data"]["added"]+=1
         else:
-            logger.warning(f"Invitation for {entry.email} already exists!")
+            res["data"]["updated"]+=1
 
-    return invitations 
+        invitation.metadata = {"position":entry.position,"affiliation":entry.affiliation}
+            
+        countries = []
+        for cname in entry.countries:
+            try:
+                c = Country.objects.get(name=cname)
+            except Country.DoesNotExist:
+                res["messages"].append(f"Did not find country {cname} while creating invite for {entry.email}")
+            else:
+                countries.append(c)
+
+        invitation.countries.set(countries)
+    return res 

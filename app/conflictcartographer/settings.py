@@ -107,7 +107,7 @@ INSTALLED_APPS = [
     #"livereload",
     "cartographer",
     "api",
-    "adminext",
+    #"adminext",
 ]
 
 MIDDLEWARE = [

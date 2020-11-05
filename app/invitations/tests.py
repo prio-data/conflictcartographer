@@ -12,6 +12,9 @@ from bs4 import BeautifulSoup
 
 from django.core import mail
 from django.test import TestCase,Client
+
+from django.core.files.base import ContentFile
+
 from django.conf import settings
 from django import urls
 
@@ -124,11 +127,13 @@ class InvitationTest(TestCase):
         reader = csv.DictReader(f)
         parsed = parseInviteFile(reader)
 
-        invites = bulkCreateInvites(parsed)
+        res = bulkCreateInvites(parsed)
 
-        furtherInvites = bulkCreateInvites(parsed)
-        self.assertEqual(len(furtherInvites),0)
+        res = bulkCreateInvites(parsed)
+        self.assertEqual(res["data"]["added"],0)
+        self.assertEqual(res["data"]["updated"],5)
 
+        invites = Invitation.objects.all()
         for i in invites:
             i.dispatch()
 
@@ -187,3 +192,45 @@ The Team
         self.assertIsNotNone(re.search(
             "You are hereby invited to my survey",
             m.body))
+
+
+class TestBulkAdd(TestCase):
+    def test_bulk_add(self):
+        for i,c in enumerate(("Colombia","Syria","Mali")):
+            ctry = Country(name = c, shape = {}, simpleshape = {}, iso2c = c[:2],gwno = i)
+            ctry.save()
+
+        User.objects.create_superuser(username="admin",password="admin")
+        self.client.login(username="admin",password="admin")
+        data = [
+            {"email":"a@b.com","affiliation":"a","position":"a",
+                "Colombia":1,"Syria":0,"Mali":0},
+            {"email":"b@c.com","affiliation":"b","position":"a",
+                "Colombia":0,"Syria":1,"Mali":0},
+            {"email":"c@d.com","affiliation":"a","position":"b",
+                "Colombia":0,"Syria":0,"Mali":1},
+            {"email":"d@e.com","affiliation":"a","position":"c",
+                "Colombia":0,"Syria":1,"Mali":1},
+            {"email":"e@f.com","affiliation":"b","position":"a",
+                "Colombia":1,"Syria":0,"Mali":0},
+        ]
+
+        f = io.StringIO()
+        writer = csv.DictWriter(f,fieldnames=data[0].keys())
+        writer.writeheader()
+        for r in data:
+            writer.writerow(r)
+        cf = ContentFile(f.getvalue().encode())
+
+        postData = {
+                "title":"myexperts.csv",
+                "datafile":ContentFile(f.getvalue().encode())
+            }
+
+        r = self.client.post(urls.reverse("uploadexcel"),postData,follow=True)
+        self.assertEqual(r.status_code,200)
+
+        self.assertEqual(Invitation.objects.count(),5)
+
+        self.assertTrue("Colombia" in [c.name for c in Invitation.objects.get(email="a@b.com").countries.all()])
+        self.assertTrue("Colombia" not in [c.name for c in Invitation.objects.get(email="b@c.com").countries.all()])

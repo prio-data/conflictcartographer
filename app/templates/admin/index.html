@@ -51,20 +51,12 @@
 
 </style>
 {% endblock %}
-{% block content %}
+{% block sidebar %}
 {{ block.super }}
-<h1>Data import</h1>
-<div id="content-custom"> 
-   <div id="custom-actions" class="module" width="100%" display="grid">
-      <div class="card" id="excel-upload">
-         <h1>EXCEL UPLOAD</h1>
-         <p>Upload an excel file with invitations. </p>
-         <form action="/uploadexcel/" method="post" enctype="multipart/form-data">
-            <input name="datafile" type="file">
-            <input type="submit">
-            {% csrf_token %}
-         </form>
-      </div>
-   </div>
-</div>
+<h1>Admin links</h1>
+<ul>
+   <li>
+      <a href="/fileupload"><h2>Upload data files</h2></a>
+   </li>
+</ul>
 {% endblock %}

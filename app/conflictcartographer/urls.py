@@ -19,10 +19,9 @@ from django.urls import path, include
 
 # MAIN
 from cartographer.views import cartographer
-
 import api.urls
 import invitations.urls
-import adminext.urls
+#import adminext.urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,4 +30,3 @@ urlpatterns = [
 
 urlpatterns += api.urls.urlpatterns
 urlpatterns += invitations.urls.urlpatterns
-urlpatterns += adminext.urls.urls

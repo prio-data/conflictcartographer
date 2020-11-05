@@ -1,11 +1,19 @@
+import io
+import csv
+import json
+
+import pydantic
 
 from django.shortcuts import render, redirect
 
 from django.contrib.auth import login,authenticate
 from django.contrib.auth.forms import UserCreationForm 
 
-from django.http import HttpResponse
+from django.views.decorators.http import require_http_methods
+
+from django.http import HttpResponse,HttpRequest,JsonResponse
 from invitations.models import Invitation
+from invitations.services import parseInviteFile,bulkCreateInvites
 
 def referralRedirect(request,refkey):
     try:
@@ -53,3 +61,26 @@ def referralSignup(request):
     # And then
     return render(request, "registration/signup.html",
         {"form":form, "uname":invitation.email})
+
+@require_http_methods(["POST"])
+def handleExcelFile(request: HttpRequest)->HttpResponse:
+    if not request.user.is_staff:
+        return JsonResponse({"status":"error","messages":"permission denied"},status=403)
+    try:
+        datafile = request.FILES["datafile"]
+    except KeyError:
+        return JsonResponse({"status":"error","messages":"no file included"},status=400)
+
+    lines = io.StringIO(datafile.read().decode())
+    reader = csv.DictReader(lines)
+    try:
+        lines = parseInviteFile(reader)
+    except pydantic.ValidationError as e:
+        return JsonResponse({"status":"error","messages":str(e)})
+
+    res = bulkCreateInvites(lines)
+    res.update({"status":"success"})
+    return JsonResponse(res)
+
+def fileuploadMenu(request:HttpRequest)->HttpResponse:
+    return render(request,"invitations/fileuploadMenu.html",{})
