@@ -1,5 +1,6 @@
 import Vue from "vue"
 import VueResource from "vue-resource"
+import Axios from "axios"
 
 Vue.use(VueResource);
 
@@ -8,6 +9,7 @@ const Api = function(url, header){
 
    this.header = header
    this._path = (...args) => [...args].join("/") + "/"
+   this.geturl = (path) => this._path(this.url,path)
 
    this.get = function(obj,callback,parameters){
       let url = this._path(this.url,obj);
@@ -19,6 +21,10 @@ const Api = function(url, header){
             function(error){
                console.log(error)
             });
+   }
+
+   this.gget = function(path,parameters){
+      return Axios.get(this.geturl(path),parameters)
    }
 
    this.getAbs = function(url, callback, parameters){

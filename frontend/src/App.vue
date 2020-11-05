@@ -21,6 +21,18 @@
    </div>
 </template>
 
+<style lang="sass">
+   @import "./sass/variables.sass"
+
+   div#app
+      background: $ui-background 
+      display: grid
+      grid-template-rows: 8vh 92vh 
+
+   #toolbar
+      margin: $gaps 
+</style>
+
 <script>
 
 import ProjectMenu from "./components/ProjectMenu.vue"
@@ -101,10 +113,3 @@ export default {
    },
 }
 </script>
-
-<style lang="sass">
-   @import "./sass/variables.sass"
-
-   #toolbar
-      margin: $gaps 
-</style>

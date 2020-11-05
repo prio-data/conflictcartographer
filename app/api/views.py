@@ -124,6 +124,13 @@ class ShapeViewSet(viewsets.ModelViewSet):
 
         return HttpResponse(serializer.data["url"])
 
+def whoami(request):
+    return JsonResponse({"name": request.user.username})
+
+def currentproject(request):
+    return JsonResponse({"title":"Violence and confidence","description":"We want you to code violence and confidence."})
+
+
 @require_http_methods(["POST"])
 def updateCountries(request):
     if not request.user.is_staff:

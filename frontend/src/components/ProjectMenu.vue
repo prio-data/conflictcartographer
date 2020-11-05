@@ -1,21 +1,13 @@
 <template>
-   <div class="menucontainer"> 
-      <div class="menu" v-if="loaded">
-         <div class = "container">
-            <div class="profile six columns">
-               <h1>Greetings {{profile.name}}!</h1>
-               <p>
-               <!-- You are participating in {{nProjects}} projects.-->
-               </p>
-               The variables to code are 
-               <span class="emphasis">intensity</span>
-               and
-               <span class="emphasis">confidence</span>.
-               Please refer to the documentation regarding the definition of these variables.
-            </div>
-
-            <div class="projects six columns">
-               <ProjectView 
+   <div id="pm-wrapper"> 
+      <div id="pm" v-if="loaded">
+         <div class="pane infobar">
+            <Profile/>
+            <MainDescription/>
+         </div>
+         <div class="pane projects">
+            <div class="projectlist">
+               <ProjectView class="card"
                   v-for="project in projects"
                   :key="project.url"
                   :project="project"
@@ -28,19 +20,51 @@
    </div>
 </template>
 
+<style lang="sass" scoped>
+@import "@/sass/variables.sass"
+
+div#pm-wrapper
+   display: grid
+   background: $ui_gray 
+
+div#pm
+   display: grid
+   grid-template-columns: $menu-proportions 
+   min-height: 0
+
+div.pane
+   margin: $menu-gaps 
+   max-height: 100%
+   min-height: 0px
+
+div.infobar 
+   min-height: 0
+   max-height: 100%
+   margin-top: $menu-gaps*6
+
+div.projects > div.projectlist 
+   background: $ui-background 
+   border-radius: $roundedness
+   overflow-y: scroll 
+   max-height: 100% 
+
+div.projectlist > .card
+   margin: $menu-gaps
+
+</style>
+
 <script charset="utf-8">
    import ProjectView from "./ProjectView.vue"
    import Spinner from "../components/Spinner"
+   import Profile from "@/components/Profile"
+   import MainDescription from "@/components/MainDescription"
 
    export default {
       name: "ProjectMenu",
 
       data(){
          return {
-            profile: {
-               "name":"",
-               "projects":[]
-            },
+            projects: [],
             loaded: false,
          }
       },
@@ -48,11 +72,13 @@
       components: {
          ProjectView,
          Spinner,
+         Profile,
+         MainDescription
       },
 
       computed: {
-         projects(){
-            return this.profile.projects
+         user(){
+            this.$store.state.sessionInfo.uk
          },
       },
 
@@ -63,41 +89,11 @@
       },
 
       mounted(){
-         let user = this.$store.state.sessionInfo.uk
          let api = this.$store.state.api
          api.get("assigned",(r)=>{
-            this.profile = {"name":"noname","projects": r}
+            this.projects = r
             this.loaded = true
          })
       }
    }
 </script>
-<style lang="sass" scoped> 
-@import "../sass/variables.sass"
-
-span.emphasis
-   color: $ui_highlight
-
-.container
-   padding: 10px 20px
-   width: 100%
-   max-width: 85vw
-
-.menucontainer
-   width: 100vw
-   height: $map_height / 1.1
-
-div.projects
-   height: $map_height / 1.1 - ($gaps * 4)
-   overflow-y: scroll
-   background: white
-   border-radius: $roundedness
-   border: 1px solid lightgray
-   padding: 10px 20px
-
-div.menu
-   height: 100%
-   width: 100%
-   background: $ui_gray 
-
-</style>

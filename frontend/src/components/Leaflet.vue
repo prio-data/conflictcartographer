@@ -223,5 +223,4 @@
 
    .leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar
       border: none
-
 </style>

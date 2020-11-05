@@ -1,27 +1,50 @@
 <template>
 <div id="navbar">
-   <div id = "headline" class = "row">
-      <div class="maintitle">
-         {{ title }} 
-      </div>
-      <div class="subtitle">
-         {{ projectname }}
-      </div>
+   <div id="title">
+      <span>{{ title }} / </span>
+      <span class="sub">{{ projectname }}</span>
    </div>
-   <div id = "menu" class = "row">
-      <button 
-         v-on:click="$emit('goback')">Back</button>
-      <button id="logout" 
-         v-on:click="$emit('logout')">
-         Log out
-      </button>
-      <button id="logout" 
-         v-on:click="$emit('helpme')">
-         ? 
-      </button>
+   <div></div>
+   <div id="navbar-buttons">
+      <button v-on:click="$emit('goback')">Back</button>
+      <button v-on:click="$emit('logout')">Log out</button>
+      <button v-on:click="$emit('helpme')">?</button>
    </div>
+   <div></div>
 </div>
 </template>
+
+<style scoped lang="sass" type="text/css" media="screen">
+@import "../sass/variables.sass"
+
+#navbar
+   display: grid
+   grid-template-areas: "one one" "two three"
+   grid-template-columns: $menu-proportions
+   margin-left: $menu-gaps 
+
+#navbar > #title
+   font-size: 2.2vh
+   grid-area: one
+
+#navbar > #title > span.sub
+   color: $ui_highlight
+
+#navbar-buttons
+   display: grid
+   grid-template-columns: 2fr 2fr 1fr
+   column-gap: 10px
+   grid-area: two 
+
+#navbar-buttons > button
+   background: $ui_gray
+   border: none
+   height: auto
+
+#navbar-buttons > button:hover
+   background: $ui_highlight
+
+</style>
 
 <script charset="utf-8">
    export default {
@@ -47,44 +70,3 @@
    }
 </script>
 
-<style scoped lang="sass" type="text/css" media="screen">
-@import "../sass/variables.sass"
-
-.imgwrapper
-   display: inline-block
-
-.imgcontainer
-   vertical-align: middle
-
-#navbar
-   margin-left: 15px
-   height: 100px
-
-#headline
-   font-size: 200%
-   margin-right: 10px
-
-#headline .maintitle
-   float: left
-
-#headline .subtitle
-   float: left
-   padding-left: 10px
-   color: $ui_highlight
-
-#menu button   
-   width: auto
-   background: $ui_gray 
-   margin-right: 5px
-   margin-bottom: 5px
-   border: none
-   font-size: 130%
-
-#menu button:hover
-   background: $ui_highlight 
-
-#spinner
-   position: absolute
-   margin-left: 10px
-
-</style>

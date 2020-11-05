@@ -17,6 +17,19 @@
    </div>
 </template>
 
+<style scoped lang="sass">
+@import "../sass/variables.sass"
+
+#mapeditor
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+  color: #2c3e50
+
+#mainwindow
+   float: left
+
+</style>
+
 <script>
 
 import Leaflet from './Leaflet.vue'
@@ -53,14 +66,3 @@ export default {
    },
 }
 </script>
-
-<style scoped lang="sass">
-@import "../sass/variables.sass"
-#mapeditor
-  -webkit-font-smoothing: antialiased
-  -moz-osx-font-smoothing: grayscale
-  color: #2c3e50
-
-#mainwindow
-   float: left
-</style>
