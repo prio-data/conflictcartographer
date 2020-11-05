@@ -47,6 +47,7 @@ div.projects > div.projectlist
    border-radius: $roundedness
    overflow-y: scroll 
    max-height: 100% 
+   height: 100%
 
 div.projectlist > .card
    margin: $menu-gaps
