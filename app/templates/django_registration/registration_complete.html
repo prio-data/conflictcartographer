@@ -1,0 +1,9 @@
+{% extends "registration/base.html" %}
+{% block content %}
+Success! Redirecting you...
+<script>
+   window.setTimeout(()=>{
+      window.location.pathname="/"
+   },2000)
+</script>
+{% endblock %}

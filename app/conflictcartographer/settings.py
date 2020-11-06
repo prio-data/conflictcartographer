@@ -100,14 +100,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "django_registration",
     "rest_framework",
     "invitations",
     "django_filters",
     "webpack_loader",
-    #"livereload",
     "cartographer",
     "api",
-    #"adminext",
 ]
 
 MIDDLEWARE = [

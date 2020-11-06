@@ -55,8 +55,11 @@ def projects(request:HttpRequest)->HttpResponse:
     """
     Get list of countries assigned to current user.
     """
-    countries = Country.objects.all().filter(assignees__pk = request.user.profile.pk)
-    return Response(CountryMetaSerializer(countries,many=True,context={"request":request}).data)
+    try:
+        countries = Country.objects.all().filter(assignees__pk = request.user.profile.pk)
+        return Response(CountryMetaSerializer(countries,many=True,context={"request":request}).data)
+    except Exception as e:
+        return Response([])
 
 # ================================================
 # Shape

@@ -10,23 +10,15 @@
 
       <!-- Style and font -->
       <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css" type="text/css" media="screen" title="no title" charset="utf-8">
-
-      <!-- Favicon -->
-      <link rel="apple-touch-icon" sizes="180x180" href={% static "/apple-touch-icon.png" %}>
-      <link rel="icon" type="image/png" sizes="32x32" href={% static "/favicon-32x32.png" %}>
-      <link rel="icon" type="image/png" sizes="16x16" href={% static "/favicon-16x16.png" %}>
-      <link rel="manifest" href={% static "/site.webmanifest" %}>
-
-
    </head>
    <body>
       <div class="container">
-         <h1>Conflict Cartographer 
-            <span>{% block pagetype %}{% endblock%}</span>
-         </h1>
+         <div class="card">
+            <h1><a href="/">Conflict Cartographer</a><span>{% block pagetype %}{% endblock%}</span></h1>
             {% block content %}
             {% endblock %}
+         </div>
       </div>
+      <script src="{% static "js/accounts.js" %}"></script>
    </body>
 </html>
