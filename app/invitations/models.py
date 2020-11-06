@@ -27,6 +27,8 @@ from api.models import Country,Profile
 
 from invitations.util import referralKeygen
 
+from utils.mixins import OnlyOneActive
+
 logger = logging.getLogger(__name__)
 
 class Invitation(Model):
@@ -115,10 +117,11 @@ class Invitation(Model):
     def __str__(self):
         return f"Invitation for {self.email}"
 
-class EmailTemplate(Model):
+class EmailTemplate(OnlyOneActive,Model):
     """
     An editable email template which is used to draft invitation emails interactively
     """
+
     class EmailTypes(TextChoices):
         INVITATION  = "inv", gettext_lazy("invitation")
         REMINDER = "rem", gettext_lazy("reminder")
@@ -133,10 +136,6 @@ class EmailTemplate(Model):
                       "Do not delete the weird-looking [{{link}}](click me) "
                       "tag!")
 
-    active = BooleanField(default=False,
-            help_text="Is template active? "
-                      "When sending mail, one of the active templates will be used. "
-                      "It is probably a good idea to only keep one template active.")
     email_type = CharField(
             max_length=3,
             choices=EmailTypes.choices,

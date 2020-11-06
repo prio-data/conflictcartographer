@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 
 from api.validation import CountryFeature,CountryFeatureCollection,CountryProps 
 from api.views import updateCountries
-from api.models import Country
+from api.models import Country,ProjectDescription
 
 class ValidationTest(unittest.TestCase):
     def test_geojson_val(self):
@@ -131,3 +131,15 @@ class TestCtryDataUpload(DjangoTestCase):
         self.assertEqual(rd["updated"],2)
         self.assertEqual(r.status_code,200)
         self.assertEqual(len(Country.objects.all()),2)
+
+class OnlyOneActiveTest(DjangoTestCase):
+    def test_ooa(self):
+
+        pda = ProjectDescription(title="",description="",long_description="",active=True)
+        pda.save()
+
+        pdb = ProjectDescription(title="",description="",long_description="",active=True)
+        pdb.save()
+
+        self.assertEqual(len(ProjectDescription.objects.all().filter(active=True)),1)
+

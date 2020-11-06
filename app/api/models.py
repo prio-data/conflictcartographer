@@ -5,6 +5,8 @@ from django.db.models import ManyToManyField,OneToOneField,CASCADE,DateField,Tex
 
 from cartographer.services import getQuarter
 
+from utils.mixins import OnlyOneActive
+
 class Country(Model):
     class Meta:
         verbose_name_plural = "countries"
@@ -27,11 +29,10 @@ class Profile(Model):
     def __str__(self):
         return f"profile of {self.user.username}" # pylint: disable=no-member
 
-class ProjectDescription(Model):
+class ProjectDescription(OnlyOneActive,Model):
     title = CharField(max_length = 128)
     description = TextField()
     long_description = TextField()
-    active = BooleanField(default=False)
 
     def __str__(self):
         return "Project description"
