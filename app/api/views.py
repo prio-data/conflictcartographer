@@ -18,7 +18,7 @@ from rest_framework.decorators import api_view
 from rest_framework import permissions
 
 from api import models, filters
-from api.models import Country
+from api.models import Country,ProjectDescription
 
 from cartographer.services import currentQuarter,currentYear
 from api.validation import CountryFeatureCollection
@@ -127,9 +127,22 @@ class ShapeViewSet(viewsets.ModelViewSet):
 def whoami(request):
     return JsonResponse({"name": request.user.username})
 
-def currentproject(request):
-    return JsonResponse({"title":"Violence and confidence","description":"We want you to code violence and confidence."})
+def projectInfo(request:HttpRequest):
+    verbose = request.GET.get("verbose","false") == "true"
 
+    project = ProjectDescription.objects.filter(active=True).first()
+
+    if project is None:
+        data = {"status":"error",
+                "title":"Missing",
+                "description":"No project has been defined yet!"}
+    else:
+        description = project.long_description if verbose else project.description
+        data = {"status":"ok",
+                "title":project.title,
+                "description":description}
+
+    return JsonResponse(data)
 
 @require_http_methods(["POST"])
 def updateCountries(request):

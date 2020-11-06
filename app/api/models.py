@@ -1,7 +1,7 @@
 
 from django.contrib.auth.models import User 
-from django.db.models import JSONField,IntegerField,CharField,ForeignKey,Model
-from django.db.models import ManyToManyField,OneToOneField,CASCADE,DateField
+from django.db.models import JSONField,IntegerField,CharField,ForeignKey,Model,BooleanField
+from django.db.models import ManyToManyField,OneToOneField,CASCADE,DateField,TextField
 
 from cartographer.services import getQuarter
 
@@ -27,6 +27,15 @@ class Profile(Model):
     def __str__(self):
         return f"profile of {self.user.username}" # pylint: disable=no-member
 
+class ProjectDescription(Model):
+    title = CharField(max_length = 128)
+    description = TextField()
+    long_description = TextField()
+    active = BooleanField(default=False)
+
+    def __str__(self):
+        return "Project description"
+
 class Shape(Model):
     author = ForeignKey(User,
        related_name = "Shapes",
@@ -38,8 +47,6 @@ class Shape(Model):
             null = False)
 
     shape =  JSONField(default = dict, null = False)
-    year = IntegerField(null=False)
-    quarter = IntegerField(null=False)
 
     date = DateField(auto_now_add=True)
 
@@ -51,7 +58,7 @@ class Shape(Model):
 
     @property
     def year(self):
-        return self.date.year 
+        return self.date.year
 
     def __str__(self):
         return f"Shape {self.quarter}/{self.year}@{self.country.name}"

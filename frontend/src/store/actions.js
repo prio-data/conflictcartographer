@@ -4,7 +4,6 @@ const actions = {
    // ================================================
    // Creates a layer, giving it default values and pushing
    // it to the API / Vuex state.
-   
    initializeLayers(context){
       context.commit("initializeLayers")
    },
@@ -15,11 +14,14 @@ const actions = {
    chooseProject(context,project){
       context.commit("setCurrentProject",project)
       context.commit("setProjectDetails",project)
-
    },
 
    backToMenu(context){
       context.commit("unsetProject")
+   },
+
+   setProjectInfo(projectInfo){
+      context.commit("setProjectInfo",projectInfo)
    },
    
    // MANIPULATION

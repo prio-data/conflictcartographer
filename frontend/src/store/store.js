@@ -52,6 +52,11 @@ const store = new Vuex.Store({
       currentProject: null,
       projectDetails: null,
 
+      projectTitle: "",
+      projectDetails: "",
+      projectLongDescription: "",
+
+
       // LAYERS
       // ================================================
       // Current set of layers, blit onto leaflet map 

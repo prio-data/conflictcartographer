@@ -40,6 +40,7 @@
    background: $ui_gray
    border: none
    height: auto
+   padding: 0
 
 #navbar-buttons > button:hover
    background: $ui_highlight

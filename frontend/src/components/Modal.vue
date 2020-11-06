@@ -4,7 +4,16 @@
       class="modalwrapper">
       <div class="modalmessage">
          <div class="contentwrapper">
-            <slot></slot>
+            <div v-if="status == 'loaded'">
+               <h1>{{ title }}</h1>
+               {{ content }}
+            </div>
+            <div v-else-if="status == 'error'">
+               {{ error }}
+            </div>
+            <div v-else>
+               <Spinner/>
+            </div>
          </div>
          <div class="closewrapper">
             <button 
@@ -16,11 +25,21 @@
 </template>
 
 <script charset="utf-8">
+import Spinner from "@/components/Spinner"
+
 export default {
    name: "modalmessage",
+   components: {
+      Spinner
+   },
+
    data(){
       return {
-         show: true
+         show: true,
+         title:"",
+         content: "",
+         error: "",
+         status: "loading" 
       }
    },
    methods: {
@@ -28,6 +47,18 @@ export default {
          this.show = !this.show
          this.$emit("toggle")
       }
+   },
+   mounted() {
+      this.$store.state.api.gget("currentproject",{"params":{"verbose":true}})
+         .then((r)=>{
+            this.status = "loaded" 
+            this.title = r.data.title
+            this.content = r.data.description
+         })
+         .catch((e)=>{
+            this.status = "error"
+            this.error = e
+         })
    }
 
 }

@@ -58,6 +58,16 @@ const mutations = {
       state.currentProject = null
       state.projectDetails = null
    },
+
+   // PROJECT INFO
+   // ================================================
+   // Setting information text about current active project.
+
+   setProjectInfo(state,projectInfo){
+      state.projectTitle = projectInfo.title
+      state.projectDescription = projectInfo.description
+      state.projectLongDescription = projectInfo.long_description
+   },
   
    // LAYERS
    // ================================================

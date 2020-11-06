@@ -1,5 +1,5 @@
 from django.contrib import admin
-from api.models import Shape, Country
+from api.models import Shape, Country,ProjectDescription
 
 # Register your models here.
 
@@ -12,3 +12,7 @@ class DrawnShapeAdmin(admin.ModelAdmin):
 class DrawnShapeAdmin(admin.ModelAdmin):
     pass
 """
+
+@admin.register(ProjectDescription)
+class ProjectAdmin(admin.ModelAdmin):
+    list_display=("title","active")
