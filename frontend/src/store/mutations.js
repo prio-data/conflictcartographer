@@ -15,19 +15,20 @@ const mutations = {
    // Get layers
    // ======================
    initializeLayers(state){
-      let filter = {
-         country: state.currentProject.pk
-      }
-      let populate = function(layers){
-         layers.forEach(function(layer,index){
-            layer.intensity = layer.values.intensity
-            layer.confidence = layer.values.confidence
-            layer.vizId = index
+      state.api.gget("shapes",{params:{country:state.currentProject.gwno}})
+         .then((r)=>{
+            let layers = r.data.map(function(layer,index){
+               layer.intensity = layer.values.intensity
+               layer.confidence = layer.values.confidence
+               layer.vizId = index
+               return layer
+            })
+            state.layers = layers
+            state.vizId = layers.length + 1
          })
-         state.layers = layers
-         state.vizId = layers.length + 1
-      }
-      state.api.get("shapes",populate,filter)
+         .catch((e)=>{
+            console.log(e)
+         })
    },
    
    // Merging setter
