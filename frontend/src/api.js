@@ -27,6 +27,14 @@ const Api = function(url, header){
       return Axios.get(this.geturl(path),parameters)
    }
 
+   this.gpost = function(path,payload,parameters){
+      return Axios.post(
+         this.geturl(path),
+         JSON.stringify(payload),
+         {...parameters, ...this.header}
+      )
+   }
+
    this.getAbs = function(url, callback, parameters){
       Vue.http.get(url,{params: {format: "json", ...parameters}},this.header)
          .then(

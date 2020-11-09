@@ -2,7 +2,7 @@
    <div id="profile-view">
       <div id="profile-centered">
          <div id="profile-image">
-            <img :src="profile"  alt="">
+            <img :src="img"  alt="">
          </div>
          <p id="profile-name">{{this.name}}</p>
       </div>
@@ -24,29 +24,22 @@
 </style>
 
 <script>
-import profile from "@/images/prof.jpg"
+import defaultImage from "@/images/prof.jpg"
 
 export default {
    name: "Profile",
-
+   props: ["profile"],
    data() {
       return {
-         name: "",
-         profile: profile
+         img: defaultImage
       }
    },
 
-   mounted(){
-      let api = this.$store.state.api
-      api.gget("whoami")
-         .then((r)=>{
-            this.name = r.data.name
-         })
-         .catch((e)=>{
-            console.log(e)
-            this.name = "error"
-         })
-   }
+   computed: {
+      name(){
+         return this.profile.name
+      }
+   },
 }
 
 </script>

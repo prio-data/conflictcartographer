@@ -5,6 +5,7 @@ from collections import defaultdict
 import pydantic
 
 from django.http import HttpResponse,HttpRequest,JsonResponse
+from django.shortcuts import render
 
 from django.db.models.query import QuerySet
 from django.utils import timezone
@@ -18,7 +19,7 @@ from rest_framework.decorators import api_view
 from rest_framework import permissions
 
 from api import models, filters
-from api.models import Country,ProjectDescription
+from api.models import Country,ProjectDescription,WaiverText
 
 from cartographer.services import currentQuarter,currentYear
 from api.validation import CountryFeatureCollection
@@ -128,7 +129,7 @@ class ShapeViewSet(viewsets.ModelViewSet):
         return HttpResponse(serializer.data["url"])
 
 def whoami(request):
-    return JsonResponse({"name": request.user.username})
+    return JsonResponse({"name": request.user.username, "waiver": request.user.profile.waiver})
 
 def projectInfo(request:HttpRequest):
     verbose = request.GET.get("verbose","false") == "true"
@@ -146,6 +147,28 @@ def projectInfo(request:HttpRequest):
                 "description":description}
 
     return JsonResponse(data)
+
+def waiver(request:HttpRequest)->HttpResponse:
+    if request.method == "GET":
+        try:
+            wt = WaiverText.objects.filter(active=True).first().content
+        except Exception as e:
+            wt = f"No waiver text defined! ({str(e)})"
+        return JsonResponse({"status":"ok","message":wt})
+    elif request.method=="POST":
+        try:
+            data = json.loads(request.body)
+            agreed = data["agree"]
+        except (json.decoder.JSONDecodeError,KeyError):
+            return HttpResponse(status=400)
+        if agreed:
+            request.user.profile.waiver = True
+            request.user.profile.save()
+            return JsonResponse({"status":"ok","message":"Thanks"})
+        else:
+            return JsonResponse({"status":"ok","message":"Did not agree"})
+    else:
+        return HttpResponse(status=405)
 
 @require_http_methods(["POST"])
 def updateCountries(request):

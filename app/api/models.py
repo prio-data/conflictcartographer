@@ -3,9 +3,17 @@ from django.contrib.auth.models import User
 from django.db.models import JSONField,IntegerField,CharField,ForeignKey,Model,BooleanField
 from django.db.models import ManyToManyField,OneToOneField,CASCADE,DateField,TextField
 
+from annoying.fields import AutoOneToOneField
+
 from cartographer.services import getQuarter
 
 from utils.mixins import OnlyOneActive
+
+class WaiverText(OnlyOneActive,Model):
+    content = TextField(default="ENTER A WAIVER TEXT HERE",null=False)
+    def __str__(self):
+        return self.content[:50]+"..."
+
 
 class Country(Model):
     class Meta:
@@ -23,8 +31,10 @@ class Country(Model):
 
 class Profile(Model):
     meta = JSONField(default = dict, null = True, blank = True)
-    user = OneToOneField(User,on_delete=CASCADE)
+    user = AutoOneToOneField(User,on_delete=CASCADE)
     countries = ManyToManyField(Country,related_name="assignees")
+
+    waiver = BooleanField(default = False)
 
     def __str__(self):
         return f"profile of {self.user.username}" # pylint: disable=no-member

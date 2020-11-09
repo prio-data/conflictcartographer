@@ -34,3 +34,4 @@ bs4==0.0.1
 
 requests==2.24.0
 Markdown==3.3.3
+django-annoying==0.10.6

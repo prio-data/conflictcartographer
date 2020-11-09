@@ -1,8 +1,8 @@
 <template>
-   <div id="pm-wrapper"> 
-      <div id="pm" v-if="loaded">
+   <div id="pm-wrapper" v-if="loaded"> 
+      <div id="pm" v-if="profile.waiver">
          <div class="pane infobar">
-            <Profile/>
+            <Profile :profile="profile"/>
             <MainDescription/>
          </div>
          <div class="pane projects">
@@ -16,8 +16,9 @@
             </div>
          </div>
       </div>
-      <Spinner v-else/>
+      <Waiver v-else/>
    </div>
+   <Spinner v-else/>
 </template>
 
 <style lang="sass" scoped>
@@ -58,6 +59,7 @@ div.projectlist > .card
    import ProjectView from "./ProjectView.vue"
    import Spinner from "../components/Spinner"
    import Profile from "@/components/Profile"
+   import Waiver from "@/components/Waiver"
    import MainDescription from "@/components/MainDescription"
 
    export default {
@@ -66,7 +68,9 @@ div.projectlist > .card
       data(){
          return {
             projects: [],
-            loaded: false,
+            projectsLoaded: false,
+            profileLoaded: false,
+            profile: {}
          }
       },
 
@@ -74,27 +78,41 @@ div.projectlist > .card
          ProjectView,
          Spinner,
          Profile,
-         MainDescription
+         MainDescription,
+         Waiver
       },
 
       computed: {
          user(){
-            this.$store.state.sessionInfo.uk
+            return this.$store.state.sessionInfo.uk
          },
+         loaded(){
+            return this.projectsLoaded && this.profileLoaded
+         }
       },
 
       methods: {
          chosen: function(project){
             this.$store.dispatch("chooseProject",project)
-         }
+         },
       },
 
       mounted(){
          let api = this.$store.state.api
+
          api.get("assigned",(r)=>{
             this.projects = r
-            this.loaded = true
+            this.projectsLoaded = true
          })
+
+         api.gget("whoami")
+            .then((r)=>{
+               this.profile = r.data
+               this.profileLoaded = true
+            })
+            .catch((e)=>{
+               this.profile = {name: e}
+            })
       }
    }
 </script>

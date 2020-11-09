@@ -1,6 +1,9 @@
 <template>
    <div id="holder">
       <img id="spinner" :src="path" alt="">
+      <div id="errmsg">
+         <slot/>
+      </div>
    </div>
 </template>
 
@@ -19,9 +22,11 @@ export default {
 
 <style scoped lang="sass">
 #holder
-   width: 100% 
-   text-align: center
-#spinner
-   margin: 30vh 0px
-   display: inline-block
+   height: 100%
+   width: 100%
+   display: grid
+   place-items: center
+#errmsg
+   color: red
+   font-size: 28px
 </style>
