@@ -29,7 +29,7 @@ div#pm-wrapper
 
 div#pm
    display: grid
-   grid-template-columns: $menu-proportions 
+   grid-template-columns: $menu-col-proportions 
    min-height: 0
 
 div.pane

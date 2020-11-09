@@ -34,42 +34,14 @@
    </div>
 </template>
 
-<script charset="utf-8">
-   import vueSlider from "vue-slider-component" 
-   import "vue-slider-component/theme/antd.css"
-   import trashicon from "../images/trash2.svg"
-
-   export default {
-      name: "layer-view",
-      props: ["layer"],
-      components: {vueSlider},
-      data: function(){
-         return {
-            trashicon: trashicon,
-            confidence_min: -5,
-            confidence_max: 5,
-            confidence_interval: 1,
-            intensity_min: -5,
-            intensity_max: 5,
-            intensity_interval: 1,
-         }
-      },
-   }
-</script>
-
 <style scoped lang="sass">
 @import "../sass/variables.sass"
 
 .layerview
-   max_width: 100%
    background: $ui_gray
-
-   margin-bottom: $gaps
-   margin-top: $gaps
-   padding: $gaps
-
+   padding: $menu-gaps 
    border-radius: $roundedness 
-
+   margin-bottom: $menu-gaps
 
 .header button
    width: 25px 
@@ -115,3 +87,26 @@ button:hover .trashicon
 
 </style>
 
+
+<script charset="utf-8">
+   import vueSlider from "vue-slider-component" 
+   import "vue-slider-component/theme/antd.css"
+   import trashicon from "../images/trash2.svg"
+
+   export default {
+      name: "layer-view",
+      props: ["layer"],
+      components: {vueSlider},
+      data: function(){
+         return {
+            trashicon: trashicon,
+            confidence_min: -5,
+            confidence_max: 5,
+            confidence_interval: 1,
+            intensity_min: -5,
+            intensity_max: 5,
+            intensity_interval: 1,
+         }
+      },
+   }
+</script>

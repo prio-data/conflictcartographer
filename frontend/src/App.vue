@@ -35,10 +35,10 @@
    div#main
       background: $ui-background 
       display: grid
-      grid-template-rows: 8vh 92vh 
 
-   #toolbar
-      margin: $gaps 
+      grid-template-rows: $menu-row-proportions 
+      height: 98vh 
+
 </style>
 
 <script>

@@ -24,7 +24,7 @@
    margin-left: $menu-gaps 
 
 #navbar > #title
-   font-size: 2.2vh
+   font-size: 25px 
    grid-area: one
 
 #navbar > #title > span.sub
@@ -39,7 +39,7 @@
 #navbar-buttons > button
    background: $ui_gray
    border: none
-   height: auto
+   height: 40px 
    padding: 0
 
 #navbar-buttons > button:hover
