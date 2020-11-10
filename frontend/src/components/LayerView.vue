@@ -7,6 +7,9 @@
             <img class="trashicon" :src="trashicon">
          </button>
       </div>
+      <div>
+         Estimation: {{ lower_deaths }} - {{ upper_deaths }} casualties
+      </div>
       <div class="controls">
          <div class="sliders">
             <p>Intensity</p>
@@ -38,10 +41,12 @@
 @import "../sass/variables.sass"
 
 .layerview
+   display: grid
    background: $ui_gray
    padding: $menu-gaps 
    border-radius: $roundedness 
    margin-bottom: $menu-gaps
+   border-bottom: 4px solid $ui-darkgray
 
 .header button
    width: 25px 
@@ -100,13 +105,22 @@ button:hover .trashicon
       data: function(){
          return {
             trashicon: trashicon,
-            confidence_min: -5,
-            confidence_max: 5,
+            confidence_min: 0,
+            confidence_max: 100,
             confidence_interval: 1,
-            intensity_min: -5,
-            intensity_max: 5,
-            intensity_interval: 1,
+            intensity_min: 0,
+            intensity_max: 1000,
+            intensity_interval: 100,
          }
       },
+
+      computed: {
+         lower_deaths(){
+            return this.layer.intensity 
+         },
+         upper_deaths(){
+            return this.layer.intensity
+         }
+      }
    }
 </script>

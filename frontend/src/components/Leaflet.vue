@@ -33,15 +33,7 @@
 
       data: function(){
          return{
-            //url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
-            //url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png',
-            //url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.png',
-            //url: "https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.png",
-            //url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-            //url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
-            //url:"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
             url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
-            //url: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
             attrib: "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community",
             id: "mapbox.streets",
             mapOpts: {
@@ -52,6 +44,7 @@
 
       methods: {
          computeStyle: function(layer){
+            /*
             let base = {
                color: colorGradient(((layer.intensity + 5)/10), this.color1, this.color2),
                fillOpacity: (((layer.confidence + 5)/10)* 0.5 ) + 0.2
@@ -61,6 +54,16 @@
                base.fillOpacity = base.fillOpacity + 0.1
             } else {
                base.weight = 0.1 
+            }
+            */
+            let base = {
+               color: "red",
+               fillOpacity: 0.5
+            }
+            if(layer.vizId == this.focused){
+               base.weight = 5
+            } else {
+               base.weight = 0.1
             }
             return base
          },
