@@ -1,7 +1,7 @@
 
 from django.urls import path, include
 from django.conf.urls import url
-from invitations.views import referralRedirect, referralSignup, handleExcelFile,fileuploadMenu
+from invitations.views import referralRedirect, referralSignup, handleExcelFile,fileuploadMenu, emailpreview
 
 urlpatterns =[
     path("accounts/",include("django.contrib.auth.urls")),
@@ -10,5 +10,6 @@ urlpatterns =[
     #path("accounts/signup",signup,name = "signup"),
     #path("accounts/bulkadd/",bulkAdd,name="bulkadd"),
     path("upload/invexcel/", handleExcelFile, name = "uploadexcel"),
-    path("fileupload/", fileuploadMenu, name = "fileupload")
+    path("fileupload/", fileuploadMenu, name = "fileupload"),
+    path("admin/invitations/emailpreview/<int:pk>/", emailpreview),
 ]

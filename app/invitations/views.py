@@ -12,7 +12,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.views.decorators.http import require_http_methods
 
 from django.http import HttpResponse,HttpRequest,JsonResponse
-from invitations.models import Invitation
+from invitations.models import Invitation,EmailTemplate
 from invitations.services import parseInviteFile,bulkCreateInvites
 
 def referralRedirect(request,refkey):
@@ -84,3 +84,9 @@ def handleExcelFile(request: HttpRequest)->HttpResponse:
 
 def fileuploadMenu(request:HttpRequest)->HttpResponse:
     return render(request,"invitations/fileuploadMenu.html",{})
+
+def emailpreview(request:HttpRequest,pk:int)->HttpResponse:
+    tpl = EmailTemplate.objects.get(pk=pk)
+    tpl.htmlMessage = None
+    tpl.save()
+    return HttpResponse(tpl.render())

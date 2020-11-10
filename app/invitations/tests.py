@@ -64,7 +64,6 @@ class InvitationTest(TestCase):
         self.assertIsNotNone(re.search(i.refkey,m.body))
 
         r = self.client.get(i.invitationLink(),follow=True)
-        location,code = r.redirect_chain[-1]
         soup = BeautifulSoup(r.content,features="html.parser")
 
         regform = soup.find("form")
@@ -75,6 +74,7 @@ class InvitationTest(TestCase):
 
         url = regform.action if regform.action else location 
         method = regform.method if regform.method else "POST"
+
 
         getattr(self.client,method.lower())(url,{
                 "username": usernameInput["value"],

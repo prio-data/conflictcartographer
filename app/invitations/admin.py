@@ -73,16 +73,4 @@ class EmailTemplateAdmin(admin.ModelAdmin):
     readonly_fields=["preview"]
 
     def preview(self,obj):
-        rendered = obj.render({"link":"invitation_link"})
-        return mark_safe("""
-            <style>
-            #preview {
-                height: 792px;
-                width: 545px;
-                box-shadow: 5px 5px gray;
-                border: 1px solid gray;
-                background: #fcfcfb;
-                padding:50px;
-            }
-            </style>
-            <div id="preview">"""+rendered+"</div>")
+        return mark_safe(f'<a href="/admin/invitations/emailpreview/{obj.pk}/" target="_blank">Click to preview</a>')

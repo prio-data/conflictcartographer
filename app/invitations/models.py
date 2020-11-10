@@ -7,6 +7,7 @@ import logging
 from pydantic import BaseModel,EmailStr,constr
 
 import markdown
+import premailer
 
 from django.conf import settings
 
@@ -71,6 +72,9 @@ class Invitation(Model):
     def invitationLink(self):
         return os.path.join(settings.INVITATION_LINK_BASE,self.refkey)
 
+    def unsubLink(self):
+        return os.path.join(settings.UNSUB_LINK_BASE,self.refkey)
+
     def dispatch(self):
         """
         Sends the invitation by email 
@@ -82,11 +86,10 @@ class Invitation(Model):
         try:
             md = markdown.Markdown()
             et = EmailTemplate.objects.filter(active=True,email_type="inv")[0]
-            msg = et.render({"link":self.invitationLink()})
             call = {
                 "subject": et.subject,
-                "message":re.sub("\[[^\)]+",self.invitationLink(),et.message),
-                "html_message":msg,
+                "message": re.sub("\[[^\)]+",self.invitationLink(),et.message),
+                "html_message": et.render({"link":self.invitationLink(),"unsublink":self.unsubLink()})
             }
 
         except IndexError:
@@ -98,7 +101,7 @@ class Invitation(Model):
             call.update({"subject":settings.DEFAULT_EMAIL_TITLE})
 
         call.update({
-                "from_email":settings.EMAIL_FROM,
+                "from_email":settings.EMAIL_FROM_ADDRESS,
                 "recipient_list":[self.email]
             })
 
@@ -128,6 +131,13 @@ class EmailTemplate(OnlyOneActive,Model):
 
     subject = CharField(max_length=1024,default=settings.DEFAULT_EMAIL_TITLE,
             help_text="Subject-field of email")
+
+    headline = CharField(
+            max_length=1024, 
+            help_text="Headline to display in the email", 
+            default="Conflict Cartographer"
+            )
+
     message = TextField(default="[{{link}}](Click this link to participate)",
             help_text="Message-body of text. "
                       "<a href='https://en.wikipedia.org/wiki/markdown' target='_blank'>"
@@ -136,6 +146,15 @@ class EmailTemplate(OnlyOneActive,Model):
                       "Do not delete the weird-looking [{{link}}](click me) "
                       "tag!")
 
+    signature = TextField(default="The conflict cartographer team",
+            help_text="The signature at the bottom of the email")
+
+    htmlMessage = TextField(
+            null=True,
+            blank=True,
+            editable=False,
+            help_text="cached rendered HTML field")
+
     email_type = CharField(
             max_length=3,
             choices=EmailTypes.choices,
@@ -143,9 +162,25 @@ class EmailTemplate(OnlyOneActive,Model):
             help_text="What kind of email is this? "
                       "Determines when this email is sent.")
 
-    def render(self,context):
-        md = markdown.Markdown()
-        return md.convert(Template(self.message).render(Context(context)))
+    def save(self,*args,**kwargs):
+        self.htmlMessage = None
+        super().save(*args,**kwargs)
+
+    def render(self,context={"reflink":"referral","unsublink":"unsubscribe"}):
+        if self.htmlMessage is None:
+            md = markdown.Markdown()
+            fixLnBreaks = lambda lines: "".join([x+"<br>" for x in lines.split("\n")])
+            context.update({
+                "headline": self.headline,
+                "content": md.convert(self.message),
+                "signature": fixLnBreaks(self.signature)
+            })
+            html = render_to_string("mail/tpl.html",context)
+            html = premailer.transform(html)
+            self.htmlMessage = html
+        else:
+            pass
+        return self.htmlMessage
 
     def __str__(self):
         return f"{self.email_type} - \"{self.subject}\""

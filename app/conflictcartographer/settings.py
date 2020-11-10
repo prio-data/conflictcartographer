@@ -50,14 +50,8 @@ if os.getenv("DB_SSL"):
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') # ???
 
-
-EMAIL_HOST = os.getenv("EMAIL_HOST") 
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASSWORD") 
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER") 
-EMAIL_FROM_ADDRESS = os.getenv("EMAIL_SENDER") 
-EMAIL_PORT = int(os.getenv("EMAIL_PORT",0)) 
-EMAIL_USE_TLS = False if os.getenv("EMAIL_NO_TLS") else True
-
+SENDGRID_API_KEY = os.getenv("EMAIL_API_KEY")
+EMAIL_FROM_ADDRESS = os.getenv("EMAIL_FROM_ADDRESS") 
 
 # ================================================
 # ================================================
@@ -162,16 +156,22 @@ REST_FRAMEWORK = {
 # ================================================
 # EMAIL STUFF 
 
-EMAIL_FROM = "noreply@prio.org"
-
+EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
 EMAIL_INTERVAL = 1
 
 DEFAULT_EMAIL_TITLE = "Invitation to participate in an expert survey"
 DEFAULT_PLAINTEXT_MAIL_TEMPLATE = "mail/invitation.txt"
 DEFAULT_HTML_MAIL_TEMPLATE = "mail/invitation.html"
 
-PUBLIC_URL = "https://conflictcartographer.prio.org"
+PUBLIC_URL = "http://0.0.0.0:8000" if DEBUG else "https://conflictcartographer.prio.org"
 INVITATION_LINK_BASE = os.path.join(PUBLIC_URL,"accounts","ref")
+UNSUB_LINK_BASE = os.path.join(PUBLIC_URL,"accounts","unsub")
+
+# EMAIL RENDERING
+
+EMAIL_HEAD = os.path.join(BASE_DIR,"email","head.html")
+EMAIL_TAIL = os.path.join(BASE_DIR,"email","tail.html")
+EMAIL_STYLE = os.path.join(BASE_DIR,"email","style.css")
 
 # ================================================
 # ================================================
