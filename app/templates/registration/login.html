@@ -15,16 +15,18 @@ Login
    {{form.username.errors}}
    {{form.password.label_tag}}
    {{form.password}}
-   <input type="submit">
+   <div id="errors">
+      {% for e in form.non_field_errors %}
+         <div class="error">
+            {{e}}
+         </div>
+      {% endfor %}
+   </div>
+   <div id="buttons">
+      <input type="submit">
+      <a id="registerlink" href="/accounts/register">Register</a>
+   </div>
    {% csrf_token %}
 </form>
-<div class = "row errors">
-   {% for e in form.non_field_errors %}
-      <div class="error">
-         {{e}}
-      </div>
-   {% endfor %}
-</div>
-<a href="/accounts/register">Register</a>
 {% endblock %}
 

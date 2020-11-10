@@ -1,7 +1,9 @@
 @import "@/sass/variables.sass"
 
-html
+html,body
    font-family: "Raleway"
+   padding: 0px
+   margin: 0px
 
 button
    border: 1px solid gray 
@@ -13,18 +15,72 @@ button
    display: grid
    place-items: center
 
-.container > .card
-   padding: $menu_gaps*4
-   display: block
-   box-shadow: 0px 0px 5px gray
+#cardholder
+   display: grid
+   place-items: center
+
+#cardholder > a 
+   margin-top: 40px
+
+.card
+   padding: 10px 80px 
+   display: grid 
+   place-items: center
+   border-radius: $roundedness
+   background: $ui-gray
 
 form
+   width: 270px
    display: grid 
+   place-items: center
    grid-template-columns: 1fr
-   margin: $menu_gaps*2 0px $menu_gaps*2 0px 
+   margin: 0px 0px 50px 0px 
 
 form > label
    margin-top: 20px 
 
-form > input[type=submit]
+#errors
+   color: $ui-highlight
+#errors > *
+   margin-top: 10px
+
+input[type=text],input[type=password],input[type=email]
+   border: none
+   height: 25px 
+   width: 200px
+   text-align: center
+   border-radius: $roundedness
+
+input[type=email]
+   width: 230px
+
+label
+   margin-bottom: 10px
+
+input[type=submit],#registerlink
    margin-top: 20px
+   border: none
+   height: 30px
+   width: 150px
+   border-radius: $roundedness
+   background: $ui-lightgray
+   text-align: center
+   text-decoration: none
+   color: black
+   font-size: 15px
+   display: grid
+   place-items: center
+   font-family: "Raleway"
+
+input[type=submit]:hover,#registerlink:hover
+   background: $ui-highlight
+
+#buttons
+   margin-top: 30px
+
+h1>a
+   color: $ui-highlight
+   text-decoration: none
+   
+h1
+   font-weight: normal 
