@@ -6,6 +6,7 @@
             <MainDescription/>
          </div>
          <div class="pane projects">
+            <h1 id="menuheader">Countries</h1>
             <div class="projectlist">
                <ProjectView class="card"
                   v-for="project in projects"
@@ -13,6 +14,7 @@
                   :project="project"
                   v-on:chosen="chosen(project)">
                </ProjectView>
+               <button id="addProjects">+</button>
             </div>
          </div>
       </div>
@@ -52,6 +54,23 @@ div.projects > div.projectlist
 
 div.projectlist > .card
    margin: $menu-gaps
+
+button#addProjects
+   width: 100%
+   border: none
+   height: 70px 
+   display: grid
+   place-items: center
+   //background: #f0f0f0
+   font-size: 80px
+   line-height: 0
+   color: $ui-darkgray
+
+button#addProjects:hover
+   color: $ui-highlight
+
+h1#menuheader
+   line-height: 20px 
 
 </style>
 

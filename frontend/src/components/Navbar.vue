@@ -39,8 +39,9 @@
 #navbar-buttons > button
    background: $ui_gray
    border: none
-   height: 40px 
+   height: 46px 
    padding: 0
+   border-bottom: 2px solid $ui-darkergray
 
 #navbar-buttons > button:hover
    background: $ui_highlight

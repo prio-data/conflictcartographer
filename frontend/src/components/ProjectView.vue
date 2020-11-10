@@ -18,8 +18,10 @@ div#project-card
    height: 80px 
    background: $ui_darkgray
    border-radius: $roundedness
+   border-bottom: 4px solid $ui-darkergray 
    color: $ui_lightgray
    font-size: 30px
+   cursor: pointer
 
 div#project-card:hover
    background: $ui_highlight

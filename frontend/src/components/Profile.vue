@@ -13,6 +13,8 @@
 </template>
 
 <style lang="sass" scoped>
+@import "@/sass/variables"
+
 #profile-view
    max-height: 300px
 
