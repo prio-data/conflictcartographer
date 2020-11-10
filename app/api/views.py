@@ -5,7 +5,7 @@ from collections import defaultdict
 import pydantic
 
 from django.http import HttpResponse,HttpRequest,JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 
 from django.db.models.query import QuerySet
 from django.utils import timezone
@@ -23,6 +23,7 @@ from api.models import Country,ProjectDescription,WaiverText
 
 from cartographer.services import currentQuarter,currentYear
 from api.validation import CountryFeatureCollection
+from api.forms import ProfileForm
 
 # ================================================
 # Countries 
@@ -210,3 +211,20 @@ def updateCountries(request):
         c.save()
 
     return JsonResponse({"status":"success","saved":saved,"updated":updated})
+
+def editProfile(request:HttpRequest)->HttpResponse:
+    if request.method == "GET":
+        profile = request.user.profile
+        form = ProfileForm(profile.meta)
+        return render(request,"registration/editprofile.html",{"form":form})
+    elif request.method =="POST":
+        data = ProfileForm(request.POST)
+        if data.is_valid():
+            request.user.profile.meta = data.cleaned_data
+            request.user.profile.save()
+            return redirect("/")
+    else:
+        return HttpResponse(status=405)
+
+def hasProfile(request:HttpRequest)->HttpResponse:
+    return JsonResponse({"status":"ok","profile":bool(request.user.profile.meta)})
