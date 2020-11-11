@@ -12,16 +12,19 @@
       <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
    </head>
    <body>
-      <div class="container">
-         <div id="cardholder">
-            <div class="card">
-               <h1><a href="/">Conflict Cartographer</a><span>{% block pagetype %}{% endblock%}</span></h1>
-               {% block content %}
-               {% endblock %}
+      <div id="page" style="position: relative">
+         <div id="consentmodal"></div>
+         <div class="container">
+            <div id="cardholder">
+               <div class="card">
+                  <h1><a href="/">Conflict Cartographer</a><span>{% block pagetype %}{% endblock%}</span></h1>
+                  {% block content %}
+                  {% endblock %}
+               </div>
+               <a href="https://www.prio.org">
+                  <img src="{% static "img/priologo.png" %}" height=100 alt="">
+               </a>
             </div>
-            <a href="https://www.prio.org">
-               <img src="{% static "img/priologo.png" %}" height=100 alt="">
-            </a>
          </div>
       </div>
       <script src="{% static "js/accounts.js" %}"></script>

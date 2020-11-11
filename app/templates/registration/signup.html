@@ -6,42 +6,12 @@
 {% block pagetype %} Sign up {% endblock %}
 
 {% block content %}
-<h2 id="subtitle">Sign up</h2>
 <form method="post" class="content">
+   Welcome {{ uname }}.
+   Please create a password. 
+   {{ form }}
    {% csrf_token %}
-   <div class="row">
-      Welcome {{ uname }}.
-      Please create a password. 
-   </div>
-   <div class="row">
-      <div class="twelve columns">
-         <table style="padding-top:15px">
-            <tr>
-               <td><p id="fieldname">Password:</p></td>
-               <td>{{ form.password1 }}</td>
-            </tr>
-            <tr>
-               <td><p id="fieldname">Repeat password:</p></td>
-               <td>{{ form.password2 }}</td>
-            </tr>
-         </table>
-      </div>
-   </div>
-   <div class="row">
-      {{ form.username.as_hidden }}
-      {{ form.non_field_errors }}
-      {{ form.password1.errors }}
-      {{ form.password2.errors }}
-      {{ form.username.errors }}
-   </div>
-   <div class="row">
-      <button type="submit">Sign up</button>
-   </div>
-   <div class="row">
-      <hr>
-      <a href="https://www.prio.org/Projects/Project/?x=1835"><img height=50 style="padding-right: 25px" src={% static "priologo.png" %} alt=""></a>
-      <a href="https://www.eu-listco.net/"><img height=29 style="padding-bottom: 8px" src={% static "eulistcologo.png" %} alt=""></a>
-
-   </div>
+   <a href="https://www.prio.org/Projects/Project/?x=1835"><img height=50 style="padding-right: 25px" src={% static "priologo.png" %} alt=""></a>
+   <a href="https://www.eu-listco.net/"><img height=29 style="padding-bottom: 8px" src={% static "eulistcologo.png" %} alt=""></a>
 </form>
 {% endblock %}
