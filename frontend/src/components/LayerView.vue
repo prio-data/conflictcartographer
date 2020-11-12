@@ -1,7 +1,8 @@
 <template>
    <div
       v-on:mouseenter ="$emit('mouseover')"
-      v-on:mouseleave ="$emit('onmouseout')" class="layerview">
+      v-on:mouseleave ="$emit('onmouseout')" class="layerview"
+      :class="{noticeme: nagging}">
       <div class="header">
          <button v-on:click="$emit('deleteMe')">
             <img class="trashicon" :src="trashicon">
@@ -12,7 +13,7 @@
             <p>Expected no. of casualties</p>
             <div id="intensity" v-for="choice in choices" v-bind:key="choice.key">
                <input 
-                  v-on:change= "$emit('change')" 
+                  v-on:change= "changed" 
                   v-model="layer.intensity" 
                   :name="choice.key" 
                   :value="choice.value" 
@@ -22,7 +23,7 @@
             <p>Confidence: {{layer.confidence}}%</p>
             <vue-slider
                ref="slider2"
-               v-on:change = "$emit('change')"
+               v-on:change = "changed"
                v-model="layer.confidence"
                :min="confidence_min"
                :max="confidence_max"
@@ -43,6 +44,17 @@
    border-radius: $roundedness 
    margin-bottom: $menu-gaps
    border-bottom: 4px solid $ui-darkgray
+
+@keyframes pulse
+   0%
+      background: $ui-gray 
+   50%
+      background: white 
+   100%
+      background: $ui-gray 
+
+.noticeme
+   animation: pulse 1s ease-in-out infinite
 
 .header button
    width: 25px 
@@ -116,8 +128,18 @@ button:hover .trashicon
                {key:"26-99",value:2},
                {key:"100-999",value:3},
                {key:">1000",value:4},
-            ]
+            ],
+            nagging: false 
          }
+      },
+
+      methods: {
+         changed(){
+            this.$emit("changed")
+            if(this.nagging){
+               this.nagging = false
+            }
+         },
       },
 
       computed: {
@@ -126,6 +148,12 @@ button:hover .trashicon
          },
          upper_deaths(){
             return this.layer.intensity
+         },
+      },
+
+      mounted(){
+         if(this.layer.confidence == 50 && this.layer.intensity == 0){
+            this.nagging = true
          }
       }
    }

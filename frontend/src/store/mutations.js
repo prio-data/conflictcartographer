@@ -78,7 +78,7 @@ const mutations = {
 
       // Defaults
       created.intensity = state.defaultIntensity;
-      created.confidence = state.defaultIntensity;
+      created.confidence = state.defaultConfidence;
       
       // Populate with information from state
       created.author = `${window.location}api/users/${state.sessionInfo.uk}/`

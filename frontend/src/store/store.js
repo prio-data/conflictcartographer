@@ -64,7 +64,7 @@ const store = new Vuex.Store({
 
       // Default scale values
       defaultIntensity: 0,
-      defaultConfidence: 0,
+      defaultConfidence: 50,
 
       // UI Stuff
       // ================================================
