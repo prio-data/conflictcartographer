@@ -64,6 +64,8 @@ class InvitationTest(TestCase):
         self.assertIsNotNone(re.search(i.refkey,m.body))
 
         r = self.client.get(i.invitationLink(),follow=True)
+        location,*_ = r.redirect_chain[-1]
+
         soup = BeautifulSoup(r.content,features="html.parser")
 
         regform = soup.find("form")
