@@ -4,6 +4,7 @@ html,body
    font-family: "Raleway"
    padding: 0px
    margin: 0px
+   color: #404040
 
 button
    border: 1px solid gray 
@@ -40,9 +41,6 @@ form
    grid-template-columns: 1fr
    margin: 0px 0px 50px 0px 
 
-form > label
-   margin-top: 20px 
-
 #errors
    color: $ui-highlight
 #errors > *
@@ -50,8 +48,9 @@ form > label
 
 input[type=text],input[type=password],input[type=email]
    border: none
-   border-left: 1px solid $ui-darkergray 
-   border-right: 1px solid $ui-darkergray 
+   border-top: 2px solid $ui-darkergray
+   border-left: 1px solid $ui-darkgray 
+   border-right: 1px solid $ui-darkgray 
    height: 35px 
    width: 200px
    text-align: center
@@ -62,7 +61,7 @@ input[type=email]
    width: 230px
 
 label
-   color: #404040
+   margin-top: 20px 
    margin-bottom: 6px 
 
 input[type=submit],#registerlink
