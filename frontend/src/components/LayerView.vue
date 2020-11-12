@@ -7,23 +7,19 @@
             <img class="trashicon" :src="trashicon">
          </button>
       </div>
-      <div>
-         Estimation: {{ lower_deaths }} - {{ upper_deaths }} casualties
-      </div>
       <div class="controls">
          <div class="sliders">
-            <p>Intensity</p>
-            <vue-slider
-               ref="slider1"
-               v-on:change = "$emit('change')"
-               v-model="layer.intensity"
-               :min="intensity_min"
-               :max="intensity_max"
-               :interval="intensity_interval"
-            />
-         </div>
-         <div class="row">
-            <p>Confidence</p>
+            <p>Expected no. of casualties</p>
+            <div id="intensity" v-for="choice in choices" v-bind:key="choice.key">
+               <input 
+                  v-on:change= "$emit('change')" 
+                  v-model="layer.intensity" 
+                  :name="choice.key" 
+                  :value="choice.value" 
+                  type="radio">
+               <label :for="choice.key">{{choice.key}} casualties</label>
+            </div>
+            <p>Confidence: {{layer.confidence}}%</p>
             <vue-slider
                ref="slider2"
                v-on:change = "$emit('change')"
@@ -52,11 +48,8 @@
    width: 25px 
    height: 25px
    padding: 0px 
-
    border: none
-
    float: right
-
    background: $ui_remove_1
 
 .header:hover button
@@ -68,6 +61,15 @@
 
 .controls p
    margin-bottom: 0px
+
+// Radio controls
+div#intensity
+   display: grid
+   grid-template-columns: 30px auto
+   font-size: 18px
+   align-items: center
+   height: 29px
+   line-height: 1px
 
 // Slider
 .vue-slider-ltr
@@ -108,9 +110,13 @@ button:hover .trashicon
             confidence_min: 0,
             confidence_max: 100,
             confidence_interval: 1,
-            intensity_min: 0,
-            intensity_max: 1000,
-            intensity_interval: 100,
+            choices: [
+               {key:"0-1",value:0},
+               {key:"2-25",value:1},
+               {key:"26-99",value:2},
+               {key:"100-999",value:3},
+               {key:">1000",value:4},
+            ]
          }
       },
 

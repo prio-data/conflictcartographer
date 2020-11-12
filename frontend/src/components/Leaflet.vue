@@ -30,6 +30,7 @@
          LMap,
          LGeoJson
       },
+      props: ["layers"],
 
       data: function(){
          return{
@@ -44,20 +45,8 @@
 
       methods: {
          computeStyle: function(layer){
-            /*
             let base = {
-               color: colorGradient(((layer.intensity + 5)/10), this.color1, this.color2),
-               fillOpacity: (((layer.confidence + 5)/10)* 0.5 ) + 0.2
-            }
-            if(layer.vizId == this.focused){
-               base.weight = 5 
-               base.fillOpacity = base.fillOpacity + 0.1
-            } else {
-               base.weight = 0.1 
-            }
-            */
-            let base = {
-               color: "red",
+               color: colorGradient((layer.intensity)/5,this.color1,this.color2), 
                fillOpacity: 0.5
             }
             if(layer.vizId == this.focused){
@@ -70,9 +59,6 @@
       },
 
       computed: {
-         layers: function(){
-            return this.$store.state.layers;
-         },
          focused: function(){
             return this.$store.state.infocus;
          },

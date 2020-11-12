@@ -5,12 +5,15 @@
          <div id="mainwindow">
             <Leaflet
                v-if="projectDetails"
+               :layers="layers"
                /> 
          </div>
          <div 
             v-if="projectDetails"
             id="toolbar">
-            <Toolbar/> 
+            <Toolbar
+               :layers="layers"
+            /> 
          </div>
       </div>
       <Spinner v-else/>
@@ -36,8 +39,6 @@ import Leaflet from './Leaflet.vue'
 import Toolbar from "./Toolbar.vue"
 import Spinner from "../components/Spinner"
 
-import {mapGetters} from "vuex"
-
 export default {
    name: 'MapEditor',
    components: {
@@ -48,17 +49,22 @@ export default {
    
    props: ["project"],
 
+   data(){
+      return {
+         defaultValues: {
+            intensity: 5,
+            confidence: 5
+         },
+      }
+   },
+
    computed: {
       projectDetails(){
          return this.$store.state.projectDetails
       },
-      ...mapGetters([
-         "projectShape",
-      ])
-
-   },
-
-   methods: {
+      layers(){
+         return this.$store.state.layers
+      }
    },
 
    mounted: function(){

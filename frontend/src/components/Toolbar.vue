@@ -44,6 +44,7 @@ div#toolbar
 
    export default {
       name: "Toolbar",
+      props:["layers"],
 
       methods: {
          deleteLayer: function(layer){
@@ -61,18 +62,7 @@ div#toolbar
          unfocus: function(){
             this.$store.commit("unfocus")
          },
-         
-         //valueChange(){
-            //console.log("something changed")
-         //}
       },
-
-      computed: {
-         layers: function(){
-            return this.$store.state.layers
-         }
-      },
-
       components: {
          LayerView 
       },
