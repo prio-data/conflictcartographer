@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 from collections import defaultdict
+from typing import Literal
 
 import pydantic
 
@@ -228,3 +229,38 @@ def editProfile(request:HttpRequest)->HttpResponse:
 
 def hasProfile(request:HttpRequest)->HttpResponse:
     return JsonResponse({"status":"ok","profile":bool(request.user.profile.meta)})
+
+def projectChoices(request:HttpRequest)->HttpResponse:
+    projects = Country.objects.all().exclude(assignees__pk = request.user.profile.pk)
+    projects = [{"name":c.name,"pk":c.pk} for c in projects]
+    return JsonResponse({"status":"ok","projects":projects})
+
+@require_http_methods(["POST"])
+def editProjects(request:HttpRequest,action:Literal["add","remove"])->HttpResponse:
+    try:
+        data = json.loads(request.body)
+        country = Country.objects.get(pk=data["pk"])
+        prof = request.user.profile
+        if action in ["add","remove"]:
+            getattr(prof.countries,action)(country)
+            prof.save()
+        else:
+            return HttpResponse(status=404)
+
+    except Exception as e:
+        return JsonResponse({"status":"error","message":str(e)},status=500)
+    else:
+        return JsonResponse({"status":"ok"})
+
+@require_http_methods(["POST"])
+def removeProject(request:HttpRequest)->HttpResponse:
+    try:
+        data = json.loads(request.body)
+        country = Country.objects.get(pk=data["pk"])
+        prof = request.user.profile
+        current = prof.countries.remove(country)
+        prof.save()
+    except Exception as e:
+        return JsonResponse({"status":"error","message":str(e)},status=500)
+    else:
+        return JsonResponse({"status":"ok"})

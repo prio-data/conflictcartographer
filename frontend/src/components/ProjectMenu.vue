@@ -1,26 +1,28 @@
 <template>
-   <div id="pm-wrapper" v-if="loaded"> 
+   <div id="pm-wrapper">
       <div id="pm" v-if="profile.waiver">
-         <div class="pane infobar">
+         <div class="pane infobar" v-if="profileLoaded">
             <Profile :profile="profile"/>
             <MainDescription/>
          </div>
+         <Spinner v-else/>
          <div class="pane projects">
             <h1 id="menuheader">Countries</h1>
-            <div class="projectlist">
+            <div class="projectlist" v-if="projectsLoaded">
                <ProjectView class="card"
                   v-for="project in projects"
                   :key="project.url"
                   :project="project"
-                  v-on:chosen="chosen(project)">
+                  v-on:chosen="chosen(project)"
+                  v-on:deselected="refreshProjects">
                </ProjectView>
-               <button id="addProjects">+</button>
+               <CountryPicker v-on:addedProject="refreshProjects"/>
             </div>
+            <Spinner v-else/>
          </div>
       </div>
       <Waiver v-else/>
    </div>
-   <Spinner v-else/>
 </template>
 
 <style lang="sass" scoped>
@@ -55,20 +57,6 @@ div.projects > div.projectlist
 div.projectlist > .card
    margin: $menu-gaps
 
-button#addProjects
-   width: 100%
-   border: none
-   height: 70px 
-   display: grid
-   place-items: center
-   //background: #f0f0f0
-   font-size: 80px
-   line-height: 0
-   color: $ui-darkgray
-
-button#addProjects:hover
-   color: $ui-highlight
-
 h1#menuheader
    line-height: 20px 
 
@@ -80,6 +68,7 @@ h1#menuheader
    import Profile from "@/components/Profile"
    import Waiver from "@/components/Waiver"
    import MainDescription from "@/components/MainDescription"
+   import CountryPicker from "@/components/CountryPicker"
 
    export default {
       name: "ProjectMenu",
@@ -98,7 +87,8 @@ h1#menuheader
          Spinner,
          Profile,
          MainDescription,
-         Waiver
+         Waiver,
+         CountryPicker
       },
 
       computed: {
@@ -114,15 +104,25 @@ h1#menuheader
          chosen: function(project){
             this.$store.dispatch("chooseProject",project)
          },
+         refreshProjects(){
+            this.projectsLoaded = false
+            this.$store.state.api.get("assigned",(r)=>{
+               this.projects = r
+               this.projectsLoaded = true
+            })
+         }
       },
 
       mounted(){
          let api = this.$store.state.api
 
+         this.refreshProjects()
+         /*
          api.get("assigned",(r)=>{
             this.projects = r
             this.projectsLoaded = true
          })
+         */
 
          api.gget("whoami")
             .then((r)=>{

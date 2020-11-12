@@ -11,8 +11,10 @@
     "test": "jest"
   },
   "dependencies": {
+    "@isneezy/vue-selectize": "^0.6.1",
     "axios": "^0.21.0",
     "core-js": "3.4.1",
+    "selectize": "^0.12.6",
     "vue": "2.6.10",
     "vue-cli": "^2.9.6"
   },
