@@ -20,9 +20,9 @@ from rest_framework.decorators import api_view
 from rest_framework import permissions
 
 from api import models, filters
-from api.models import Country,ProjectDescription,WaiverText
+from api.models import Country,ProjectDescription,WaiverText,NonAnswer
 
-from cartographer.services import currentQuarter,currentYear
+from cartographer.services import currentQuarter,currentYear,quarterRange
 from api.validation import CountryFeatureCollection
 from api.forms import ProfileForm
 
@@ -264,3 +264,27 @@ def removeProject(request:HttpRequest)->HttpResponse:
         return JsonResponse({"status":"error","message":str(e)},status=500)
     else:
         return JsonResponse({"status":"ok"})
+
+def completedProject(request:HttpRequest,pk)->HttpResponse:
+    try:
+        completed = False
+
+        project = Country.objects.get(pk=pk)#.Shapes.filter(author=request.user)
+        qr = quarterRange()
+
+        shapes = project.Shapes.filter(
+                author = request.user,
+                date__gte=qr[0],
+                date__lte=qr[1]) 
+        completed |= len(shapes) > 0
+
+        nonanswers = project.nonanswer_set.filter(
+                author = request.user,
+                date__gte=qr[0],
+                date__lte=qr[1])
+        completed |= len(nonanswers) > 0
+
+    except Exception as e:
+        return JsonResponse({"status":"error","message":str(e)})
+    else:
+        return JsonResponse({"status":"ok","completed":completed})

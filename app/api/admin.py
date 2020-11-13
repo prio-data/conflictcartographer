@@ -1,5 +1,5 @@
 from django.contrib import admin
-from api.models import Shape, Country,ProjectDescription,WaiverText
+from api.models import * 
 
 # Register your models here.
 
@@ -10,5 +10,9 @@ class ProjectAdmin(admin.ModelAdmin):
 @admin.register(WaiverText)
 class WTAdmin(admin.ModelAdmin):
     list_display=("__str__","active")
+    pass
+
+@admin.register(NonAnswer)
+class WTAdmin(admin.ModelAdmin):
     pass
 

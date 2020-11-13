@@ -9,9 +9,7 @@
             {{ project.name }}
          </div>
          <div id="displaywidgets">
-            <div class="mockwidget"/>
-            <div class="mockwidget"/>
-            <div class="mockwidget"/>
+            <CompletedWidget :project="project"/>
          </div>
       </div>
       <div class="divbutton" id="deselectButton" v-on:click="deselect">X</div>
@@ -19,8 +17,13 @@
 </template>
 
 <script charset="utf-8">
+import CompletedWidget from "@/components/widgets/Completed"
+
 export default { name: "ProjectView",
    props: ["project"],
+   components: {
+      CompletedWidget,
+   },
    methods: {
       deselect(){
          this.$store.state.api.gpost("editprojects/remove",{"pk":this.project.gwno})
@@ -77,6 +80,7 @@ export default { name: "ProjectView",
    background: $ui-lightgray
    border-radius: $roundedness
    margin-bottom: 2px 
+   padding: 0 $project-menu-card-gaps
 
 .mockwidget
    background: $ui-highlight

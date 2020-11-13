@@ -47,21 +47,13 @@ class ProjectDescription(OnlyOneActive,Model):
     def __str__(self):
         return "Project description"
 
-class Shape(Model):
-    author = ForeignKey(User,
-       related_name = "Shapes",
-       on_delete = CASCADE, null = False)
-
-    country = ForeignKey(Country, 
-            related_name = "Shapes", 
-            on_delete = CASCADE, 
-            null = False)
-
-    shape =  JSONField(default = dict, null = False)
+class Answer(Model):
+    class Meta:
+        abstract = True
 
     date = DateField(auto_now_add=True)
-
-    values = JSONField(default = dict)
+    author = ForeignKey(User,on_delete=CASCADE,null=False)
+    country = ForeignKey(Country,on_delete=CASCADE,null=False)
 
     @property
     def quarter(self):
@@ -70,6 +62,17 @@ class Shape(Model):
     @property
     def year(self):
         return self.date.year
+    
 
+class Shape(Answer):
+    #Name collision
+    country = ForeignKey(Country,related_name="Shapes",on_delete=CASCADE,null=False)
+
+    shape =  JSONField(default = dict, null = False)
+    values = JSONField(default = dict)
     def __str__(self):
         return f"Shape {self.quarter}/{self.year}@{self.country.name}"
+
+class NonAnswer(Answer):
+    def __str__(self):
+        return f"Nonanswer {self.quarter}/{self.year}@{self.country.name}"
