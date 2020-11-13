@@ -6,12 +6,10 @@
 {% block pagetype %} Sign up {% endblock %}
 
 {% block content %}
+{{ mdg }}
 <form method="post" class="content">
-   Welcome {{ uname }}.
-   Please create a password. 
    {{ form }}
    {% csrf_token %}
-   <a href="https://www.prio.org/Projects/Project/?x=1835"><img height=50 style="padding-right: 25px" src={% static "priologo.png" %} alt=""></a>
-   <a href="https://www.eu-listco.net/"><img height=29 style="padding-bottom: 8px" src={% static "eulistcologo.png" %} alt=""></a>
+   <input type="submit">
 </form>
 {% endblock %}

@@ -1,5 +1,5 @@
 
-{% extends "registration/base.html"%}
+{% extends "registration/base_form.html"%}
 
 {% block title %} Login {% endblock %}
 
@@ -7,26 +7,6 @@
 Login
 {% endblock %}
 
-
-{% block content %}
-<form method="post" accept-charset="utf-8">
-   {{form.username.label_tag}}
-   {{form.username}}
-   {{form.username.errors}}
-   {{form.password.label_tag}}
-   {{form.password}}
-   <div id="errors">
-      {% for e in form.non_field_errors %}
-         <div class="error">
-            {{e}}
-         </div>
-      {% endfor %}
-   </div>
-   <div id="buttons">
-      <input type="submit">
-      <a id="registerlink" href="/accounts/register">Register</a>
-   </div>
-   {% csrf_token %}
-</form>
+{% block buttons %}
+<a id="registerlink" href="/accounts/register">Register</a>
 {% endblock %}
-

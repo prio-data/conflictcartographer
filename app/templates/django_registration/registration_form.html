@@ -1,12 +1,4 @@
-{% extends "registration/base.html" %}
+{% extends "registration/base_form.html" %}
 
 {% block title %} Sign up {% endblock %}
 {% block pagetype %} Sign up {% endblock %}
-
-{% block content %}
-<form action="" method="post">
-   {{ form }}
-   {% csrf_token %}
-   <input type="submit">
-</form>
-{% endblock %}

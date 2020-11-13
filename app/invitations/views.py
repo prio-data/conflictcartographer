@@ -59,8 +59,8 @@ def referralSignup(request):
         form.fields["username"].initial = invitation.email
 
     # And then
-    return render(request, "registration/signup.html",
-        {"form":form, "uname":invitation.email})
+    return render(request, "django_registration/registration_form.html",
+            {"form":form,"msg":f"Welcome {invitation.email}! Please complete your registration to participate."})
 
 @require_http_methods(["POST"])
 def handleExcelFile(request: HttpRequest)->HttpResponse:

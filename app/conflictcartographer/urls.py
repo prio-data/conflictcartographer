@@ -17,6 +17,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from django.shortcuts import render
+from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
+
 # MAIN
 from cartographer.views import cartographer
 import api.urls
@@ -27,7 +30,13 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", cartographer, name = "conflictcartographer"), # MAIN
     path('accounts/', include('django_registration.backends.one_step.urls')),
-    path("accounts/",include("django.contrib.auth.urls"))
+    path("accounts/",include("django.contrib.auth.urls")),
+
+    path("test/ref/",lambda r: render(r,"django_registration/registration_form.html",{"form":UserCreationForm(),
+        "msg":"Welcome {invitation.email}! Please complete your registration to participate."})),
+    path("test/reg/",lambda r: render(r,"django_registration/registration_form.html",{"form":UserCreationForm()})),
+    path("test/redir/",lambda r: render(r,"django_registration/registration_complete.html",{"form":UserCreationForm()})),
+    path("test/login/",lambda r: render(r,"registration/login.html",{"form":AuthenticationForm()})),
 ]
 
 urlpatterns += api.urls.urlpatterns
