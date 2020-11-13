@@ -8,15 +8,18 @@
          <Spinner v-else/>
          <div class="pane projects">
             <h1 id="menuheader">Countries</h1>
-            <div class="projectlist" v-if="projectsLoaded">
-               <ProjectView class="card"
-                  v-for="project in projects"
-                  :key="project.url"
-                  :project="project"
-                  v-on:chosen="chosen(project)"
-                  v-on:deselected="refreshProjects">
-               </ProjectView>
-               <CountryPicker v-on:addedProject="refreshProjects"/>
+            <div id="projectlist" v-if="projectsLoaded">
+               <div v-for="project in projects" class="pmcard">
+                  <ProjectView class="card"
+                     :key="project.url"
+                     :project="project"
+                     v-on:chosen="chosen(project)"
+                     v-on:deselected="refreshProjects">
+                  </ProjectView>
+               </div>
+               <div class="pmcard">
+                  <CountryPicker v-on:addedProject="refreshProjects"/>
+               </div>
             </div>
             <Spinner v-else/>
          </div>
@@ -47,15 +50,15 @@ div.infobar
    max-height: 100%
    margin-top: $menu-gaps*6
 
-div.projects > div.projectlist 
+#projectlist
    background: $ui-background 
    border-radius: $roundedness
    overflow-y: scroll 
    max-height: 100% 
    height: 100%
 
-div.projectlist > .card
-   margin: $menu-gaps
+.pmcard
+   margin: $menu-gaps $menu-gaps 0 $menu-gaps
 
 h1#menuheader
    line-height: 20px 

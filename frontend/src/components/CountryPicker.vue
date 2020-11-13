@@ -1,21 +1,17 @@
 <template>
    <div id="root">
-      <div class="pvlike" id="selectHolder" v-if="active">
+      <div id="selectHolder" v-if="active">
          <select name="country" v-model="selected">
             <option v-for="c in choices" :value="c.pk">{{c.name}}</option>
          </select>
-         <div id="button" v-on:click="dispatch">OK</div>
-
+         <div class="divbutton" v-on:click="dispatch">Add</div>
+         <div class="divbutton" v-on:click="active = false">X</div>
       </div>
-      <button class="pvlike" id="addProjects" v-on:click="activate">+</button>
+      <button id="addProjects" v-if="!active" v-on:click="activate">+</button>
    </div>
 </template>
 <style lang="sass" scoped>
 @import "@/sass/variables.sass"
-
-.pvlike 
-   border: none
-   height: 70px 
 
 #root
    display: grid
@@ -23,35 +19,38 @@
 
 #selectHolder
    display: grid
-   grid-template-columns: $project-menu-ratio 
-   margin-bottom: $menu_gaps
+   grid-gap: $project-menu-card-gaps 
+   grid-template-columns: auto $project-menu-card-button-size $project-menu-card-button-size 
+   margin-bottom: $menu-gaps
 
-#selectHolder > #button
+.divbutton
    background: $ui-darkgray
-   margin-right: $menu_gaps
    border-radius: $roundedness
    border-bottom: 4px solid $ui-darkergray
    display: grid
    place-items: center
+   font-size: $project-menu-card-font-size 
 
-#selectHolder > #button:hover
+.divbutton:hover
    background: $ui-highlight 
    cursor: pointer
 
 select
-   background: $ui-lightgray
-   margin: 0px $menu_gaps
-   height: 80px
+   background: $ui-gray
+   height: $project-menu-card-height
+   font-size: $project-menu-card-font-size 
+select:focus
+   border: 1px solid $ui-highlight
 
 button#addProjects
    border: none
-   height: 70px 
+   height: $project-menu-card-height 
    display: grid
    place-items: center
-   //background: #f0f0f0
    font-size: 80px
    line-height: 0
    color: $ui-darkgray
+   background: $ui-lightgray 
 
 button#addProjects:hover
    color: $ui-highlight
@@ -65,15 +64,16 @@ export default {
       return {
          active: false,
          choices: [],
-         selected: ""
+         selected: {} 
       }
    },
    methods: {
       activate(){
-         this.active=true
          this.choices = this.$store.state.api.gget("projectchoices")
             .then((r)=>{
                this.choices = r.data.projects
+               this.selected = this.choices[0]
+               this.active=true
             })
             .catch((e)=>{
                this.active=false

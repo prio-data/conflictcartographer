@@ -1,9 +1,20 @@
 <template>
    <div id="container">
-      <div v-on:click="$emit('chosen')" id="project-card">
-         <p class="projecttitle">{{ project.name }}</p>
+      <div id="actions">
+         <div class="divbutton" v-on:click="$emit('chosen')">✏️</div>
+         <div class="divbutton">🕊️</div>
       </div>
-      <div id="deselectButton" v-on:click="deselect">X</div>
+      <div id="display">
+         <div class="header">
+            {{ project.name }}
+         </div>
+         <div id="displaywidgets">
+            <div class="mockwidget"/>
+            <div class="mockwidget"/>
+            <div class="mockwidget"/>
+         </div>
+      </div>
+      <div class="divbutton" id="deselectButton" v-on:click="deselect">X</div>
    </div>
 </template>
 
@@ -29,29 +40,53 @@ export default { name: "ProjectView",
 
 #container
    display: grid
-   grid-template-columns: $project-menu-ratio 
-   grid-gap: $menu-gaps * 0.5
+   grid-template-columns: $project-menu-card-button-size*2 auto $project-menu-card-button-size 
+   grid-gap: $project-menu-card-gaps 
+   height: $project-menu-card-height 
+   background: $ui-gray
+   border-radius: $roundedness
+   padding: 0 $project-menu-card-gaps
 
-#deselectButton
+#actions
+   display: grid
+   grid-template-rows: 1fr
+   grid-gap: $project-menu-card-gaps
+   grid-auto-flow: column
+
+.divbutton
+   font-size: $project-menu-card-font-size 
    background: $ui-darkgray
    display: grid
    place-items: center
    border-bottom: 4px solid $ui-darkergray
    border-radius: $roundedness
+   cursor: pointer
+   margin: $project-menu-card-gaps 0
+   margin-top: $project-menu-card-gaps - 2px
 
-#deselectButton:hover
+.divbutton:hover
    background: $ui-highlight
 
-div#project-card
-   padding: $menu-gaps
-   height: 80px 
-   background: $ui_darkgray
-   border-radius: $roundedness
-   border-bottom: 4px solid $ui-darkergray 
-   color: $ui_lightgray
-   font-size: 30px
-   cursor: pointer
+#display
+   display: grid
+   grid-template-rows: 40px auto 
+   margin: $project-menu-card-gaps+(-2) 0 
 
-div#project-card:hover
-   background: $ui_highlight
+#displaywidgets
+   display: flex
+   background: $ui-lightgray
+   border-radius: $roundedness
+   margin-bottom: 2px 
+
+.mockwidget
+   background: $ui-highlight
+   margin: $project-menu-card-gaps 0 $project-menu-card-gaps $project-menu-card-gaps
+   width: 60px
+   border-radius: $roundedness
+
+.header
+   padding-left: $project-menu-card-gaps
+   //background: $ui-lightgray
+   border-radius: $roundedness
+   font-size: $project-menu-card-font-size 
 </style>
