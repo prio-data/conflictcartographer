@@ -1,12 +1,10 @@
 <template>
-   <div class="widget" v-if="value">
-      ✔️
-   </div>
+   <div class="widget" v-if="value">🕊️</div>
 </template>
 <script>
 import "@/sass/widget.sass"
 export default {
-   name: "CompletedWidget",
+   name: "NonanswerWidget",
    props: ["value"],
 }
 </script>

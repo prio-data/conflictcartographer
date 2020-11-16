@@ -3,12 +3,11 @@
       <div id="pm" v-if="profile.waiver">
          <div class="pane infobar" v-if="profileLoaded">
             <Profile :profile="profile"/>
-            <MainDescription/>
             <Calendar/>
+            <MainDescription/>
          </div>
          <Spinner v-else/>
          <div class="pane projects">
-            <h1 id="menuheader">Countries</h1>
             <div id="projectlist" v-if="projectsLoaded">
                <div v-for="project in projects" class="pmcard">
                   <ProjectView class="card"
@@ -55,12 +54,14 @@ div.infobar
 .infobar > *
    margin-bottom: $menu-gaps
 
+.pane.projects
+   display: grid
+   margin-bottom: 40px 
+
 #projectlist
    background: $ui-background 
    border-radius: $roundedness
    overflow-y: scroll 
-   max-height: 100% 
-   height: 100%
 
 .pmcard
    margin: $menu-gaps $menu-gaps 0 $menu-gaps
@@ -118,6 +119,11 @@ h1#menuheader
             this.projectsLoaded = false
             this.$store.state.api.get("assigned",(r)=>{
                this.projects = r
+               this.projects = this.projects.sort((a,b)=>{ 
+                  if(a.name < b.name){return -1}
+                  if(a.name > b.name){return 1}
+                  return 0
+               })
                this.projectsLoaded = true
             })
          }

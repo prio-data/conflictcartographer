@@ -37,7 +37,7 @@
       display: grid
 
       grid-template-rows: $menu-row-proportions 
-      height: 98vh 
+      height: 100vh 
 
 </style>
 

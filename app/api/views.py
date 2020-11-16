@@ -20,6 +20,7 @@ from rest_framework.decorators import api_view
 from rest_framework import permissions
 
 from api import models, filters
+from api.models import Shape
 from api.models import Country,ProjectDescription,WaiverText,NonAnswer
 
 from cartographer.services import currentQuarter,currentYear,quarterRange
@@ -78,7 +79,7 @@ def prepRequestData(request:HttpRequest):
 
 class ShapeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = models.Shape
+        model = Shape
         fields = ["url","country","shape","values"]
 
 class ShapeViewSet(viewsets.ModelViewSet):
@@ -88,7 +89,7 @@ class ShapeViewSet(viewsets.ModelViewSet):
     POST Shapes to projects they are part of
     """
 
-    queryset = models.Shape.objects.all()
+    queryset = Shape.objects.all()
     serializer_class = ShapeSerializer  
 
     filterset_fields = ["country"]
@@ -112,12 +113,18 @@ class ShapeViewSet(viewsets.ModelViewSet):
 
     def create(self,request,*args,**kwargs):
         prepRequestData(request)
-
         serializer = self.get_serializer(data = request.data)
         if serializer.is_valid():
-            serializer.save(author = self.request.user)
-            return HttpResponse(serializer.data["url"], status=status.HTTP_201_CREATED)
+            o = serializer.save(author = self.request.user)
+            try:
+                s,e = quarterRange()
+                na = NonAnswer.objects.get(country = o.country,date__gte=s,date__lte=e)
+            except NonAnswer.DoesNotExist:
+                pass
+            else:
+                na.delete()
 
+            return HttpResponse(serializer.data["url"], status=status.HTTP_201_CREATED)
         else:
             return HttpResponse(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
@@ -247,6 +254,7 @@ def editProjects(request:HttpRequest,action:Literal["add","remove"])->HttpRespon
         else:
             return HttpResponse(status=404)
 
+    
     except Exception as e:
         return JsonResponse({"status":"error","message":str(e)},status=500)
     else:
@@ -265,33 +273,67 @@ def removeProject(request:HttpRequest)->HttpResponse:
     else:
         return JsonResponse({"status":"ok"})
 
-def completedProject(request:HttpRequest,pk)->HttpResponse:
-    try:
-        completed = False
-
-        project = Country.objects.get(pk=pk)#.Shapes.filter(author=request.user)
-        qr = quarterRange()
-
-        shapes = project.Shapes.filter(
-                author = request.user,
-                date__gte=qr[0],
-                date__lte=qr[1]) 
-        completed |= len(shapes) > 0
-
-        nonanswers = project.nonanswer_set.filter(
-                author = request.user,
-                date__gte=qr[0],
-                date__lte=qr[1])
-        completed |= len(nonanswers) > 0
-
-    except Exception as e:
-        return JsonResponse({"status":"error","message":str(e)})
-    else:
-        return JsonResponse({"status":"ok","completed":completed})
-
 def calendar(request:HttpRequest)->HttpResponse:
     return JsonResponse({
         "status":"ok",
         "quarter": currentQuarter(),
         "year": currentYear()
     })
+
+@require_http_methods(["POST"])
+def nonanswer(request:HttpRequest,project:int)->HttpResponse:
+    try:
+        country = Country.objects.get(pk=project) 
+    except Country.DoesNotExist:
+        return HttpResponse(status=404)
+    try:
+        na = NonAnswer.objects.get(author=request.user,country=country)
+    except NonAnswer.DoesNotExist:
+        na = NonAnswer(author=request.user,country=country)
+        na.save()
+        return JsonResponse({"status":"ok","nonanswer":True})
+    else:
+        na.delete()
+        return JsonResponse({"status":"ok","nonanswer":False})
+
+def projectStatus(request: HttpRequest, project: int)->HttpResponse:
+    try:
+        country = Country.objects.get(pk=project) 
+    except Country.DoesNotExist:
+        return HttpResponse(status=404)
+
+    s,e = quarterRange()
+    shapes = Shape.objects.filter(
+            author = request.user, 
+            country = country, 
+            date__gte=s,date__lte=e).count()
+
+    try:
+        NonAnswer.objects.get(author=request.user,country=country)
+    except NonAnswer.DoesNotExist:
+        na = False
+    else:
+        na = True
+
+    return JsonResponse({
+            "shapes": shapes,
+            "nonanswer": na
+        })
+
+def clearShapes(request: HttpRequest, project: int)->HttpResponse:
+    try:
+        country = Country.objects.get(pk=project) 
+    except Country.DoesNotExist:
+        return HttpResponse(status=404)
+
+    s,e = quarterRange()
+    shapes = Shape.objects.filter(
+            author = request.user,
+            country = country,
+            date__gte = s,
+            date__lte = e)
+    d = len(shapes)
+    
+    shapes.delete()
+    return JsonResponse({"status":"ok","deleted":d})
+

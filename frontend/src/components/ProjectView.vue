@@ -1,45 +1,32 @@
 <template>
    <div id="container">
       <div id="actions">
-         <div class="divbutton" v-on:click="$emit('chosen')">Draw shapes</div>
-         <div class="divbutton">No conflict</div>
+         <div id="drawshapes" class="divbutton" v-on:click="$emit('chosen')">Draw shapes</div>
+         <div id="noconflict" class="divbutton" v-on:click="nonanswer" v-if="!hasShapes">No conflict</div>
+         <div id="clearshapes" class="divbutton" v-on:click="clear" v-else>Clear shapes</div>
       </div>
       <div id="display">
          <div class="header">
             {{ project.name }}
+            <span id="errors">
+               {{ errors }}
+            </span>
          </div>
          <div id="displaywidgets">
-            <CompletedWidget :project="project"/>
+            <CompletedWidget :value="completed"/>
+            <Nshapeswidget :value="status.shapes"/>
+            <NonanswerWidget :value="status.nonanswer"/>
          </div>
       </div>
       <div class="divbutton" id="deselectButton" v-on:click="deselect">X</div>
    </div>
 </template>
 
-<script charset="utf-8">
-import CompletedWidget from "@/components/widgets/Completed"
-
-export default { name: "ProjectView",
-   props: ["project"],
-   components: {
-      CompletedWidget,
-   },
-   methods: {
-      deselect(){
-         this.$store.state.api.gpost("editprojects/remove",{"pk":this.project.gwno})
-            .then((r)=>{
-               this.$emit("deselected")
-            })
-            .catch((e)=>{
-               console.log(e)
-            })
-      }
-   }
-}
-</script>
-
 <style lang="sass" scoped> 
 @import "../sass/variables.sass"
+
+#errors
+   color: red 
 
 #container
    display: grid
@@ -57,10 +44,20 @@ export default { name: "ProjectView",
    //grid-gap: $project-menu-card-gaps
    //grid-auto-flow: column
 
+#noconflict:hover
+   background: linear-gradient(90deg, $ui-darkgray 0%, $button-blue 100%)
+
+#clearshapes:hover
+   background: linear-gradient(90deg, $ui-darkgray 0%, $button-red 100%)
+
+#drawshapes:hover
+   background: linear-gradient(90deg, $ui-darkgray 0%, $button-yellow 100%)
+
 .divbutton
    font-size: $project-menu-card-font-size 
    background: $ui-darkgray
    display: grid
+   color: white 
    place-items: center
    border-bottom: 4px solid $ui-darkergray
    border-radius: $roundedness
@@ -68,11 +65,11 @@ export default { name: "ProjectView",
    margin: $project-menu-card-gaps 0
    margin-top: $project-menu-card-gaps - 2px
 
+.divbutton:hover
+   filter: brightness(0.9)
+
 #actions > .divbutton
    margin-bottom: 0
-
-.divbutton:hover
-   background: $ui-highlight
 
 #display
    display: grid
@@ -84,7 +81,7 @@ export default { name: "ProjectView",
    background: $ui-lightgray
    border-radius: $roundedness
    margin-bottom: 2px 
-   padding: 0 $project-menu-card-gaps
+   padding: 0 $project-menu-card-gaps*3
 
 .mockwidget
    background: $ui-highlight
@@ -98,3 +95,76 @@ export default { name: "ProjectView",
    border-radius: $roundedness
    font-size: $project-menu-card-font-size 
 </style>
+
+<script charset="utf-8">
+import CompletedWidget from "@/components/widgets/Completed"
+import NonanswerWidget from "@/components/widgets/Nonanswer"
+import Nshapeswidget from "@/components/widgets/Nshapes"
+
+export default { name: "ProjectView",
+   props: ["project"],
+   components: {
+      CompletedWidget,
+      NonanswerWidget,
+      Nshapeswidget
+   },
+   data(){
+      return {
+         errors: "",
+         loaded: false,
+         status: {} 
+      }
+   },
+
+   computed: {
+      completed(){
+         return this.status.shapes > 0 || this.status.nonanswer
+      },
+      hasShapes(){
+         return this.status.shapes > 0
+      }
+   },
+
+   methods: {
+      deselect(){
+         this.$store.state.api.gpost("editprojects/remove",{"pk":this.project.gwno})
+            .then((r)=>{
+               this.$emit("deselected")
+            })
+            .catch((e)=>{
+               this.errors = e
+         })
+      },
+      nonanswer(){
+         this.$store.state.api.gpost(`nonanswer/${this.project.gwno}`)
+            .then((r)=>{
+               this.$emit("deselected")
+            })
+            .catch((e)=>{
+               this.errors = e
+            })
+      },
+      clear(){
+         this.$store.state.api.gpost(`clearshapes/${this.project.gwno}`)
+            .then((r)=>{
+               this.$emit("deselected")
+            })
+            .catch((e)=>{
+               this.errors = e
+            })
+      }
+   },
+
+   mounted(){
+      this.$store.state.api.gget(`projectstatus/${this.project.gwno}`)
+         .then((r)=>{
+            this.status = r.data
+            this.loaded = true
+         })
+         .catch((e)=>{
+            this.errors = e
+         })
+   }
+}
+</script>
+

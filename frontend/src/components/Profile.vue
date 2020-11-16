@@ -1,6 +1,6 @@
 <template>
    <div id="profile-view">
-      <div id="profile-centered">
+      <div id="profile-centered" v-if="loaded">
             <div id="imgholder">
                <a href="/accounts/profile">
                   <img id="profile-image" :src="img"  alt="">
@@ -9,6 +9,7 @@
             </div>
          <p id="profile-name">{{this.name}}</p>
       </div>
+      <Spinner v-else/>
    </div>
 </template>
 
@@ -61,6 +62,7 @@ img#profile-image
 
 <script>
 import defaultImage from "@/images/prof.jpg"
+import Spinner from "@/components/Spinner"
 
 export default {
    name: "Profile",
@@ -68,8 +70,13 @@ export default {
    data() {
       return {
          img: defaultImage,
-         hasprofile: false
+         hasprofile: false,
+         loaded: false
       }
+   },
+
+   components: {
+      Spinner
    },
 
    computed: {
@@ -85,6 +92,7 @@ export default {
       this.$store.state.api.gget("hasprofile")
          .then((r)=>{
             this.hasprofile=r.data.profile 
+            this.loaded = true
          })
          .catch((e)=>{
             console.log(e)
