@@ -4,6 +4,7 @@
          <div class="pane infobar" v-if="profileLoaded">
             <Profile :profile="profile"/>
             <MainDescription/>
+            <Calendar/>
          </div>
          <Spinner v-else/>
          <div class="pane projects">
@@ -48,7 +49,11 @@ div.pane
 div.infobar 
    min-height: 0
    max-height: 100%
+   margin: $menu-gaps*6 0 0 $menu-gaps
    margin-top: $menu-gaps*6
+
+.infobar > *
+   margin-bottom: $menu-gaps
 
 #projectlist
    background: $ui-background 
@@ -72,6 +77,7 @@ h1#menuheader
    import Waiver from "@/components/Waiver"
    import MainDescription from "@/components/MainDescription"
    import CountryPicker from "@/components/CountryPicker"
+   import Calendar from "@/components/Calendar"
 
    export default {
       name: "ProjectMenu",
@@ -91,7 +97,8 @@ h1#menuheader
          Profile,
          MainDescription,
          Waiver,
-         CountryPicker
+         CountryPicker,
+         Calendar
       },
 
       computed: {

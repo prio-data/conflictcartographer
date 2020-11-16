@@ -288,3 +288,10 @@ def completedProject(request:HttpRequest,pk)->HttpResponse:
         return JsonResponse({"status":"error","message":str(e)})
     else:
         return JsonResponse({"status":"ok","completed":completed})
+
+def calendar(request:HttpRequest)->HttpResponse:
+    return JsonResponse({
+        "status":"ok",
+        "quarter": currentQuarter(),
+        "year": currentYear()
+    })

@@ -24,6 +24,39 @@
    </div>
 </template>
 
+<style scoped lang="sass">
+.modalwrapper
+   position: absolute !important
+   overflow: auto !important
+   top: 0
+   left: 0
+   width: 100vw
+   height: 100vh
+   text-align: center
+   background: rgba(0,0,0,0.5)
+
+.modalmessage
+   display: inline-block
+   margin-top: 5vh 
+   padding: 50px
+   background: white 
+   border-radius: 15px
+   font-size: 20px
+
+.contentwrapper
+   text-align: left
+   height: 75vh 
+   width: 50vw 
+   overflow: auto
+
+.closewrapper
+   text-align center
+
+.closebutton
+   display: inline-block
+
+</style>
+
 <script charset="utf-8">
 import Spinner from "@/components/Spinner"
 
@@ -63,38 +96,3 @@ export default {
 
 }
 </script>
-
-<style scoped lang="sass">
-.modalwrapper
-   position: absolute !important
-   overflow: auto !important
-   top: 0
-   left: 0
-   width: 100vw
-   height: 100vh
-   text-align: center
-   background: rgba(0,0,0,0.5)
-
-.modalmessage
-   display: inline-block
-   margin-top: 5vh 
-   padding: 50px
-   background: white 
-   border-radius: 15px
-
-.contentwrapper
-   text-align: left
-   height: 75vh 
-   width: 50vw 
-   overflow: auto
-
-
-.closewrapper
-   text-align center
-
-.closebutton
-   display: inline-block
-   
-   
-
-</style>

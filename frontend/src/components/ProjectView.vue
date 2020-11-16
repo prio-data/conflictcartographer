@@ -1,8 +1,8 @@
 <template>
    <div id="container">
       <div id="actions">
-         <div class="divbutton" v-on:click="$emit('chosen')">✏️</div>
-         <div class="divbutton">🕊️</div>
+         <div class="divbutton" v-on:click="$emit('chosen')">Draw shapes</div>
+         <div class="divbutton">No conflict</div>
       </div>
       <div id="display">
          <div class="header">
@@ -52,9 +52,10 @@ export default { name: "ProjectView",
 
 #actions
    display: grid
-   grid-template-rows: 1fr
-   grid-gap: $project-menu-card-gaps
-   grid-auto-flow: column
+   margin-bottom: $project-menu-card-gaps
+   //grid-template-rows: 1fr
+   //grid-gap: $project-menu-card-gaps
+   //grid-auto-flow: column
 
 .divbutton
    font-size: $project-menu-card-font-size 
@@ -66,6 +67,9 @@ export default { name: "ProjectView",
    cursor: pointer
    margin: $project-menu-card-gaps 0
    margin-top: $project-menu-card-gaps - 2px
+
+#actions > .divbutton
+   margin-bottom: 0
 
 .divbutton:hover
    background: $ui-highlight
