@@ -1,3 +1,4 @@
+from datetime import date 
 
 from django.contrib.auth.models import User 
 from django.db.models import JSONField,IntegerField,CharField,ForeignKey,Model,BooleanField
@@ -5,7 +6,7 @@ from django.db.models import ManyToManyField,OneToOneField,CASCADE,DateField,Tex
 
 from annoying.fields import AutoOneToOneField
 
-from cartographer.services import getQuarter
+from cartographer.services import getQuarter,quarterRange
 
 from utils.mixins import OnlyOneActive
 
@@ -51,7 +52,7 @@ class Answer(Model):
     class Meta:
         abstract = True
 
-    date = DateField(auto_now_add=True)
+    date = DateField(null=False)
     author = ForeignKey(User,on_delete=CASCADE,null=False)
     country = ForeignKey(Country,on_delete=CASCADE,null=False)
 
@@ -62,7 +63,12 @@ class Answer(Model):
     @property
     def year(self):
         return self.date.year
-    
+
+    def save(self,*args,**kwargs):
+        if self.pk is None and self.date is None:
+            print(today())
+            self.date = today() 
+        super().save(*args,**kwargs)
 
 class Shape(Answer):
     #Name collision
@@ -72,6 +78,20 @@ class Shape(Answer):
     values = JSONField(default = dict)
     def __str__(self):
         return f"Shape {self.quarter}/{self.year}@{self.country.name}"
+
+    def save(self,*args,**kwargs):
+        s,e = quarterRange(self.date)
+        nas = NonAnswer.objects.filter(
+                author=self.author,
+                country=self.country,
+                date__gte=s,
+                date__lte=e
+                )
+
+        if nas:
+            nas.delete()
+
+        super().save(*args,**kwargs)
 
 class NonAnswer(Answer):
     def __str__(self):

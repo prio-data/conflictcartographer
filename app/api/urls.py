@@ -7,8 +7,8 @@ from api.views import *
 
 router = routers.DefaultRouter()
 
-router.register(r"shapes",ShapeViewSet)
-router.register(r"countries",CountryViewSet)
+router.register(r"shapes",ShapeViewSet,basename="shape")
+router.register(r"countries",CountryViewSet,basename="country")
 
 urlpatterns = [
     path("api/assigned/", projects),

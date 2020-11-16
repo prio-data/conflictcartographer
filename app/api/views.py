@@ -11,6 +11,7 @@ from django.shortcuts import render,redirect
 from django.db.models.query import QuerySet
 from django.utils import timezone
 from django.contrib import auth
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 
 from rest_framework import viewsets, status, exceptions, serializers
@@ -297,6 +298,9 @@ def nonanswer(request:HttpRequest,project:int)->HttpResponse:
         return JsonResponse({"status":"ok","nonanswer":False})
 
 def projectStatus(request: HttpRequest, project: int)->HttpResponse:
+    if not request.user.is_authenticated:
+        return HttpResponse(status=403)
+
     try:
         country = Country.objects.get(pk=project) 
     except Country.DoesNotExist:
