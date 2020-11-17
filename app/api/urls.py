@@ -23,7 +23,7 @@ urlpatterns = [
     path("api/editprojects/<str:action>/",editProjects),
     #path("api/pinfo/completed/<int:pk>/",completedProject),
     path("api/calendar/",calendar),
-    path("api/nonanswer/<int:project>/",nonanswer),
+    path("api/nonanswer/<int:project>/",nonanswer,name="nonanswer"),
     path("api/projectstatus/<int:project>/",projectStatus,name="projectstatus"),
     path("api/clearshapes/<int:project>/",clearShapes),
 ]

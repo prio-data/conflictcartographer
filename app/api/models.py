@@ -1,4 +1,7 @@
+import os
+from typing import List
 from datetime import date 
+import importlib
 
 from django.contrib.auth.models import User 
 from django.db.models import JSONField,IntegerField,CharField,ForeignKey,Model,BooleanField
@@ -7,7 +10,6 @@ from django.db.models import ManyToManyField,OneToOneField,CASCADE,DateField,Tex
 from annoying.fields import AutoOneToOneField
 
 from cartographer.services import getQuarter,quarterRange,today
-
 from utils.mixins import OnlyOneActive
 
 class WaiverText(OnlyOneActive,Model):
@@ -49,12 +51,29 @@ class ProjectDescription(OnlyOneActive,Model):
         return "Project description"
 
 class Answer(Model):
+    """
+    A model that does two things:
+    
+        Firstly, it handles the date attribute similarly to auto_now_add,
+        except that the attribute is overrideable. This is important for
+        testing, since I really need to simulate answers given some time ago.
+
+        Secondly, it allows you to define mutex-models, which means that
+        only instances from a given model in the mutex can exist from 
+        the same author, for the same project, in the given quarter.
+
+        This means that you won't get situations where there are both non-answers
+        and shapes, for instance.
+
+    """
     class Meta:
         abstract = True
 
     date = DateField(null=False)
     author = ForeignKey(User,on_delete=CASCADE,null=False)
     country = ForeignKey(Country,on_delete=CASCADE,null=False)
+
+    mutex: List[Model] = []
 
     @property
     def quarter(self):
@@ -67,10 +86,26 @@ class Answer(Model):
     def save(self,*args,**kwargs):
         if self.pk is None and self.date is None:
             self.date = today() 
+
+        s,e = quarterRange(self.date)
+        for model in self.mutex:
+            if type(model) is str:
+                module,model = os.path.splitext(model)
+                model = model[1:]
+                model = getattr(importlib.import_module(module),model)
+            else:
+                pass
+            others = model.objects.filter(
+                    author=self.author,
+                    country=self.country,
+                    date__gte=s,date__lte=e)
+            others.delete()
+
         super().save(*args,**kwargs)
 
 class Shape(Answer):
     #Name collision
+    mutex=["api.models.NonAnswer"]
     country = ForeignKey(Country,related_name="Shapes",on_delete=CASCADE,null=False)
 
     shape =  JSONField(default = dict, null = False)
@@ -93,5 +128,7 @@ class Shape(Answer):
         super().save(*args,**kwargs)
 
 class NonAnswer(Answer):
+    mutex=["api.models.Shape"]
+
     def __str__(self):
         return f"Nonanswer {self.quarter}/{self.year}@{self.country.name}"

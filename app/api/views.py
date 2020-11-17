@@ -101,6 +101,9 @@ class ShapeViewSet(viewsets.ModelViewSet):
         if not self.request.user.is_staff:
             queryset = queryset.filter(author = self.request.user)
 
+        s,e = quarterRange()
+        queryset = queryset.filter(date__gte=s,date__lte=e)
+
         return queryset
 
     def create(self,request,*args,**kwargs):
@@ -117,6 +120,7 @@ class ShapeViewSet(viewsets.ModelViewSet):
 
         if serializer.is_valid():
             o = serializer.save(author = self.request.user)
+            """
             try:
                 s,e = quarterRange()
                 na = NonAnswer.objects.get(country = o.country,date__gte=s,date__lte=e)
@@ -124,6 +128,7 @@ class ShapeViewSet(viewsets.ModelViewSet):
                 pass
             else:
                 na.delete()
+                """
 
             return HttpResponse(serializer.data["url"], status=status.HTTP_201_CREATED)
         else:
@@ -287,8 +292,15 @@ def nonanswer(request:HttpRequest,project:int)->HttpResponse:
         country = Country.objects.get(pk=project) 
     except Country.DoesNotExist:
         return HttpResponse(status=404)
+
+    s,e = quarterRange()
+
     try:
-        na = NonAnswer.objects.get(author=request.user,country=country)
+        na = NonAnswer.objects.get(
+                author=request.user,
+                country=country,
+                date__gte=s,
+                date__lte=e)
     except NonAnswer.DoesNotExist:
         na = NonAnswer(author=request.user,country=country)
         na.save()
@@ -313,7 +325,11 @@ def projectStatus(request: HttpRequest, project: int)->HttpResponse:
             date__gte=s,date__lte=e).count()
 
     try:
-        NonAnswer.objects.get(author=request.user,country=country)
+        NonAnswer.objects.get(
+                author=request.user,country=country,
+                date__gte = s, date__lte=e
+                )
+
     except NonAnswer.DoesNotExist:
         na = False
     else:
