@@ -89,6 +89,7 @@ const mutations = {
          intensity: created.intensity,
          confidence: created.confidence
       }
+
       state.layers.push(created)
       state.api.post("shapes",created)
    },

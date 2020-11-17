@@ -11,7 +11,7 @@ router.register(r"shapes",ShapeViewSet,basename="shape")
 router.register(r"countries",CountryViewSet,basename="country")
 
 urlpatterns = [
-    path("api/assigned/", projects),
+    path("api/assigned/", projects,name="assigned"),
     path("api/",include(router.urls)),
     path("api/updatecountries/",updateCountries,name="updatecountries"),
     path("api/whoami/",whoami),
@@ -24,6 +24,6 @@ urlpatterns = [
     #path("api/pinfo/completed/<int:pk>/",completedProject),
     path("api/calendar/",calendar),
     path("api/nonanswer/<int:project>/",nonanswer),
-    path("api/projectstatus/<int:project>/",projectStatus),
+    path("api/projectstatus/<int:project>/",projectStatus,name="projectstatus"),
     path("api/clearshapes/<int:project>/",clearShapes),
 ]

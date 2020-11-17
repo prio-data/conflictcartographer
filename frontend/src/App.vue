@@ -111,8 +111,9 @@ export default {
       const csrfToken = this.$cookies.get("csrftoken");
       const apiDef = {
          url: "/api",
-         header: {credentials: "include",
-            headers: {"X-CSRFToken": csrfToken}
+         header: {
+            credentials: "include",
+            headers: {"X-CSRFToken": csrfToken,"Content-Type":"application/json"}
          }
       }
       this.$store.commit("initApi",apiDef)

@@ -6,7 +6,7 @@ from django.db.models import ManyToManyField,OneToOneField,CASCADE,DateField,Tex
 
 from annoying.fields import AutoOneToOneField
 
-from cartographer.services import getQuarter,quarterRange
+from cartographer.services import getQuarter,quarterRange,today
 
 from utils.mixins import OnlyOneActive
 
@@ -66,7 +66,6 @@ class Answer(Model):
 
     def save(self,*args,**kwargs):
         if self.pk is None and self.date is None:
-            print(today())
             self.date = today() 
         super().save(*args,**kwargs)
 

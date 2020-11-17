@@ -69,15 +69,6 @@ def projects(request:HttpRequest)->HttpResponse:
 # ================================================
 # Shape
 
-def prepRequestData(request:HttpRequest):
-    """
-    Puts all "non-variable" data into a JSON field "values".
-    Makes the schema really flexible.
-    """
-    NONVAR = ("year","shape","quarter","author","country","vizId")
-    request.data["values"] = {k:v for k,v in request.data.items() if k not in NONVAR}
-    return request
-
 class ShapeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Shape
@@ -113,8 +104,17 @@ class ShapeViewSet(viewsets.ModelViewSet):
         return queryset
 
     def create(self,request,*args,**kwargs):
-        prepRequestData(request)
-        serializer = self.get_serializer(data = request.data)
+        #prepRequestData(request)
+        NONVAR = ("year","shape","quarter","author","country","vizId")
+
+        if not request.content_type == "application/json":
+            return HttpResponse("submitted data must be in JSON format", status=401)
+        
+        data = request.data
+        if "values" not in data.keys():
+            data["values"] = {k:v for k,v in request.data.items() if k not in NONVAR}
+        serializer = self.get_serializer(data = data)
+
         if serializer.is_valid():
             o = serializer.save(author = self.request.user)
             try:

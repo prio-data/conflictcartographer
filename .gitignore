@@ -26,3 +26,4 @@ note
 cert/*
 !cert/.keep
 penv.env
+.coverage
