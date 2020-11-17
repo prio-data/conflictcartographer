@@ -1,11 +1,11 @@
 <template>
    <div id="root">
       <div id="selectHolder" v-if="active">
-         <select name="country" v-model="selected">
+         <select id="selectbox" name="country" v-model="selected">
             <option v-for="c in choices" :value="c.pk">{{c.name}}</option>
          </select>
-         <div class="divbutton" v-on:click="dispatch">Add</div>
-         <div class="divbutton" v-on:click="active = false">X</div>
+         <div id="dispatch" class="divbutton" v-on:click="dispatch">Add</div>
+         <div id="close" class="divbutton" v-on:click="active = false">X</div>
       </div>
       <button id="addProjects" v-if="!active" v-on:click="activate">+</button>
    </div>
@@ -17,11 +17,36 @@
    display: grid
    width: 100%
 
+button#addProjects
+   border: none
+   height: $project-menu-card-height 
+   display: grid
+   place-items: center
+   font-size: 80px
+   line-height: 0
+   color: $ui-darkgray
+   background: $ui-lightgray 
+
+button#addProjects:hover
+   color: $ui-highlight
+
 #selectHolder
    display: grid
+   place-items: center
    grid-gap: $project-menu-card-gaps 
    grid-template-columns: auto $project-menu-card-button-size $project-menu-card-button-size 
-   margin-bottom: $menu-gaps
+   height: $project-menu-card-height
+   background: $ui-lightgray
+   border-radius: $roundedness
+   padding: 0 $project-menu-card-gaps
+
+#selectHolder > *
+   height: 100px 
+   width: 100%
+
+#selectbox
+   height: 105px
+   padding-left: $menu-gaps
 
 .divbutton
    background: $ui-darkgray
@@ -37,23 +62,11 @@
 
 select
    background: $ui-gray
-   height: $project-menu-card-height
    font-size: $project-menu-card-font-size 
+   padding: 0
+
 select:focus
    border: 1px solid $ui-highlight
-
-button#addProjects
-   border: none
-   height: $project-menu-card-height 
-   display: grid
-   place-items: center
-   font-size: 80px
-   line-height: 0
-   color: $ui-darkgray
-   background: $ui-lightgray 
-
-button#addProjects:hover
-   color: $ui-highlight
 
 </style>
 <script>
