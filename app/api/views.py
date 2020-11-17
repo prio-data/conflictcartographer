@@ -29,6 +29,15 @@ from api.validation import CountryFeatureCollection
 from api.forms import ProfileForm
 
 # ================================================
+# Utility views 
+
+def whoami(request):
+    """
+    Returns stored information about the user
+    """
+    return JsonResponse({"name": request.user.username, "waiver": request.user.profile.waiver})
+
+# ================================================
 # Countries 
      
 class CountryMetaSerializer(serializers.HyperlinkedModelSerializer):
@@ -60,6 +69,7 @@ def projects(request:HttpRequest)->HttpResponse:
     """
     Get list of countries assigned to current user.
     """
+
     try:
         countries = Country.objects.all().filter(assignees__pk = request.user.profile.pk)
         return Response(CountryMetaSerializer(countries,many=True,context={"request":request}).data)
@@ -142,9 +152,6 @@ class ShapeViewSet(viewsets.ModelViewSet):
         shape.save()
 
         return HttpResponse(serializer.data["url"])
-
-def whoami(request):
-    return JsonResponse({"name": request.user.username, "waiver": request.user.profile.waiver})
 
 def projectInfo(request:HttpRequest):
     verbose = request.GET.get("verbose","false") == "true"
@@ -250,6 +257,10 @@ def projectChoices(request:HttpRequest)->HttpResponse:
 
 @require_http_methods(["POST"])
 def editProjects(request:HttpRequest,action:Literal["add","remove"])->HttpResponse:
+    """
+    Endpoint for adding / removing projects from the currently assigned
+    projects field for the current user.
+    """
     try:
         data = json.loads(request.body)
         country = Country.objects.get(pk=data["pk"])
@@ -266,37 +277,34 @@ def editProjects(request:HttpRequest,action:Literal["add","remove"])->HttpRespon
     else:
         return JsonResponse({"status":"ok"})
 
-@require_http_methods(["POST"])
-def removeProject(request:HttpRequest)->HttpResponse:
-    try:
-        data = json.loads(request.body)
-        country = Country.objects.get(pk=data["pk"])
-        prof = request.user.profile
-        current = prof.countries.remove(country)
-        prof.save()
-    except Exception as e:
-        return JsonResponse({"status":"error","message":str(e)},status=500)
-    else:
-        return JsonResponse({"status":"ok"})
-
 def calendar(request:HttpRequest)->HttpResponse:
+    """ 
+    Returns the server time information used by the server to timestamp
+    answers.  
+    """
+    s,e = quarterRange()
     return JsonResponse({
         "status":"ok",
         "quarter": currentQuarter(),
-        "year": currentYear()
+        "year": currentYear(),
+        "starts": str(s),
+        "ends": str(e)
     })
 
 @require_http_methods(["POST"])
 def nonanswer(request:HttpRequest,project:int)->HttpResponse:
+    """
+    Endpoint for toggling nonanswer status for a given project.
+    """
     try:
         country = Country.objects.get(pk=project) 
     except Country.DoesNotExist:
         return HttpResponse(status=404)
 
     s,e = quarterRange()
-
     try:
         na = NonAnswer.objects.get(
+                
                 author=request.user,
                 country=country,
                 date__gte=s,
@@ -310,6 +318,11 @@ def nonanswer(request:HttpRequest,project:int)->HttpResponse:
         return JsonResponse({"status":"ok","nonanswer":False})
 
 def projectStatus(request: HttpRequest, project: int)->HttpResponse:
+    """
+    Returns current status on a project for a user.
+    Used to display details about project progression.
+    """
+
     if not request.user.is_authenticated:
         return HttpResponse(status=403)
 
@@ -329,7 +342,6 @@ def projectStatus(request: HttpRequest, project: int)->HttpResponse:
                 author=request.user,country=country,
                 date__gte = s, date__lte=e
                 )
-
     except NonAnswer.DoesNotExist:
         na = False
     else:
@@ -341,6 +353,9 @@ def projectStatus(request: HttpRequest, project: int)->HttpResponse:
         })
 
 def clearShapes(request: HttpRequest, project: int)->HttpResponse:
+    """
+    Clear all shapes for a project.
+    """
     try:
         country = Country.objects.get(pk=project) 
     except Country.DoesNotExist:
