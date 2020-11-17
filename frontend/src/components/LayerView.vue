@@ -135,7 +135,7 @@ button:hover .trashicon
 
       methods: {
          changed(){
-            this.$emit("changed")
+            this.$emit("change")
             if(this.nagging){
                this.nagging = false
             }
