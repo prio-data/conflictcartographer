@@ -1,5 +1,5 @@
 <template>
-   <div id="container">
+   <div :class="{'noticeme': !completed}" id="container">
       <div id="actions">
          <div id="drawshapes" class="divbutton" v-on:click="$emit('chosen')">Draw shapes</div>
          <div id="noconflict" class="divbutton" v-on:click="nonanswer" v-if="!hasShapes">No conflict</div>
@@ -23,7 +23,8 @@
 </template>
 
 <style lang="sass" scoped> 
-@import "../sass/variables.sass"
+@import "@/sass/variables"
+@import "@/sass/animations"
 
 #errors
    color: red 
@@ -36,6 +37,9 @@
    background: $ui-gray
    border-radius: $roundedness
    padding: 0 $project-menu-card-gaps
+
+.noticeme
+   animation: nagging 1s infinite
 
 #actions
    display: grid

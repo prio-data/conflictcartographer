@@ -35,7 +35,8 @@
 </template>
 
 <style scoped lang="sass">
-@import "../sass/variables.sass"
+@import "@/sass/variables.sass"
+@import "@/sass/animations.sass"
 
 .layerview
    display: grid
@@ -45,16 +46,8 @@
    margin-bottom: $menu-gaps
    border-bottom: 4px solid $ui-darkgray
 
-@keyframes pulse
-   0%
-      background: $ui-gray 
-   50%
-      background: white 
-   100%
-      background: $ui-gray 
-
 .noticeme
-   animation: pulse 1s ease-in-out infinite
+   animation: nagging 1s ease-in-out infinite
 
 .header button
    width: 25px 
