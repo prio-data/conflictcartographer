@@ -6,10 +6,12 @@ module.exports = {
    roots: ["<rootDir>/tests/","<rootDir>/src/"],
    moduleFileExtensions: ["js","vue"],
    moduleNameMapper: {
-      "^@/(.*)$": "<rootDir>/src/$1"
+      "^@/(.*)$": "<rootDir>/src/$1",
+      "\\.(css|sass)$":"<rootDir>/src/stylestub.js"
    },
    transform: {
       "^.+\\.js$": "babel-jest",
       "^.+\\.vue$": "vue-jest",
+      ".+\\.(gif|png|jpg|svg|ttf|woff|woff2)$": "jest-transform-stub"
    }
 }

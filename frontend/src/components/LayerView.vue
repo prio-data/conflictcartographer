@@ -11,11 +11,10 @@
       <div class="controls">
          <div class="sliders">
             <p>Expected no. of casualties</p>
-            <div id="intensity" v-for="choice in choices" v-bind:key="choice.key">
+            <div class="intensityControl" v-for="choice in choices" v-bind:key="choice.key">
                <input 
                   v-on:change= "changed" 
-                  v-model="layer.intensity" 
-                  :name="choice.key" 
+                  v-model="layer.values.intensity" 
                   :value="choice.value" 
                   type="radio">
                <label :for="choice.key">{{choice.key}} casualties</label>
@@ -24,7 +23,7 @@
             <vue-slider
                ref="slider2"
                v-on:change = "changed"
-               v-model="layer.confidence"
+               v-model="layer.values.confidence"
                :min="confidence_min"
                :max="confidence_max"
                :interval="confidence_interval"
@@ -68,7 +67,7 @@
    margin-bottom: 0px
 
 // Radio controls
-div#intensity
+div.intensityControl
    display: grid
    grid-template-columns: 30px auto
    font-size: 18px
@@ -104,6 +103,7 @@ button:hover .trashicon
    import vueSlider from "vue-slider-component" 
    import "vue-slider-component/theme/antd.css"
    import trashicon from "../images/trash2.svg"
+   import debounce from "@/util/debounce"
 
    export default {
       name: "layer-view",
@@ -127,25 +127,22 @@ button:hover .trashicon
       },
 
       methods: {
-         changed(){
-            this.$emit("change")
-            if(this.nagging){
-               this.nagging = false
-            }
-         },
-      },
+         changed: debounce(function(){
+            this.$store.state.api.put_abs(this.layer.url,this.layer)
+               .then((r)=>{
+                  if(this.nagging){
+                     this.nagging = false
+                  }
+               })
+               .catch((e)=>{
+                  console.log(e)
+               })
 
-      computed: {
-         lower_deaths(){
-            return this.layer.intensity 
-         },
-         upper_deaths(){
-            return this.layer.intensity
-         },
+         }, 500),
       },
 
       mounted(){
-         if(this.layer.confidence == 50 && this.layer.intensity == 0){
+         if(this.layer.values.confidence == 50 && this.layer.values.intensity == 0){
             this.nagging = true
          }
       }

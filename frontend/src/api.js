@@ -27,12 +27,26 @@ const Api = function(url, header){
       return Axios.get(this.geturl(path),parameters)
    }
 
-   this.gpost = function(path,payload,parameters){
+   this.gpost = function(url,payload,parameters){
       return Axios.post(
-         this.geturl(path),
+         url,
          JSON.stringify(payload),
          {...parameters, ...this.header}
       )
+   }
+   this.agpost = this.gpost
+   this.gpost = function(path,...args){
+      return this.gpost(this.geturl(path),...args)
+   }
+
+   this.put = function(url,payload,parameters){
+      return Axios.put(
+         url,payload,{...parameters, ...this.header}
+      )
+   }
+   this.put_abs = this.put
+   this.put = function(path,...args){
+      return this.gput(this.geturl(path),...args)
    }
 
    this.getAbs = function(url, callback, parameters){
@@ -43,35 +57,6 @@ const Api = function(url, header){
             },
             function(error){
                console.log(error)
-            });
-   }
-
-   this.put = function(obj,payload,pk){
-      let url = this._path(this.url,obj,pk);
-      Vue.http.put(url,payload,this.header)
-         .then(
-            function(response){
-               if(typeof(payload) !== "list"){
-                  payload.pk = Number(response.body)
-               }
-            },
-            function(error){
-               console.log(error)
-               console.log(payload)
-            });
-   }
-
-   this.putAbs = function(url,payload){
-      Vue.http.put(url,payload,this.header)
-         .then(
-            function(response){
-               if(typeof(payload) !== "list"){
-                  payload.pk = Number(response.body)
-               }
-            },
-            function(error){
-               console.log(error)
-               console.log(payload)
             });
    }
 

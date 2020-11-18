@@ -95,10 +95,6 @@ const mutations = {
    },
 
    updateLayer: debounce(function(state,updated){
-      updated.values = {
-         intensity: updated.intensity,
-         confidence: updated.confidence
-      }
       state.api.putAbs(updated.url,updated)
    },400),
 
