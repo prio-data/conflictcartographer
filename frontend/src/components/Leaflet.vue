@@ -46,8 +46,8 @@
       methods: {
          computeStyle: function(layer){
             let base = {
-               color: colorGradient((layer.intensity)/5,this.color1,this.color2), 
-               fillOpacity: 0.4+((layer.confidence / 100)*0.4)
+               color: colorGradient((layer.values.intensity)/5,this.color1,this.color2), 
+               fillOpacity: 0.4+((layer.values.confidence / 100)*0.4)
             }
             if(layer.vizId == this.focused){
                base.weight = 5
