@@ -25,6 +25,7 @@
     "@vue/test-utils": "^1.1.1",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "10.0.3",
+    "canvas": "^2.6.1",
     "cookies": "0.8.0",
     "eslint": "5.16.0",
     "eslint-plugin-vue": "5.2.3",

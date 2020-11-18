@@ -30,7 +30,7 @@
          LMap,
          LGeoJson
       },
-      props: ["layers"],
+      props: ["layers","infocus"],
 
       data: function(){
          return{
@@ -40,6 +40,7 @@
             mapOpts: {
                zoomSnap: 1
             },
+            mask: {}
          }
       },
 
@@ -49,7 +50,7 @@
                color: colorGradient((layer.values.intensity)/5,this.color1,this.color2), 
                fillOpacity: 0.4+((layer.values.confidence / 100)*0.4)
             }
-            if(layer.vizId == this.focused){
+            if(layer.url == this.infocus){
                base.weight = 5
             } else {
                base.weight = 0.1
@@ -59,9 +60,6 @@
       },
 
       computed: {
-         focused: function(){
-            return this.$store.state.infocus;
-         },
          color1: function(){
             return this.$store.state.color_low
          },
@@ -75,23 +73,12 @@
          map.zoomSnap = 0.1
 
          const mask = this.$store.getters.projectShape
+         this.mask = mask
 
          this.$nextTick(function(){
 
             const store = this.$store;
             this.map = map;
-
-
-            // Disable all movement 
-            //this.map.touchZoom.disable();
-            //this.map.doubleClickZoom.disable();
-            //this.map.scrollWheelZoom.disable();
-            //this.map.dragging.disable();
-
-            // Remove zoom control
-
-            //this.map.zoomControl.remove();
-
             // Add draw control
             this.drawnItems = new L.FeatureGroup();
             this.map.addControl(new L.Control.Draw({
@@ -125,9 +112,10 @@
             })
 
             // Add event listener
-            map.on(L.Draw.Event.CREATED, function(e){
+            map.on(L.Draw.Event.CREATED,(e)=>{
                let layer = e.layer.toGeoJSON()
-               store.dispatch("createLayer",layer);
+               this.$emit("created",e.layer.toGeoJSON())
+               //store.dispatch("createLayer",layer);
             })
          });
 

@@ -27,7 +27,7 @@ const Api = function(url, header){
       return Axios.get(this.geturl(path),parameters)
    }
 
-   this.gpost = function(url,payload,parameters){
+   this.base_gpost = function(url,payload,parameters){
       return Axios.post(
          url,
          JSON.stringify(payload),
@@ -36,17 +36,27 @@ const Api = function(url, header){
    }
    this.agpost = this.gpost
    this.gpost = function(path,...args){
-      return this.gpost(this.geturl(path),...args)
+      return this.base_gpost(this.geturl(path),...args)
    }
 
-   this.put = function(url,payload,parameters){
+   this.base_put = function(url,payload,parameters){
       return Axios.put(
          url,payload,{...parameters, ...this.header}
       )
    }
-   this.put_abs = this.put
+   this.put_abs = this.base_put
    this.put = function(path,...args){
-      return this.gput(this.geturl(path),...args)
+      return this.base_put(this.geturl(path),...args)
+   }
+
+   this.base_del= function(url,parameters){
+      return Axios.delete(
+         url,{...parameters, ...this.header}
+      )
+   }
+   this.del_abs = this.base_del
+   this.del = function(path,...args){
+      return this.base_del(this.geturl(path),...args)
    }
 
    this.getAbs = function(url, callback, parameters){
@@ -54,27 +64,6 @@ const Api = function(url, header){
          .then(
             function(response){
                callback(response.body);
-            },
-            function(error){
-               console.log(error)
-            });
-   }
-
-   this.del = function(obj,pk){
-      let url = this._path(this.url,obj,pk);
-      Vue.http.delete(url,this.header).then(
-            function(response){
-               //
-            },
-            function(error){
-               console.log(error)
-            });
-   }
-
-   this.delAbs = function(url){
-      Vue.http.delete(url,this.header).then(
-            function(response){
-               //
             },
             function(error){
                console.log(error)

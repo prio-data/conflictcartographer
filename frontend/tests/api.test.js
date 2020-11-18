@@ -8,6 +8,9 @@ import { Api } from "@/testutils"
 
 import Calendar from "@/components/Calendar"
 import LayerView from "@/components/LayerView"
+import MapEditor from "@/components/MapEditor"
+
+import * as L from "leaflet"
 
 test("Calendar API mocking POC", async ()=>{
    let api = new Api({
@@ -22,7 +25,7 @@ test("Calendar API mocking POC", async ()=>{
          $store: {
             state: {
                api: api 
-            }
+            },
          }
       }
    })
@@ -83,4 +86,45 @@ test("Layer view update posting", async ()=>{
       expect(payload.url).toBe(stupidUrl)
       expect(payload.values.confidence).toBe(50)
    }
+})
+
+test("Test api post on layer create", async ()=>{
+
+   let api = new Api({"shape":{}})
+
+   let c = mount(MapEditor,{
+      mocks: {
+         $store: {
+            state: {
+               api: api,
+               projectDetails: {
+               },
+               currentProject: {
+                  url: "http://my.cool.site"
+               }
+           },
+           dispatch(){
+           },
+           getters: {
+              projectShape: {
+                 type: "MultiPolygon",
+                 coordinates: [[[[-110.33,24.40],[-110.31,24.43],[-110.29,24.48],[-110.37,24.58],[-110.40,24.56],[-110.33,24.40]]]]
+              }
+           }
+         }
+      }
+   })
+   await flushPromises()
+
+   let lmap = c.get("#map")
+   lmap.vm.$emit("created",{
+      shape: {},
+      values: {
+         intensity: 0,
+         confidence: 50
+      },
+   })
+
+   await flushPromises()
+   expect(api.calls).toHaveLength(1)
 })

@@ -1,10 +1,7 @@
 <template>
-   <div
-      v-on:mouseenter ="$emit('mouseover')"
-      v-on:mouseleave ="$emit('onmouseout')" class="layerview"
-      :class="{noticeme: nagging}">
+   <div class="layerview" :class="{noticeme: nagging}" v-on:mouseover="focus">
       <div class="header">
-         <button v-on:click="$emit('deleteMe')">
+         <button v-on:click="deleteme">
             <img class="trashicon" :src="trashicon">
          </button>
       </div>
@@ -19,7 +16,7 @@
                   type="radio">
                <label :for="choice.key">{{choice.key}} casualties</label>
             </div>
-            <p>Confidence: {{layer.confidence}}%</p>
+            <p>Confidence: {{layer.values.confidence}}%</p>
             <vue-slider
                ref="slider2"
                v-on:change = "changed"
@@ -36,6 +33,9 @@
 <style scoped lang="sass">
 @import "@/sass/variables.sass"
 @import "@/sass/animations.sass"
+
+#mousesensor
+   display: k
 
 .layerview
    display: grid
@@ -55,9 +55,6 @@
    border: none
    float: right
    background: $ui_remove_1
-
-.header:hover button
-   background: $ui_remove_2 
 
 .controls
    font-size: 20px
@@ -83,9 +80,6 @@ div.intensityControl
 //div.controls
    display: none
 
-.layerview:hover div.controls
-   display: inline
-
 .trashicon
    display:none
    padding-top: 2px
@@ -93,8 +87,10 @@ div.intensityControl
    max-height: 80%
    filter: opacity(0)
 
-button:hover .trashicon
+button:hover>.trashicon
    filter: opacity(0.4)
+button:hover
+   background: $ui_remove_2 
 
 </style>
 
@@ -106,7 +102,7 @@ button:hover .trashicon
    import debounce from "@/util/debounce"
 
    export default {
-      name: "layer-view",
+      name: "LayerView",
       props: ["layer"],
       components: {vueSlider},
       data: function(){
@@ -139,12 +135,30 @@ button:hover .trashicon
                })
 
          }, 500),
+
+         deleteme(){
+            this.$store.state.api.del_abs(this.layer.url)
+               .then((r)=>{
+                  this.$emit("deleted",this.layer.url)
+               })
+               .catch((e)=>{
+                  console.log(e)
+               })
+         },
+
+         focus(e){
+            if(e.target == this.$el){
+               this.$emit("focus",this.layer)
+            }
+         },
       },
 
       mounted(){
          if(this.layer.values.confidence == 50 && this.layer.values.intensity == 0){
             this.nagging = true
          }
-      }
+      },
+
+
    }
 </script>
