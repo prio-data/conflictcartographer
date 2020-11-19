@@ -113,19 +113,22 @@ h1#menuheader
 
       methods: {
          chosen: function(project){
-            this.$store.dispatch("chooseProject",project)
+            this.$emit("projectSelected",project)
          },
          refreshProjects(){
             this.projectsLoaded = false
-            this.$store.state.api.get("assigned",(r)=>{
-               this.projects = r
-               this.projects = this.projects.sort((a,b)=>{ 
-                  if(a.name < b.name){return -1}
-                  if(a.name > b.name){return 1}
-                  return 0
+            this.$store.state.api.get.rel("assigned")
+               .then((r)=>{
+                  this.projects = r.data
+                  this.projects = this.projects.sort((a,b)=>{ 
+                     if(a.name < b.name){return -1}
+                     if(a.name > b.name){return 1}
+                     return 0
+                  })
+                  this.projectsLoaded = true})
+               .catch((e)=>{
+                  console.log(e)
                })
-               this.projectsLoaded = true
-            })
          }
       },
 
@@ -133,14 +136,7 @@ h1#menuheader
          let api = this.$store.state.api
 
          this.refreshProjects()
-         /*
-         api.get("assigned",(r)=>{
-            this.projects = r
-            this.projectsLoaded = true
-         })
-         */
-
-         api.gget("whoami")
+         api.get.rel("whoami")
             .then((r)=>{
                this.profile = r.data
                this.profileLoaded = true

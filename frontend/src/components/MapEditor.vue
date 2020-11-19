@@ -1,13 +1,12 @@
 <template>
    <div id="mapeditor" class="row">
-      <div v-if="projectDetails">
-            
+      <div v-if="projectShape">
          <div id="mainwindow">
             <Leaflet id="map"
-               v-if="projectDetails"
                v-on:created="created"
                :layers="layers"
                :infocus="infocus"
+               :mask="projectShape"
                /> 
          </div>
          <div id="toolbarContainer">
@@ -81,57 +80,54 @@ export default {
 
    data(){
       return {
-         defaultValues: {
-            intensity: 5,
-            confidence: 5
-         },
          infocus: "",
-      }
-   },
-
-   computed: {
-      projectDetails(){
-         return this.$store.state.projectDetails
-      },
-      layers(){
-         return this.$store.state.layers
+         layers: [],
+         projectShape: undefined 
       }
    },
 
    mounted: function(){
-      this.$store.dispatch("initializeLayers")
+      this.$store.state.api.get.abs(this.project.url)
+         .then((r)=>{
+            this.projectShape = r.data.shape
+            this.$store.state.api.get.rel("shapes",{params: {country: this.project.gwno}})
+               .then((r)=>{
+                  this.layers = r.data
+               })
+               .catch((e)=>{
+                  console.log(e)
+               })
+
+         })
+         .catch((e)=>{
+            console.log(e)
+         })
    },
 
    methods: {
       deleteLayer(layer){
-         let layers = this.$store.state.layers
-         let i = layers.indexOf(layers.find((lyr)=>lyr.url == layer.url))
+         let i = this.layers.indexOf(this.layers.find((lyr)=>lyr.url == layer.url))
          if(i > -1){
-            layers.splice(i,1)
+            this.layers.splice(i,1)
          } else {
             console.log(i)
          }
       },
 
       created(feature){
-         let state = this.$store.state
-         //state.vizId ++
-
          let toPost = {
             shape: feature, 
             values: {
-               intensity: state.defaultIntensity,
-               confidence: state.defaultConfidence,
+               intensity: this.$store.state.defaultIntensity,
+               confidence: this.$store.state.defaultConfidence,
             },
-            author: `${window.location}api/users/state.sessionInfo.uk/`,
-            country: state.currentProject.url,
-            //vizId: state.vizId
+            country: this.project.url 
          }
 
-         this.$store.state.api.gpost("shapes",toPost)
+         this.$store.state.api.post.rel("shapes",{data:toPost})
             .then((r)=>{
                toPost.url = r.data
-               this.$store.state.layers.push(toPost)
+               this.layers.push(toPost)
             })
             .catch((e)=>{
             })

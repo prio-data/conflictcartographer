@@ -35,7 +35,7 @@ export default {
       }
    },
    mounted(){
-      this.$store.state.api.gget("currentproject")
+      this.$store.state.api.get.rel("currentproject")
          .then((r)=>{
             this.title = r.data.title
             this.description = r.data.description

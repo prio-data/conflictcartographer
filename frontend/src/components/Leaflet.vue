@@ -30,7 +30,7 @@
          LMap,
          LGeoJson
       },
-      props: ["layers","infocus"],
+      props: ["layers","infocus","mask"],
 
       data: function(){
          return{
@@ -40,7 +40,6 @@
             mapOpts: {
                zoomSnap: 1
             },
-            mask: {}
          }
       },
 
@@ -71,15 +70,13 @@
       mounted: function(){
          const map = this.$refs.map.mapObject;
          map.zoomSnap = 0.1
-
-         const mask = this.$store.getters.projectShape
-         this.mask = mask
-
          this.$nextTick(function(){
 
             const store = this.$store;
             this.map = map;
+
             // Add draw control
+
             this.drawnItems = new L.FeatureGroup();
             this.map.addControl(new L.Control.Draw({
                draw: {
@@ -113,9 +110,7 @@
 
             // Add event listener
             map.on(L.Draw.Event.CREATED,(e)=>{
-               let layer = e.layer.toGeoJSON()
                this.$emit("created",e.layer.toGeoJSON())
-               //store.dispatch("createLayer",layer);
             })
          });
 
@@ -127,11 +122,11 @@
          map.addLayer(osm);
 
          const masked = new L.TileLayer.BoundaryCanvas(this.url,{
-            boundary: mask,
+            boundary: this.mask,
             id: "countrytiles"
          })
          map.addLayer(masked);
-         const box = bbox(mask)
+         const box = bbox(this.mask)
          const getbox = (box) => [[box[3],box[0]],[box[1],box[2]]]
          const latlng = L.latLngBounds(getbox(box))
 

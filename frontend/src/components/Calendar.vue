@@ -94,7 +94,7 @@ export default {
       }
    },
    mounted(){
-      this.$store.state.api.gget("calendar")
+      this.$store.state.api.get.rel("calendar")
          .then((r)=>{
             let d = r.data
             this.year = d.year

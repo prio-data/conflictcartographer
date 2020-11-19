@@ -11,8 +11,7 @@ function Api(endpoints){
    }
 
    this.mockResponseFactory = (type) => {
-      return async function(path, ...args){
-         
+      return async (path, args)=>{
          this.calls.push({
             path: path,
             type: type,
@@ -24,17 +23,29 @@ function Api(endpoints){
       }
    }
 
-   this.gget = this.mockResponseFactory("get")
-   this.get_abs = this.gget
+   this.get = {
+      abs: this.mockResponseFactory("get"),
+      rel: this.mockResponseFactory("get"),
+   }
    this.gets = this.typeGetterFactory("get")
 
-   this.gpost = this.mockResponseFactory("post")
-   this.post_abs = this.gpost
+   this.post = {
+      abs: this.mockResponseFactory("post"),
+      rel: this.mockResponseFactory("post"),
+   }
    this.posts = this.typeGetterFactory("post")
 
-   this.put = this.mockResponseFactory("put")
-   this.put_abs = this.put
+   this.put = {
+      abs: this.mockResponseFactory("put"),
+      rel: this.mockResponseFactory("put"),
+   }
    this.puts = this.typeGetterFactory("put")
+
+   this.del = {
+      abs: this.mockResponseFactory("delete"),
+      rel: this.mockResponseFactory("delete"),
+   }
+   this.dels = this.typeGetterFactory("delete")
 }
 
 

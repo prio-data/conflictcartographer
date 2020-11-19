@@ -124,7 +124,7 @@ button:hover
 
       methods: {
          changed: debounce(function(){
-            this.$store.state.api.put_abs(this.layer.url,this.layer)
+            this.$store.state.api.put.abs(this.layer.url,{data: this.layer})
                .then((r)=>{
                   if(this.nagging){
                      this.nagging = false
@@ -137,7 +137,7 @@ button:hover
          }, 500),
 
          deleteme(){
-            this.$store.state.api.del_abs(this.layer.url)
+            this.$store.state.api.del.abs(this.layer.url)
                .then((r)=>{
                   this.$emit("deleted",this.layer.url)
                })

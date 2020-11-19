@@ -10,8 +10,6 @@ import Calendar from "@/components/Calendar"
 import LayerView from "@/components/LayerView"
 import MapEditor from "@/components/MapEditor"
 
-import * as L from "leaflet"
-
 test("Calendar API mocking POC", async ()=>{
    let api = new Api({
       calendar: {
@@ -82,7 +80,7 @@ test("Layer view update posting", async ()=>{
       await flushPromises()
       expect(api.puts()).toHaveLength(1)
 
-      let payload = api.calls.pop().args[0]
+      let payload = api.calls.pop().args.data
       expect(payload.url).toBe(stupidUrl)
       expect(payload.values.confidence).toBe(50)
    }
@@ -90,29 +88,29 @@ test("Layer view update posting", async ()=>{
 
 test("Test api post on layer create", async ()=>{
 
-   let api = new Api({"shape":{}})
+   let api = new Api({"http://get.my.shape/1/":{
+      shape: {
+         type: "MultiPolygon",
+         coordinates: [[[[-110.33,24.40],[-110.31,24.43],[-110.29,24.48],[-110.37,24.58],[-110.40,24.56],[-110.33,24.40]]]]
+      },
+      url: "http://get.my.shape/1/"
+   }})
 
    let c = mount(MapEditor,{
+      propsData: {
+         project: {
+            url: "http://get.my.shape/1/",
+            gwno: 10,
+            name: "Somewhere"
+         }
+      },
       mocks: {
          $store: {
             state: {
                api: api,
-               projectDetails: {
-               },
-               currentProject: {
-                  url: "http://my.cool.site"
-               }
-           },
-           dispatch(){
-           },
-           getters: {
-              projectShape: {
-                 type: "MultiPolygon",
-                 coordinates: [[[[-110.33,24.40],[-110.31,24.43],[-110.29,24.48],[-110.37,24.58],[-110.40,24.56],[-110.33,24.40]]]]
-              }
-           }
+            },
          }
-      }
+      },
    })
    await flushPromises()
 
@@ -126,5 +124,5 @@ test("Test api post on layer create", async ()=>{
    })
 
    await flushPromises()
-   expect(api.calls).toHaveLength(1)
+   expect(api.posts()).toHaveLength(1)
 })
