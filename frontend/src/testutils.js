@@ -19,7 +19,7 @@ function Api(endpoints){
             response: endpoints[path]
          })
 
-         return Promise.resolve({data: endpoints[path]})
+         return Promise.resolve({data: endpoints[type][path]})
       }
    }
 

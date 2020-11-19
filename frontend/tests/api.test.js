@@ -2,7 +2,7 @@ jest.mock("@/util/debounce")
 
 import flushPromises from "flush-promises"
 
-import {mount} from "@vue/test-utils"
+import {mount,shallowMount} from "@vue/test-utils"
 import { Api } from "@/testutils"
 
 
@@ -12,9 +12,11 @@ import MapEditor from "@/components/MapEditor"
 
 test("Calendar API mocking POC", async ()=>{
    let api = new Api({
-      calendar: {
-         "year": 1999,
-         "quarter": 1
+      get:{
+         calendar: {
+            "year": 1999,
+            "quarter": 1
+         }
       }
    })
 
@@ -49,7 +51,12 @@ test("Layer view update posting", async ()=>{
    let stupidUrl = "http://foo.bar.baz/1/"
 
    let api = new Api({
-      "shape": {}
+      get: {
+         "shape": {}
+      },
+      put: {
+         "http://foo.bar.baz/1/": ""
+      }
    })
 
    const wrapper = mount(LayerView,{
@@ -87,27 +94,39 @@ test("Layer view update posting", async ()=>{
 })
 
 test("Test api post on layer create", async ()=>{
-
-   let api = new Api({"http://get.my.shape/1/":{
-      shape: {
-         type: "MultiPolygon",
-         coordinates: [[[[-110.33,24.40],[-110.31,24.43],[-110.29,24.48],[-110.37,24.58],[-110.40,24.56],[-110.33,24.40]]]]
+   let api = new Api({
+      get: {
+         "http://get.my.shape/1/":{
+            shape: {
+               type: "MultiPolygon",
+               coordinates: [[[[-110.33,24.40],[-110.31,24.43],[-110.29,24.48],[-110.37,24.58],[-110.40,24.56],[-110.33,24.40]]]]
+            },
+            url: "http://get.my.shape/1/"
+            },
+         "shapes": [],
+         "shapes/?country=1":{data:[]}
       },
-      url: "http://get.my.shape/1/"
-   }})
+      post: {
+         "shapes": "http://posted.shape/1/"
+      }
+   })
 
-   let c = mount(MapEditor,{
+   let c = shallowMount(MapEditor,{
       propsData: {
          project: {
             url: "http://get.my.shape/1/",
             gwno: 10,
             name: "Somewhere"
-         }
+         },
       },
       mocks: {
          $store: {
             state: {
                api: api,
+               defaultConfidence: 50,
+               defaultIntensity: 0,
+               color_low: "#2b83ba",
+               color_high: "#d7191c",
             },
          }
       },
@@ -115,14 +134,26 @@ test("Test api post on layer create", async ()=>{
    await flushPromises()
 
    let lmap = c.get("#map")
-   lmap.vm.$emit("created",{
-      shape: {},
+   let f = {"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[-80.396942,21.94384],[-80.451892,20.849762],[-81.891572,21.310885],[-81.781673,22.167767],[-80.396942,21.94384]]]}}
+   lmap.vm.$emit("created",f)
+
+   await flushPromises()
+   expect(c.vm.layers).toHaveLength(1)
+   expect(api.posts()).toHaveLength(1)
+
+   //let payload = api.posts()[0].args.data
+   //expect(
+
+   /*
+   expect(payload).toMatchObject({
+      country: "http://get.my.shape/1/",
+      shape: [f],
       values: {
          intensity: 0,
          confidence: 50
       },
+      url: "http://posted.shape/1/"
    })
+   */
 
-   await flushPromises()
-   expect(api.posts()).toHaveLength(1)
 })
