@@ -131,7 +131,7 @@ export default { name: "ProjectView",
 
    methods: {
       deselect(){
-         this.$store.state.api.gpost("editprojects/remove",{"pk":this.project.gwno})
+         this.$store.state.api.post.rel("editprojects/remove",{data: {"pk":this.project.gwno}})
             .then((r)=>{
                this.$emit("deselected")
             })
@@ -140,7 +140,7 @@ export default { name: "ProjectView",
          })
       },
       nonanswer(){
-         this.$store.state.api.gpost(`nonanswer/${this.project.gwno}`)
+         this.$store.state.api.post.rel(`nonanswer/${this.project.gwno}`)
             .then((r)=>{
                this.$emit("deselected")
             })
@@ -149,7 +149,7 @@ export default { name: "ProjectView",
             })
       },
       clear(){
-         this.$store.state.api.gpost(`clearshapes/${this.project.gwno}`)
+         this.$store.state.api.post.rel(`clearshapes/${this.project.gwno}`)
             .then((r)=>{
                this.$emit("deselected")
             })
@@ -160,7 +160,7 @@ export default { name: "ProjectView",
    },
 
    mounted(){
-      this.$store.state.api.gget(`projectstatus/${this.project.gwno}`)
+      this.$store.state.api.get.rel(`projectstatus/${this.project.gwno}`)
          .then((r)=>{
             this.status = r.data
             this.loaded = true

@@ -30,7 +30,7 @@
          LMap,
          LGeoJson
       },
-      props: ["layers"],
+      props: ["layers","infocus","mask"],
 
       data: function(){
          return{
@@ -49,7 +49,7 @@
                color: colorGradient((layer.values.intensity)/5,this.color1,this.color2), 
                fillOpacity: 0.4+((layer.values.confidence / 100)*0.4)
             }
-            if(layer.vizId == this.focused){
+            if(layer.url == this.infocus){
                base.weight = 5
             } else {
                base.weight = 0.1
@@ -59,9 +59,6 @@
       },
 
       computed: {
-         focused: function(){
-            return this.$store.state.infocus;
-         },
          color1: function(){
             return this.$store.state.color_low
          },
@@ -73,26 +70,13 @@
       mounted: function(){
          const map = this.$refs.map.mapObject;
          map.zoomSnap = 0.1
-
-         const mask = this.$store.getters.projectShape
-
          this.$nextTick(function(){
 
             const store = this.$store;
             this.map = map;
 
-
-            // Disable all movement 
-            //this.map.touchZoom.disable();
-            //this.map.doubleClickZoom.disable();
-            //this.map.scrollWheelZoom.disable();
-            //this.map.dragging.disable();
-
-            // Remove zoom control
-
-            //this.map.zoomControl.remove();
-
             // Add draw control
+
             this.drawnItems = new L.FeatureGroup();
             this.map.addControl(new L.Control.Draw({
                draw: {
@@ -125,9 +109,8 @@
             })
 
             // Add event listener
-            map.on(L.Draw.Event.CREATED, function(e){
-               let layer = e.layer.toGeoJSON()
-               store.dispatch("createLayer",layer);
+            map.on(L.Draw.Event.CREATED,(e)=>{
+               this.$emit("created",e.layer.toGeoJSON())
             })
          });
 
@@ -139,11 +122,11 @@
          map.addLayer(osm);
 
          const masked = new L.TileLayer.BoundaryCanvas(this.url,{
-            boundary: mask,
+            boundary: this.mask,
             id: "countrytiles"
          })
          map.addLayer(masked);
-         const box = bbox(mask)
+         const box = bbox(this.mask)
          const getbox = (box) => [[box[3],box[0]],[box[1],box[2]]]
          const latlng = L.latLngBounds(getbox(box))
 

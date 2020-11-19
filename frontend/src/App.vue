@@ -11,7 +11,7 @@
             v-bind:project="currentProject"
             />
          <ProjectMenu 
-            :projects="projects"
+            v-on:projectSelected="projectSelected"
             v-else/>
          <Monogram/>
          <Modal 
@@ -68,33 +68,18 @@ export default {
       return {
          showMenuInfo: false,
          state: "loading",
-         error: ""
+         error: "",
+         currentProject: null
       }
-   },
-
-   computed: {
-
-      currentUser: function(){
-         return this.$store.state.sessionInfo.uk;
-      },
-
-      currentProject: function(){
-         return this.$store.state.currentProject;
-      },
-
-      menustatus: function(){
-         return this.$store.state.menustatus;
-      },
-
-      projects: function(){
-         return this.$store.state.projects
-      }
-
    },
 
    methods: {
       backToMenu: function(){
-         this.$store.dispatch("backToMenu")
+         this.currentProject = null
+      },
+
+      projectSelected(p){
+         this.currentProject = p
       },
 
       logout: function(){
@@ -108,19 +93,9 @@ export default {
    },
 
    beforeMount: function(){
-      const csrfToken = this.$cookies.get("csrftoken");
-      const apiDef = {
-         url: "/api",
-         header: {
-            credentials: "include",
-            headers: {"X-CSRFToken": csrfToken,"Content-Type":"application/json"}
-         }
-      }
-      this.$store.commit("initApi",apiDef)
-      
-      this.$store.state.api.gget("currentproject",{params:{verbose:false}})
+      this.$store.commit("initApi",this.$cookies.get("csrftoken"))
+      this.$store.state.api.get.rel("currentproject",{params:{verbose:false}})
          .then((r)=>{
-            this.$store.commit("setProjectInfo",r.data)
             this.state = "loaded"
          })
          .catch((e)=>{
@@ -130,7 +105,6 @@ export default {
 
 
       let sessionInfo = JSON.parse(document.getElementById("sessionInfo").textContent);
-      this.$store.commit("setSessionInfo",sessionInfo);
    },
 
    mounted: function(){

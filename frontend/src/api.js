@@ -4,87 +4,38 @@ import Axios from "axios"
 
 Vue.use(VueResource);
 
-const Api = function(url, header){
-   this.url = url
+const path = (...args)=> [...args].join("/")+"/"
 
-   this.header = header
-   this._path = (...args) => [...args].join("/") + "/"
-   this.geturl = (path) => this._path(this.url,path)
+const Api = function(csrftoken){
+   this.url = "/api" 
 
-   this.get = function(obj,callback,parameters){
-      let url = this._path(this.url,obj);
-      Vue.http.get(url,{params: {format: "json", ...parameters}},this.header)
-         .then(
-            function(response){
-               callback(response.body);
-            },
-            function(error){
-               console.log(error)
-            });
+   this.staticArgs = {
+      credentials: "include",
+      headers: {
+         "X-CSRFToken": csrftoken,
+         "Content-Type": "application/json"
+      }
    }
 
-   this.gget = function(path,parameters){
-      return Axios.get(this.geturl(path),parameters)
+   this._requestSet = (method)=>{
+      //return function(url,...args){
+      let rq = (url,...args)=>{
+         args = {...this.staticArgs, ...args[0]}
+         return Axios({method: method, url: url,...args})
+      }
+      return {
+         rel: (url,...args)=>{
+            return rq(path(this.url,url),...args)
+         },
+         abs: rq
+      }
+      //}
    }
 
-   this.base_gpost = function(url,payload,parameters){
-      return Axios.post(
-         url,
-         JSON.stringify(payload),
-         {...parameters, ...this.header}
-      )
-   }
-   this.agpost = this.gpost
-   this.gpost = function(path,...args){
-      return this.base_gpost(this.geturl(path),...args)
-   }
-
-   this.base_put = function(url,payload,parameters){
-      return Axios.put(
-         url,payload,{...parameters, ...this.header}
-      )
-   }
-   this.put_abs = this.base_put
-   this.put = function(path,...args){
-      return this.base_put(this.geturl(path),...args)
-   }
-
-   this.base_del= function(url,parameters){
-      return Axios.delete(
-         url,{...parameters, ...this.header}
-      )
-   }
-   this.del_abs = this.base_del
-   this.del = function(path,...args){
-      return this.base_del(this.geturl(path),...args)
-   }
-
-   this.getAbs = function(url, callback, parameters){
-      Vue.http.get(url,{params: {format: "json", ...parameters}},this.header)
-         .then(
-            function(response){
-               callback(response.body);
-            },
-            function(error){
-               console.log(error)
-            });
-   }
-
-   this.post = function(obj,payload){
-      let url = this._path(this.url,obj);
-      Vue.http.post(url,payload,this.header)
-         .then(
-            function(response){
-               if(typeof(payload) !== "list"){
-                  payload.url = response.body
-               }
-            },
-            function(error){
-               console.log(error)
-               console.log(payload)
-            });
-   }
-
+   this.get = this._requestSet("get")
+   this.post = this._requestSet("post")
+   this.put = this._requestSet("put")
+   this.del = this._requestSet("delete")
 };
 
 export default Api

@@ -82,7 +82,7 @@ export default {
    },
    methods: {
       activate(){
-         this.choices = this.$store.state.api.gget("projectchoices")
+         this.choices = this.$store.state.api.get.rel("projectchoices")
             .then((r)=>{
                this.choices = r.data.projects
                this.selected = this.choices[0]
@@ -94,7 +94,7 @@ export default {
       },
       dispatch(){
          this.active = false
-         this.$store.state.api.gpost("editprojects/add",{"pk":this.selected})
+         this.$store.state.api.post.rel("editprojects/add",{data:{"pk":this.selected}})
             .then((r)=>{
                this.$emit("addedProject")
                })
