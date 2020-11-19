@@ -58,9 +58,6 @@ class InvitationAdmin(admin.ModelAdmin):
             fieldvalue = link
         except:
             fieldvalue = "-"
-
-
-
         return format_html(fieldvalue)
 
 def makeInvitationLink(inv):

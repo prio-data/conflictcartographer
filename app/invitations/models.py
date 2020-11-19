@@ -46,19 +46,36 @@ class Invitation(Model):
 
     mailed = BooleanField(default=False,editable=False)
 
-    metadata = JSONField(default=dict,blank=True,
+    metadata = JSONField(default=dict,blank=True,editable=False,
             help_text="Metadata that will be added to the user profile "
                       "once they register. (occupation/sex/age/...) "
                       "<a href='https://en.wikipedia.org/wiki/json' target='_blank'>"
                       "JSON Formatted."
                       "</a>")
 
+    customemail = TextField(verbose_name="Custom invitation email", default = "", 
+            blank = True,
+            help_text = "A custom email text to send to this particular invitee. "
+                        "The text will be pasted into the standard email template, "
+                        "which includes the invitation link. If this field is left "
+                        "blank, the active email template will be used instead.")
+
+    customsig = TextField(verbose_name="Custom signature", default = "The Conflict Cartographer Team",
+            blank = False, null = False,
+            help_text = "A custom signature which will be displayed at the bottom"
+                        " of the email. The default is \"The Conflict Cartographer Team\".")
+
     countries = ManyToManyField(Country,related_name="invited_assignees",
+            blank = True,
             help_text="Countries that will be assigned to the user "
                       "once they complete registration")
 
     refkey = CharField(max_length = 32, null = True, editable=False)
 
+    def save(self,*args,**kwargs):
+        if self.refkey is None:
+            self.refkey = referralKeygen(self.email)
+        super().save(*args,**kwargs)
 
     def makeProfile(self,user):
         profile = Profile(
@@ -85,14 +102,23 @@ class Invitation(Model):
         
         try:
             md = markdown.Markdown()
-            et = EmailTemplate.objects.filter(active=True,email_type="inv")[0]
+            if self.customemail:
+                et = EmailTemplate(
+                        subject = settings.DEFAULT_EMAIL_TITLE,
+                        headline = "Conflict Cartographer",
+                        message = self.customemail,
+                        signature = self.customsig,
+                    )
+            else:
+                et = EmailTemplate.objects.filter(active=True,email_type="inv")[0]
+
             call = {
                 "subject": et.subject,
                 "message": re.sub("\[[^\)]+",self.invitationLink(),et.message),
                 "html_message": et.render({"link":self.invitationLink(),"unsublink":self.unsubLink()})
             }
 
-        except IndexError:
+        except IndexError as e:
             call = [
                 ("message",settings.DEFAULT_PLAINTEXT_MAIL_TEMPLATE),
                 ("html_message",settings.DEFAULT_HTML_MAIL_TEMPLATE)]
@@ -104,7 +130,6 @@ class Invitation(Model):
                 "from_email":settings.EMAIL_FROM_ADDRESS,
                 "recipient_list":[self.email]
             })
-
         try:
             mail.send_mail(**call)
 

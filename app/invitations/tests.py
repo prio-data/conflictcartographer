@@ -194,7 +194,27 @@ The Team
         self.assertIsNotNone(re.search(
             "You are hereby invited to my survey",
             m.body))
+    def test_custom_invite_text(self):
+        et = EmailTemplate.objects.create(
+                active = True,
+                subject = "Inv",
+                message = "Please join my survey"
+                )
 
+        inv = Invitation.objects.create(
+                email = "yee@haw.com",
+                customemail = "Hey yee! Please join my survey",
+                customsig = "Sincerely, Haw."
+                )
+
+        inv.dispatch()
+        self.assertEqual(len(mail.outbox),1)
+        m = mail.outbox.pop()
+        for msg,mtype in m.alternatives:
+            if mtype == "text/html":
+                self.assertIsNotNone(re.search("Hey yee! Please join my survey",msg))
+                self.assertIsNotNone(re.search(inv.refkey,msg))
+                self.assertIsNotNone(re.search("Sincerely, Haw",msg))
 
 class TestBulkAdd(TestCase):
     def test_bulk_add(self):
