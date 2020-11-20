@@ -7,6 +7,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User,Group
 
 from invitations.models import Invitation,EmailTemplate
+from invitations.services.email import dispatchInvitation
 from api.models import Profile
 
 # Register your models here.
@@ -31,8 +32,9 @@ def dispatch_invitation(modeladmin, request, queryset):
     """
     Send invitation email
     """
-    for m in queryset:
-        m.dispatch()
+    for invitation in queryset:
+        dispatchInvitation(invitation)
+
 dispatch_invitation.short_description=dispatch_invitation.__doc__
 
 @admin.register(Invitation)

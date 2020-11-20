@@ -26,6 +26,7 @@ from django.utils.translation import gettext_lazy
 
 from api.models import Country,Profile
 
+#from invitations.services.email import dispatchInvitation
 from invitations.util import referralKeygen
 
 from utils.mixins import OnlyOneActive
@@ -44,7 +45,13 @@ class Invitation(Model):
         User, related_name = "invitation", null = True, blank = True,
         on_delete = CASCADE)
 
-    mailed = BooleanField(default=False,editable=False)
+    mailed = BooleanField(default=False,editable=False,
+            help_text="Indicates whether or not the invitation has been dispatched, "
+                      "that is, if an email has been sent to the target recipient")
+
+    fulfilled = BooleanField(default=False,editable=False, 
+            help_text="Indicates whether or not the invitation has been fulfilled, "
+                      "meaning a user has been registered for it.")
 
     metadata = JSONField(default=dict,blank=True,editable=False,
             help_text="Metadata that will be added to the user profile "
@@ -75,11 +82,18 @@ class Invitation(Model):
     def save(self,*args,**kwargs):
         if self.refkey is None:
             self.refkey = referralKeygen(self.email)
+
+        try:
+            User.objects.get(email = self.email)
+        except User.DoesNotExist:
+            pass
+        else:
+            self.fulfilled = True
+
         super().save(*args,**kwargs)
 
-    def makeProfile(self,user):
+    def profile(self,user):
         profile = Profile(
-            meta = self.metadata,
             user = user
         )
         profile.save()
@@ -91,56 +105,6 @@ class Invitation(Model):
 
     def unsubLink(self):
         return os.path.join(settings.UNSUB_LINK_BASE,self.refkey)
-
-    def dispatch(self):
-        """
-        Sends the invitation by email 
-        """
-        if self.refkey is None:
-            self.refkey = referralKeygen(self.email)
-            self.save()
-        
-        try:
-            md = markdown.Markdown()
-            if self.customemail:
-                et = EmailTemplate(
-                        subject = settings.DEFAULT_EMAIL_TITLE,
-                        headline = "Conflict Cartographer",
-                        message = self.customemail,
-                        signature = self.customsig,
-                    )
-            else:
-                et = EmailTemplate.objects.filter(active=True,email_type="inv")[0]
-
-            call = {
-                "subject": et.subject,
-                "message": re.sub("\[[^\)]+",self.invitationLink(),et.message),
-                "html_message": et.render({"link":self.invitationLink(),"unsublink":self.unsubLink()})
-            }
-
-        except IndexError as e:
-            call = [
-                ("message",settings.DEFAULT_PLAINTEXT_MAIL_TEMPLATE),
-                ("html_message",settings.DEFAULT_HTML_MAIL_TEMPLATE)]
-            call = {k:render_to_string(template,{"link":self.invitationLink()})
-                for k,template in call}
-            call.update({"subject":settings.DEFAULT_EMAIL_TITLE})
-
-        call.update({
-                "from_email":settings.EMAIL_FROM_ADDRESS,
-                "recipient_list":[self.email]
-            })
-        try:
-            mail.send_mail(**call)
-
-        except ConnectionRefusedError:
-            logger.error("Failed to send email to %s, connection refused!",self.email)
-            return False
-        else:
-            logger.info("Sent email to %s",self.email)
-            self.mailed = True
-            self.save()
-            return True
 
     def __str__(self):
         return f"Invitation for {self.email}"
@@ -190,22 +154,6 @@ class EmailTemplate(OnlyOneActive,Model):
     def save(self,*args,**kwargs):
         self.htmlMessage = None
         super().save(*args,**kwargs)
-
-    def render(self,context={"reflink":"referral","unsublink":"unsubscribe"}):
-        if self.htmlMessage is None:
-            md = markdown.Markdown()
-            fixLnBreaks = lambda lines: "".join([x+"<br>" for x in lines.split("\n")])
-            context.update({
-                "headline": self.headline,
-                "content": md.convert(self.message),
-                "signature": fixLnBreaks(self.signature)
-            })
-            html = render_to_string("mail/tpl.html",context)
-            html = premailer.transform(html)
-            self.htmlMessage = html
-        else:
-            pass
-        return self.htmlMessage
 
     def __str__(self):
         return f"{self.email_type} - \"{self.subject}\""

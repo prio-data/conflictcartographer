@@ -11,6 +11,8 @@ from api.models import Country
 from api.testutils import ApiTestCase
 
 class ApiRequestsTest(ApiTestCase):
+    serialized_rollback = True
+
     def setUp(self):
         self.u = User.objects.create_user(username="testuser",password="12345")
         c = Country.objects.create(name="somewhere",iso2c="SW",gwno=1,shape={},simpleshape={})
@@ -66,18 +68,18 @@ class ApiRequestsTest(ApiTestCase):
 
         # Delete a shape 
 
-        s,c = self.shapes_delete(1)
-        self.assertEqual(s,204)
-
+        self.client.delete(s1["url"])
         s,data = self.project_status(1)
         self.assertEqual(s,200)
         self.assertEqual(data["shapes"],1)
 
         # Update a shape 
         s2["values"] = {"a third option":3}
-        s,c = self.shapes_put(2,**s2)
-        self.assertEqual(s,200)
+        r = self.client.put(s2["url"],data=s2,content_type="application/json")
+        self.assertEqual(r.status_code,200)
 
-        s,data = self.shapes_detail(2)
+        r = self.client.get(s2["url"])
+        data = json.loads(r.content.decode())
+        s = r.status_code
         self.assertEqual(s,200)
         self.assertEqual(data,s2)

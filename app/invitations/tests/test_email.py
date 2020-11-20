@@ -22,17 +22,8 @@ from django.contrib.auth.models import User
 
 from invitations.models import Invitation,EmailTemplate
 from invitations.util import referralKeygen
-from invitations.services import bulkCreateInvites,parseInviteFile
+from invitations.services.email import dispatchInvitation
 from api.models import Country
-
-EXAMPLE_CSV = [
-    "name,email,position,affiliation,one,two,thr,fou,fiv,six,sev,eig",
-    "name nameson,one@one.com,plumber,Somewhere,1,1,1,1,1,0,0,0",
-    "name nameson,two@two.com,cleaner,Someplace,0,0,0,1,1,1,1,1",
-    "name nameson,thr@thr.com,cleaner,Somewhere,1,1,1,1,1,0,0,0",
-    "name nameson,fou@fou.com,plumber,Somewhere,0,0,0,1,1,1,1,1",
-    "name nameson,fiv@fiv.com,cleaner,Someplace,1,1,1,1,1,0,0,0",
-]
 
 
 class InvitationTest(TestCase):
@@ -50,7 +41,7 @@ class InvitationTest(TestCase):
         i = Invitation(email="name@loc.com")
         i.save()
         i.countries.set(countries)
-        i.dispatch()
+        dispatchInvitation(i)
 
         m = mail.outbox[0]
 
@@ -97,57 +88,6 @@ class InvitationTest(TestCase):
                 {c.pk for c in u.profile.countries.all()}
             )
 
-    def test_parse(self):
-        """
-        Tests parsing an invite-csv
-        """
-        f = io.StringIO("\n".join(EXAMPLE_CSV))
-        reader = csv.DictReader(f)
-        parsed = parseInviteFile(reader)
-
-        f.seek(0)
-        reader = csv.DictReader(f)
-        rows = [*reader]
-        self.assertEqual(len(parsed),len(rows))
-
-        for v in ("email","affiliation","position"):
-            self.assertEqual(
-                    [getattr(r,v) for r in parsed],
-                    [r[v] for r in rows]
-                )
-
-    def test_bulk_invite(self):
-        """
-        Tests importing and dispatching invites from a csv
-        """
-        N = ("one","two","thr","fou","fiv","six","sev","eig")
-        countries = [Country(gwno=i+1,name=n,shape={},simpleshape={}) for i,n in zip(range(8),N)]
-        for c in countries:
-            c.save()
-
-        f = io.StringIO("\n".join(EXAMPLE_CSV))
-        reader = csv.DictReader(f)
-        parsed = parseInviteFile(reader)
-
-        res = bulkCreateInvites(parsed)
-
-        res = bulkCreateInvites(parsed)
-        self.assertEqual(res["data"]["added"],0)
-        self.assertEqual(res["data"]["updated"],5)
-
-        invites = Invitation.objects.all()
-        for i in invites:
-            i.dispatch()
-
-        for parsedrow,invite,email in zip(parsed,invites,mail.outbox):
-            self.assertEqual(email.to[-1],invite.email)
-            self.assertEqual(invite.email,parsedrow.email)
-            self.assertEqual(
-                    set(parsedrow.countries),
-                    {c.name for c in invite.countries.all()}
-                )
-            self.assertIsNotNone(re.search(invite.refkey,email.body))
-
     def test_admin_dispatch(self):
         """
         Tests admin action to send email to selected invites
@@ -184,7 +124,7 @@ The Team
                 """)
         et.save()
         inv = Invitation(email="name@nameson.com")
-        inv.dispatch()
+        dispatchInvitation(inv)
         self.assertEqual(len(mail.outbox),1)
         m = mail.outbox[0]
         with open("/tmp/m.pckl","wb") as f:
@@ -194,6 +134,7 @@ The Team
         self.assertIsNotNone(re.search(
             "You are hereby invited to my survey",
             m.body))
+
     def test_custom_invite_text(self):
         et = EmailTemplate.objects.create(
                 active = True,
@@ -207,7 +148,7 @@ The Team
                 customsig = "Sincerely, Haw."
                 )
 
-        inv.dispatch()
+        dispatchInvitation(inv)
         self.assertEqual(len(mail.outbox),1)
         m = mail.outbox.pop()
         for msg,mtype in m.alternatives:
@@ -215,44 +156,3 @@ The Team
                 self.assertIsNotNone(re.search("Hey yee! Please join my survey",msg))
                 self.assertIsNotNone(re.search(inv.refkey,msg))
                 self.assertIsNotNone(re.search("Sincerely, Haw",msg))
-
-class TestBulkAdd(TestCase):
-    def test_bulk_add(self):
-        for i,c in enumerate(("Colombia","Syria","Mali")):
-            ctry = Country(name = c, shape = {}, simpleshape = {}, iso2c = c[:2],gwno = i)
-            ctry.save()
-
-        User.objects.create_superuser(username="admin",password="admin")
-        self.client.login(username="admin",password="admin")
-        data = [
-            {"email":"a@b.com","affiliation":"a","position":"a",
-                "Colombia":1,"Syria":0,"Mali":0},
-            {"email":"b@c.com","affiliation":"b","position":"a",
-                "Colombia":0,"Syria":1,"Mali":0},
-            {"email":"c@d.com","affiliation":"a","position":"b",
-                "Colombia":0,"Syria":0,"Mali":1},
-            {"email":"d@e.com","affiliation":"a","position":"c",
-                "Colombia":0,"Syria":1,"Mali":1},
-            {"email":"e@f.com","affiliation":"b","position":"a",
-                "Colombia":1,"Syria":0,"Mali":0},
-        ]
-
-        f = io.StringIO()
-        writer = csv.DictWriter(f,fieldnames=data[0].keys())
-        writer.writeheader()
-        for r in data:
-            writer.writerow(r)
-        cf = ContentFile(f.getvalue().encode())
-
-        postData = {
-                "title":"myexperts.csv",
-                "datafile":ContentFile(f.getvalue().encode())
-            }
-
-        r = self.client.post(urls.reverse("uploadexcel"),postData,follow=True)
-        self.assertEqual(r.status_code,200)
-
-        self.assertEqual(Invitation.objects.count(),5)
-
-        self.assertTrue("Colombia" in [c.name for c in Invitation.objects.get(email="a@b.com").countries.all()])
-        self.assertTrue("Colombia" not in [c.name for c in Invitation.objects.get(email="b@c.com").countries.all()])

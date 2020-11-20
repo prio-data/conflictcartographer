@@ -13,7 +13,7 @@ from django.views.decorators.http import require_http_methods
 
 from django.http import HttpResponse,HttpRequest,JsonResponse
 from invitations.models import Invitation,EmailTemplate
-from invitations.services import parseInviteFile,bulkCreateInvites
+from invitations.services.imports import parseInviteFile,bulkCreateInvites
 
 def referralRedirect(request,refkey):
     try:
@@ -45,11 +45,12 @@ def referralSignup(request):
             raw_password = form.cleaned_data.get("password1")
 
             user = authenticate(username = username, password = raw_password)
-            profile = invitation.makeProfile(user)
+            profile = invitation.profile(user)
             profile.save()
 
             user.email = invitation.email
-            invitation.delete()
+            invitation.fulfilled = True
+            #invitation.delete()
             user.save()
 
             login(request,user)
