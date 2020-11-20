@@ -1,0 +1,55 @@
+@import "@/sass/variables"
+@import "@/sass/animations"
+
+$opentime: 0.5s
+$closedheight: 50px
+$openedheight: 200px
+
+@keyframes slideopen
+   0%
+      height: $closedheight
+   100% 
+      height: $openedheight 
+
+button
+   width: 100%
+
+.sbwidget
+   background: $ui-panelgray
+   padding: $menu-gaps
+   font-size: 16px
+   border-radius: $roundedness
+
+.closed
+   height: $closedheight
+   animation-name: fadein
+   animation-duration: $opentime
+
+.open
+   display: grid
+   animation-name: slideopen 
+   animation-fill-mode: forwards
+   animation-duration: $opentime/2
+
+.open > *
+   animation-name: fadein 
+   animation-fill-mode: forwards
+   animation-delay: $opentime/2
+   animation-duration: $opentime/2
+   opacity: 0%
+
+.thanks
+   display: grid
+   place-items: center
+   height: $openedheight
+
+   animation-name: slideopen
+   animation-fill-mode: forwards
+   animation-direction: reverse
+   animation-duration: $opentime
+   animation-delay: $opentime
+
+.thanks > *
+   animation-name: fadepulse 
+   animation-duration: $opentime 
+   opacity: 0%

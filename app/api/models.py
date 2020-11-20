@@ -6,6 +6,7 @@ import importlib
 from django.contrib.auth.models import User 
 from django.db.models import JSONField,IntegerField,CharField,ForeignKey,Model,BooleanField
 from django.db.models import ManyToManyField,OneToOneField,CASCADE,DateField,TextField
+from django.core.validators import MinValueValidator,MaxValueValidator
 
 from annoying.fields import AutoOneToOneField
 
@@ -132,3 +133,13 @@ class NonAnswer(Answer):
 
     def __str__(self):
         return f"Nonanswer {self.quarter}/{self.year}@{self.country.name}"
+
+class Feedback(Model):
+    author = ForeignKey(User,on_delete=CASCADE,null=False)
+    message = TextField()
+    stars = IntegerField(default=3,
+            validators = [
+                MinValueValidator(1),
+                MaxValueValidator(5),
+                ])
+

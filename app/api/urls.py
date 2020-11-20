@@ -9,6 +9,7 @@ router = routers.DefaultRouter()
 
 router.register(r"shapes",ShapeViewSet,basename="shape")
 router.register(r"countries",CountryViewSet,basename="country")
+router.register(r"feedback",FeedbackViewset,basename="feedback")
 
 urlpatterns = [
     path("api/assigned/", projects,name="assigned"),

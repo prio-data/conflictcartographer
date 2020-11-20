@@ -5,6 +5,8 @@
             <Profile :profile="profile"/>
             <Calendar/>
             <MainDescription/>
+            <Feedback/>
+            <Share/>
          </div>
          <Spinner v-else/>
          <div class="pane projects">
@@ -79,6 +81,8 @@ h1#menuheader
    import MainDescription from "@/components/MainDescription"
    import CountryPicker from "@/components/CountryPicker"
    import Calendar from "@/components/Calendar"
+   import Feedback from "@/components/Feedback"
+   import Share from "@/components/Share"
 
    export default {
       name: "ProjectMenu",
@@ -99,7 +103,9 @@ h1#menuheader
          MainDescription,
          Waiver,
          CountryPicker,
-         Calendar
+         Calendar,
+         Feedback,
+         Share,
       },
 
       computed: {

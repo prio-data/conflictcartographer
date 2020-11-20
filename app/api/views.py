@@ -21,7 +21,7 @@ from rest_framework.decorators import api_view
 from rest_framework import permissions
 
 from api import models, filters
-from api.models import Shape
+from api.models import Shape,Feedback
 from api.models import Country,ProjectDescription,WaiverText,NonAnswer
 
 from cartographer.services import currentQuarter,currentYear,quarterRange
@@ -152,6 +152,44 @@ class ShapeViewSet(viewsets.ModelViewSet):
         shape.save()
 
         return HttpResponse(serializer.data["url"])
+
+class FeedbackSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Feedback 
+        fields = ["url","message","stars"]
+
+class CurrentUserAuthorMixin(viewsets.ModelViewSet):
+    class Meta:
+        abstract = True
+
+    def create(self,request,*args,**kwargs):
+        serializer = self.get_serializer(data = request.data)
+        if serializer.is_valid():
+            new = serializer.save(author = self.request.user)
+            return HttpResponse(serializer.data["url"],status = 201)
+        else:
+            return HttpResponse(serializer.errors, status = 400)
+
+class FeedbackViewset(CurrentUserAuthorMixin, viewsets.ModelViewSet):
+    """
+    Strict viewset that only allows users to:
+    GET Shapes which they have authored
+    POST Shapes to projects they are part of
+    """
+    queryset = Feedback.objects.all()
+    serializer_class = FeedbackSerializer
+
+    def list(self,*args,**kwargs):
+        if self.request.user.is_staff:
+            return super().list(self,*args,**kwargs)
+        else:
+            return Response(status=401)
+
+    def retrieve(self,*args,**kwargs):
+        if self.request.user.is_staff:
+            return super().retrieve(self,*args,**kwargs)
+        else:
+            return Response(status=401)
 
 def projectInfo(request:HttpRequest):
     verbose = request.GET.get("verbose","false") == "true"
