@@ -51,6 +51,16 @@ class InvitationAdmin(admin.ModelAdmin):
         "referral_link",
     ]
 
+    list_display = ("email","mailed","fulfilled","ncountries","customized","invitedBy")
+
+    def ncountries(self,obj):
+        return len(obj.countries.all())
+    ncountries.__doc__ = "Number of countries assigned"
+
+    def customized(self,obj):
+        return bool(obj.customemail)
+    customized.__doc__ = "Personalized email"
+
     actions = [dispatch_invitation]
     
     def referral_link(self,obj):
