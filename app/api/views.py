@@ -54,7 +54,7 @@ class CountryViewSet(viewsets.ModelViewSet):
     """
     Yields shape in detail view.
     """
-    queryset = models.Country.objects.all()
+    queryset = models.Country.objects.filter(active=True)
     serializer_class = CountryMetaSerializer  
     permission_classes = [permissions.IsAuthenticated]
 
@@ -289,7 +289,7 @@ def hasProfile(request:HttpRequest)->HttpResponse:
     return JsonResponse({"status":"ok","profile":bool(request.user.profile.meta)})
 
 def projectChoices(request:HttpRequest)->HttpResponse:
-    projects = Country.objects.all().exclude(assignees__pk = request.user.profile.pk)
+    projects = CountryViewSet().get_queryset().exclude(assignees__pk = request.user.profile.pk)
     projects = [{"name":c.name,"pk":c.pk} for c in projects]
     return JsonResponse({"status":"ok","projects":projects})
 

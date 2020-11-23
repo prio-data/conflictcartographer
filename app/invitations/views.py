@@ -8,12 +8,16 @@ from django.shortcuts import render, redirect
 
 from django.contrib.auth import login,authenticate
 from django.contrib.auth.forms import UserCreationForm 
+from django.contrib.auth.decorators import login_required 
+
+from django.db import IntegrityError
 
 from django.views.decorators.http import require_http_methods
 
 from django.http import HttpResponse,HttpRequest,JsonResponse
 from invitations.models import Invitation,EmailTemplate
 from invitations.services.imports import parseInviteFile,bulkCreateInvites
+from invitations.services.email import dispatchInvitation
 
 def referralRedirect(request,refkey):
     try:
@@ -91,3 +95,33 @@ def emailpreview(request:HttpRequest,pk:int)->HttpResponse:
     tpl.htmlMessage = None
     tpl.save()
     return HttpResponse(tpl.render())
+
+@login_required
+def share(request: HttpRequest)->HttpResponse:
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"status":"error","errors":"failed to decode request data"},status=401)
+
+    try:
+        sender = request.user.email if request.user.email else None
+        reciever = data["email"]
+        msg = data["message"] if data["message"] else ""
+    except Exception as e:
+        return JsonResponse({"status":"error","errors":str(e)},status=401)
+    
+    try:
+        invitation = Invitation.objects.create(email=reciever,invitedBy=sender, customemail = msg)
+    except IntegrityError:
+        try:
+            invitation = Invitation.objects.get(email=reciever)
+            invitation.invitedBy = sender
+            invitation.customemail = msg
+            invitation.save()
+            dispatchInvitation(invitation)
+            return JsonResponse({"status":"ok","message":"User was already invited!"},status=200)
+        except Exception as e:
+            return JsonResponse({"status":"error","message":str(e)},status=401)
+    else:
+        dispatchInvitation(invitation)
+        return JsonResponse({"status":"ok","message":"invitation sent"},status=200)

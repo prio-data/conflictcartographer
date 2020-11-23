@@ -71,7 +71,6 @@ def dispatchInvitation(invitation: Invitation)-> bool:
                         "Already fulfilled!")
         return False
 
-
     if invitation.refkey is None:
         invitation.refkey = referralKeygen(invitation.email)
         invitation.save()

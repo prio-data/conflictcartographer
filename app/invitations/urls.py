@@ -1,7 +1,7 @@
 
 from django.urls import path, include
 from django.conf.urls import url
-from invitations.views import referralRedirect, referralSignup, handleExcelFile,fileuploadMenu, emailpreview
+from invitations.views import referralRedirect, referralSignup, handleExcelFile,fileuploadMenu, emailpreview,share
 
 urlpatterns =[
     path("accounts/",include("django.contrib.auth.urls")),
@@ -12,4 +12,5 @@ urlpatterns =[
     path("upload/invexcel/", handleExcelFile, name = "uploadexcel"),
     path("fileupload/", fileuploadMenu, name = "fileupload"),
     path("admin/invitations/emailpreview/<int:pk>/", emailpreview),
+    path("api/share/",share,name="share")
 ]

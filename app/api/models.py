@@ -26,6 +26,7 @@ class Country(Model):
     gwno = IntegerField(null = False,primary_key=True)
     name = CharField(max_length = 150, null = False)
     iso2c = CharField(max_length=2,null = True)
+    active = BooleanField(default=False)
 
     shape = JSONField(null = False)
     simpleshape = JSONField(null=False)

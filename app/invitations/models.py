@@ -72,6 +72,9 @@ class Invitation(Model):
             help_text = "A custom signature which will be displayed at the bottom"
                         " of the email. The default is \"The Conflict Cartographer Team\".")
 
+    invitedBy = EmailField(verbose_name="Invitation was sent by this user",
+            default = "", blank = True, null = True)
+
     countries = ManyToManyField(Country,related_name="invited_assignees",
             blank = True,
             help_text="Countries that will be assigned to the user "
@@ -83,11 +86,8 @@ class Invitation(Model):
         if self.refkey is None:
             self.refkey = referralKeygen(self.email)
 
-        try:
-            User.objects.get(email = self.email)
-        except User.DoesNotExist:
-            pass
-        else:
+        qs = User.objects.filter(email = self.email)
+        if len(qs)>0:
             self.fulfilled = True
 
         super().save(*args,**kwargs)
