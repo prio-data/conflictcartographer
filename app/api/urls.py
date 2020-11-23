@@ -15,16 +15,20 @@ urlpatterns = [
     path("api/assigned/", projects,name="assigned"),
     path("api/",include(router.urls)),
     path("api/updatecountries/",updateCountries,name="updatecountries"),
+
+    path("api/currentproject/",projectInfo,name="projecttext"),
+    path("api/waiver/",waiver,name="waivetext"),
+    path("api/calendar/",calendar,name="timestatus"),
+
     path("api/whoami/",whoami,name="whoami"),
-    path("api/currentproject/",projectInfo),
-    path("api/waiver/",waiver),
-    path("accounts/profile/",editProfile),
-    path("api/hasprofile/",hasProfile),
-    path("api/projectchoices/",projectChoices),
-    path("api/editprojects/<str:action>/",editProjects),
-    #path("api/pinfo/completed/<int:pk>/",completedProject),
-    path("api/calendar/",calendar),
+
+    path("accounts/profile/",editProfile,name="editprofiledata"),
+    path("api/hasprofile/",hasProfile,name="hasprofiledata"),
+
+    path("api/projectchoices/",projectChoices,name="countrychoices"),
+    path("api/editprojects/<str:action>/",editProjects,name="selectcountries"),
+
     path("api/nonanswer/<int:project>/",nonanswer,name="nonanswer"),
     path("api/projectstatus/<int:project>/",projectStatus,name="projectstatus"),
-    path("api/clearshapes/<int:project>/",clearShapes),
+    path("api/clearshapes/<int:project>/",clearShapes,name="clearshapes"),
 ]

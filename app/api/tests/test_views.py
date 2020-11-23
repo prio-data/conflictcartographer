@@ -110,3 +110,17 @@ class ApiViewsTest(TestCase):
         print(r.content)
         self.assertEqual(r.status_code,201)
         """
+
+    def test_util_views(self):
+        u = User.objects.create_user(username="someone",password="something")
+        self.client.login(username="someone",password="something")
+        r = self.client.get(reverse("hasprofiledata"))
+        self.assertEqual(r.status_code,200)
+        self.assertFalse(r.json()["profile"])
+
+        u.profile.meta = {"something":"weird"}
+        u.profile.save()
+
+        r = self.client.get(reverse("hasprofiledata"))
+        self.assertEqual(r.status_code,200)
+        self.assertTrue(r.json()["profile"])
