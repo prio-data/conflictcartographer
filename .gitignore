@@ -27,3 +27,4 @@ cert/*
 !cert/.keep
 penv.env
 .coverage
+htmlcov/
