@@ -53,7 +53,9 @@ def referralSignup(request):
             profile.save()
 
             user.email = invitation.email
+
             invitation.fulfilled = True
+            invitation.save()
             #invitation.delete()
             user.save()
 
