@@ -23,6 +23,7 @@
    import "leaflet-boundary-canvas"
    import bbox from "geojson-bbox"
    import colorGradient from "../util/colorGradient.js"
+   import "@/sass/leaflet.sass"
 
    export default {
       name: "Leaflet",
@@ -68,6 +69,7 @@
       },
 
       mounted: function(){
+
          const map = this.$refs.map.mapObject;
          map.zoomSnap = 0.1
          this.$nextTick(function(){
