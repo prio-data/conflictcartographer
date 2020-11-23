@@ -15,7 +15,63 @@
    </l-map>
 </template>
 
-<script charset="utf-8">
+<style lang="sass" type="text/css" media="screen">
+   @import "../sass/variables.sass"
+
+   #map
+      height: $map_height 
+      width: $map_width 
+
+   // Tile stuff
+   .leaflet-tile-container img
+       filter: brightness(0.8)
+
+   .leaflet-tile-container canvas 
+       filter: brightness(0.9) contrast(1.1) //saturate(5.5) 
+
+   // Editing dots
+   .leaflet-editing-icon
+      //width: 5px !important
+      //height: 5px !important
+      //top: 5px !important 
+      //left: 5px !important
+      border-radius: 10px
+      border: none
+      background: $drawcolor
+
+   .leaflet-marker-pane div:nth-child(2)
+      background: $ui_highlight
+
+   .leaflet-touch .leaflet-control-zoom-display 
+     width: $tbsize + 8px
+     height: $tbsize + 8px
+     font-size: 18px
+     line-height: $tbsize - ($tbsize / 4) 
+
+   .leaflet-touch .leaflet-bar a, .leaflet-touch .leaflet-toolbar-0 > li > a 
+     width: $tbsize + 4px
+     height: $tbsize + 4px
+     font-size: $tbsize / 2 
+     line-height: $tbsize + 5px
+     background-size: 314px 30px
+
+   .leaflet-touch .leaflet-draw-toolbar.leaflet-bar a 
+     background-position-y: 6px
+
+   .leaflet-touch .leaflet-draw-actions a, .leaflet-touch .leaflet-control-toolbar .leaflet-toolbar-1 > li > .leaflet-toolbar-icon 
+     font-size: $tbsize / 2 
+     line-height: $tbsize + 4px
+     height: $tbsize + 4px
+
+   .leaflet-touch .leaflet-draw-actions, .leaflet-touch .leaflet-toolbar-1 
+     left: $tbsize + 5px
+
+   .leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar
+      border: none
+</style>
+
+<script>
+   import "../sass/leaflet.sass"
 
    import {LMap, LGeoJson} from "vue2-leaflet"
    import L from "leaflet"
@@ -23,7 +79,6 @@
    import "leaflet-boundary-canvas"
    import bbox from "geojson-bbox"
    import colorGradient from "../util/colorGradient.js"
-   import "@/sass/leaflet.sass"
 
    export default {
       name: "Leaflet",
@@ -142,59 +197,3 @@
       }
    }
 </script>
-
-<style lang="sass" type="text/css" media="screen">
-
-   @import "../sass/variables.sass"
-
-   #map
-      height: $map_height 
-      width: $map_width 
-
-   // Tile stuff
-   .leaflet-tile-container img
-       filter: brightness(0.8)
-
-   .leaflet-tile-container canvas 
-       filter: brightness(0.9) contrast(1.1) //saturate(5.5) 
-
-   // Editing dots
-   .leaflet-editing-icon
-      //width: 5px !important
-      //height: 5px !important
-      //top: 5px !important 
-      //left: 5px !important
-      border-radius: 10px
-      border: none
-      background: $drawcolor
-
-   .leaflet-marker-pane div:nth-child(2)
-      background: $ui_highlight
-
-   .leaflet-touch .leaflet-control-zoom-display 
-     width: $tbsize + 8px
-     height: $tbsize + 8px
-     font-size: 18px
-     line-height: $tbsize - ($tbsize / 4) 
-
-   .leaflet-touch .leaflet-bar a, .leaflet-touch .leaflet-toolbar-0 > li > a 
-     width: $tbsize + 4px
-     height: $tbsize + 4px
-     font-size: $tbsize / 2 
-     line-height: $tbsize + 5px
-     background-size: 314px 30px
-
-   .leaflet-touch .leaflet-draw-toolbar.leaflet-bar a 
-     background-position-y: 6px
-
-   .leaflet-touch .leaflet-draw-actions a, .leaflet-touch .leaflet-control-toolbar .leaflet-toolbar-1 > li > .leaflet-toolbar-icon 
-     font-size: $tbsize / 2 
-     line-height: $tbsize + 4px
-     height: $tbsize + 4px
-
-   .leaflet-touch .leaflet-draw-actions, .leaflet-touch .leaflet-toolbar-1 
-     left: $tbsize + 5px
-
-   .leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar
-      border: none
-</style>
