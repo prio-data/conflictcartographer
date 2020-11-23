@@ -17,7 +17,7 @@ from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse,HttpRequest,JsonResponse
 from invitations.models import Invitation,EmailTemplate
 from invitations.services.imports import parseInviteFile,bulkCreateInvites
-from invitations.services.email import dispatchInvitation
+from invitations.services.email import dispatchInvitation,renderEmailTemplate
 
 def referralRedirect(request,refkey):
     try:
@@ -94,7 +94,7 @@ def emailpreview(request:HttpRequest,pk:int)->HttpResponse:
     tpl = EmailTemplate.objects.get(pk=pk)
     tpl.htmlMessage = None
     tpl.save()
-    return HttpResponse(tpl.render())
+    return HttpResponse(renderEmailTemplate(tpl,{}))
 
 @login_required
 def share(request: HttpRequest)->HttpResponse:

@@ -11,6 +11,7 @@ import logging
 from pydantic import BaseModel,EmailStr,constr
 
 import premailer
+import markdown
 from premailer import Premailer
 
 from django.conf import settings
@@ -44,12 +45,13 @@ def renderEmailTemplate(template: EmailTemplate, context: Dict[Any,Any])-> str:
     """
     Renders a HTML message from an EmailTemplate instance
     """
+    md = markdown.Markdown()
 
     if template.htmlMessage is None:
         fixLnBreaks = lambda lines: "".join([x+"<br>" for x in lines.split("\n")])
         context.update({
             "headline": template.headline,
-            "content": template.message,
+            "content": md.convert(template.message),
             "signature": fixLnBreaks(template.signature)
         })
         html = render_to_string("mail/tpl.html",context)

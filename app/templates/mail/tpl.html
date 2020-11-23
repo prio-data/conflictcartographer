@@ -1,6 +1,8 @@
 <html>
 <body>
+   <!--
    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital@1&display=swap" rel="stylesheet">
+   -->
    <style>
       html {
          font-family: 'Raleway', sans-serif;
@@ -9,18 +11,19 @@
 
       table {
          border: none;
+         max-width: 600px;
+         min-width: 400px;
          border-collapse: collapse;
       }
+
       td {
          padding: 4px 20px;
       }
       tbody {
-         min-width: 320px;
-         max-width: 720px;
          background: #f0f0f0;
       }
       hr {
-         border: 0.1px solid #a0a0a0;
+         border-top: 1px solid #c0c0c0;
       }
       #headline {
          padding-top: 20px;
@@ -37,7 +40,7 @@
          margin: 20px;
       }
    </style>
-   <table align="center" width="100%"><tbody>
+   <table align="center" width="100%"><tbody width=600px>
       <tr><td id="headline" align="center">
          <h1>{{ headline }}</h1>
       </td></tr>
@@ -54,9 +57,6 @@
          <a href="https://www.prio.org" target="_blank">
          <img src="https://www.prio.org/images/network/prio.png" alt="">
          </a>
-      </td></tr>
-      <tr><td id="unsubLink">
-            To stop recieving email about conflict cartographer, <a href="{{ unsublink }}">click here</a>.
       </td></tr>
    </tbody></table>
 </body>
