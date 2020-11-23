@@ -15,7 +15,7 @@ urlpatterns = [
     path("api/assigned/", projects,name="assigned"),
     path("api/",include(router.urls)),
     path("api/updatecountries/",updateCountries,name="updatecountries"),
-    path("api/whoami/",whoami),
+    path("api/whoami/",whoami,name="whoami"),
     path("api/currentproject/",projectInfo),
     path("api/waiver/",waiver),
     path("accounts/profile/",editProfile),

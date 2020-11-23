@@ -10,8 +10,9 @@ from django.shortcuts import render,redirect
 
 from django.db.models.query import QuerySet
 from django.utils import timezone
-from django.contrib import auth
+
 from django.contrib.auth.decorators import login_required
+
 from django.views.decorators.http import require_http_methods
 
 from rest_framework import viewsets, status, exceptions, serializers
@@ -20,7 +21,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import permissions
 
-from api import models, filters
+from api import models
 from api.models import Shape,Feedback
 from api.models import Country,ProjectDescription,WaiverText,NonAnswer
 
@@ -31,6 +32,7 @@ from api.forms import ProfileForm
 # ================================================
 # Utility views 
 
+@login_required
 def whoami(request):
     """
     Returns stored information about the user
