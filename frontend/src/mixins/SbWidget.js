@@ -3,6 +3,7 @@ export default {
       return {
          active: false,
          mode: "inactive",
+         msg: ""
       }
    },
    methods: {
@@ -10,6 +11,7 @@ export default {
          if(!this.active){
             this.mode = "active"
             this.active = true
+            this.msg = ""
          } else {
             this.mode = "thanks"
             setTimeout(()=>{

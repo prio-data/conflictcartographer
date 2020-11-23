@@ -11,6 +11,28 @@ $openedheight: 200px
    100% 
       height: $openedheight 
 
+.form
+   position: relative
+
+div.closebutton
+   position: absolute
+   top: 0
+   right: 0
+   height: 20px 
+   width: 20px 
+   font-size: 12px
+   background: $ui-highlight
+   border-bottom: 2px solid $ui-darkgray !important
+   border-radius: $roundedness
+   color: white 
+   display: grid
+   place-items: center
+   border: 0px
+   cursor: pointer
+
+div.closebutton:hover
+   background: $ui-light-highlight
+
 button
    width: 100%
 
@@ -53,3 +75,8 @@ button
    animation-name: fadepulse 
    animation-duration: $opentime 
    opacity: 0%
+
+.close
+   placement: absolute
+   top: 0
+   right: 0

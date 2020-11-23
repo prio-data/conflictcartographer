@@ -3,10 +3,11 @@
       <button class="closed" id="activatebutton" v-if="mode=='inactive'" v-on:click="toggle">
          Give us some feedback!
       </button>
-      <div class="open" id="form" v-if="mode=='active'">
-         <div class="label">Feedback text</div>
+      <div class="open form" v-if="mode=='active'">
+         <!--<div class="label">Feedback text</div>-->
+         <label>Feedback text</label>
          <textarea v-model="feedback"/>
-         <div class="label">Star rating</div>
+         <label>Star rating: {{ stars }}</label>
          <div id="stars">
             <input v-model="stars" value=1 type="radio">
             <input v-model="stars" value=2 type="radio">
@@ -15,11 +16,10 @@
             <input v-model="stars" value=5 type="radio">
          </div>
          <button v-on:click="submit">Submit</button>
+         <div class="closebutton" v-on:click="toggle">X</div>
       </div>
       <div class="thanks" v-if="mode=='thanks'">
-         <p>
-            Thanks!
-         </p>
+         {{ msg }}
       </div>
    </div>
 </template>
@@ -28,14 +28,10 @@
 @import "@/sass/sidebarwidget"
 @import "@/sass/generic"
 
-#form
-   display: grid
-   place-items: center
-   grid-template-rows: 30px 2fr 30px 20px 50px
-
 #form>textarea
    height: 100%
    width: 100%
+   margin-bottom: 11px 
    border-top: 2px solid $ui-darkergray 
    border-right: 1px solid $ui-darkergray 
    border-left: 1px solid $ui-darkergray 
@@ -47,9 +43,9 @@
 #stars
    display: grid
    width: 100%
-   grid-template-rows: 1fr
+   height: 28px
    grid-template-columns: repeat(5, 1fr)
-   place-items: center
+   justify-items: center
 
 </style>
 <script>
