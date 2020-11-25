@@ -23,6 +23,7 @@ from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 # MAIN
 from cartographer.views import cartographer
 import api.urls
+from api.admin_views import router as api_admin_router
 import invitations.urls
 #import adminext.urls
 
@@ -41,3 +42,6 @@ urlpatterns = [
 
 urlpatterns += api.urls.urlpatterns
 urlpatterns += invitations.urls.urlpatterns
+
+urlpatterns += [path("aapi/",include(api_admin_router.urls))]
+
