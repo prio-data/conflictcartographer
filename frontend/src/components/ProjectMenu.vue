@@ -1,6 +1,7 @@
 <template>
    <div id="pm-wrapper">
-      <div id="pm" v-if="profile.waiver">
+      <Waiver v-if="(!profile.waiver) && profileLoaded"/>
+      <div id="pm" v-else>
          <div class="pane infobar" v-if="profileLoaded">
             <Profile :profile="profile"/>
             <Calendar/>
@@ -26,7 +27,6 @@
             <Spinner v-else/>
          </div>
       </div>
-      <Waiver v-else/>
    </div>
 </template>
 
@@ -92,7 +92,7 @@ h1#menuheader
             projects: [],
             projectsLoaded: false,
             profileLoaded: false,
-            profile: {}
+            profile: {waiver: true}
          }
       },
 
