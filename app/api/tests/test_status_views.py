@@ -1,7 +1,8 @@
 import json
 from datetime import date,datetime
 from unittest.mock import patch,Mock
-import pytz
+
+import geojson
 
 from django.test import TestCase
 from django.urls import reverse
@@ -9,6 +10,7 @@ from django.contrib.auth.models import User
 
 from django.utils.timezone import now
 
+from api.testutils import randomFeature
 from api.views import projectStatus,clearShapes
 from api.models import Country,Shape,NonAnswer
 from api.views import ShapeViewSet
@@ -39,26 +41,44 @@ class TestStatusViews(TestCase):
             data  = json.loads(self.client.get(url).content.decode())
             self.assertTrue(data["nonanswer"])
 
-            s = Shape(author=self.u,country=c,date=date(1998,6,1))
-            s.save()
+            s = Shape.objects.create(
+                    author=self.u,
+                    country=c,
+                    date=date(1998,6,1),
+                    shape = randomFeature()
+                )
             data  = json.loads(self.client.get(url).content.decode())
             self.assertTrue(data["nonanswer"])
             self.assertEqual(data["shapes"],0)
 
-            s = Shape(author=self.u,country=c,date=date(1999,1,1))
-            s.save()
+            s = Shape.objects.create(
+                    author=self.u,
+                    country=c,
+                    date=date(1999,1,1),
+                    shape=randomFeature()
+                )
+
             data  = json.loads(self.client.get(url).content.decode())
             self.assertTrue(data["nonanswer"])
             self.assertEqual(data["shapes"],0)
 
-            s = Shape(author=self.u,country=c,date=date(1999,10,1))
-            s.save()
+            s = Shape.objects.create(
+                    author=self.u,
+                    country=c,
+                    date=date(1999,10,1),
+                    shape=randomFeature()
+                )
+
             data  = json.loads(self.client.get(url).content.decode())
             self.assertTrue(data["nonanswer"])
             self.assertEqual(data["shapes"],0)
 
-            s = Shape(author=self.u,country=c,date=date(1999,6,15))
-            s.save()
+            s = Shape.objects.create(
+                    author=self.u,
+                    country=c,
+                    date=date(1999,6,15),
+                    shape=randomFeature())
+            
             data  = json.loads(self.client.get(url).content.decode())
 
             self.assertFalse(data["nonanswer"])

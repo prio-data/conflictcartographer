@@ -1,9 +1,11 @@
 import json
-from datetime import datetime
+from datetime import datetime,date
 from collections import defaultdict
 from typing import Literal
 
 import pydantic
+
+import geojson
 
 from django.http import HttpResponse,HttpRequest,JsonResponse
 from django.shortcuts import render,redirect
@@ -58,7 +60,7 @@ class CountryViewSet(viewsets.ModelViewSet):
     """
     queryset = models.Country.objects.filter(active=True)
     serializer_class = CountryMetaSerializer  
-    permission_classes = [permissions.IsAuthenticated]
+    #permission_classes = [permissions.IsAuthenticated]
 
     def get_serializer_class(self):
         if self.action == "retrieve":
@@ -66,117 +68,53 @@ class CountryViewSet(viewsets.ModelViewSet):
         else:
             return CountryMetaSerializer
 
-@api_view(("GET",))
-def projects(request:HttpRequest)->HttpResponse:
-    """
-    Get list of countries assigned to current user.
-    """
-
-    try:
-        countries = Country.objects.all().filter(assignees__pk = request.user.profile.pk)
-        return Response(CountryMetaSerializer(countries,many=True,context={"request":request}).data)
-    except Exception as e:
-        return Response([])
-
 # ================================================
 # Shape
 
 class ShapeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Shape
-        fields = ["url","country","shape","values"]
+        fields = ["url","country","shape","values","author","date"]
+
+    def validate_shape(self,value):
+        try:
+            gjf = geojson.Feature(type= "Feature", geometry = value,properties = dict())
+        except ValueError as e:
+            raise serializers.ValidationError
+        if not gjf.is_valid:
+            raise serializers.ValidationError
+        return value
+    
+    author = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    date = serializers.DateField(read_only=True,default=date.today)
 
 class ShapeViewSet(viewsets.ModelViewSet):
     """
-    Strict viewset that only allows users to:
-    GET Shapes which they have authored
-    POST Shapes to projects they are part of
+    Application API used to communicate with participants.
+    The viewset adds the request user as author of each shape.
+    The viewset is also restricted by quarter, meaning only shapes from the
+    current quarter are returned.
     """
-
-    queryset = Shape.objects.all()
     serializer_class = ShapeSerializer  
-
     filterset_fields = ["country"]
-
-    permission_classes = [permissions.IsAuthenticated]
+    #permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        """
-        This override restricts the returned data if the user is not admin.
-        """
-
-        queryset = self.queryset
-        if isinstance(queryset, QuerySet):
-            # Ensure queryset is re-evaluated on each request.
-            queryset = queryset.all()
-
-        if not self.request.user.is_staff:
-            queryset = queryset.filter(author = self.request.user)
-
         s,e = quarterRange()
-        queryset = queryset.filter(date__gte=s,date__lte=e)
+        return Shape.objects.filter(author = self.request.user, date__gte=s,date__lte=e) 
 
-        return queryset
-
-    def create(self,request,*args,**kwargs):
-        #prepRequestData(request)
-        NONVAR = ("year","shape","quarter","author","country","vizId")
-
-        if not request.content_type == "application/json":
-            return HttpResponse("submitted data must be in JSON format", status=401)
-        
-        data = request.data
-        if "values" not in data.keys():
-            data["values"] = {k:v for k,v in request.data.items() if k not in NONVAR}
-        serializer = self.get_serializer(data = data)
-
-        if serializer.is_valid():
-            o = serializer.save(author = self.request.user)
-            """
-            try:
-                s,e = quarterRange()
-                na = NonAnswer.objects.get(country = o.country,date__gte=s,date__lte=e)
-            except NonAnswer.DoesNotExist:
-                pass
-            else:
-                na.delete()
-                """
-
-            return HttpResponse(serializer.data["url"], status=status.HTTP_201_CREATED)
-        else:
-            return HttpResponse(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
-
-    def put(self, request, pk, format = None):
-        request = prepRequestData(request)
-
-        shape = self.get_object(pk)
-        shape.values = request.data["values"]
-        shape.save()
-
-        return HttpResponse(serializer.data["url"])
-
+# ================================================
+# Feedback
 class FeedbackSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Feedback 
-        fields = ["url","message","stars"]
+        fields = ["url","message","stars","author","date"]
+    author = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    date = serializers.DateField(read_only=True,default=date.today)
 
-class CurrentUserAuthorMixin(viewsets.ModelViewSet):
-    class Meta:
-        abstract = True
-
-    def create(self,request,*args,**kwargs):
-        serializer = self.get_serializer(data = request.data)
-        if serializer.is_valid():
-            new = serializer.save(author = self.request.user)
-            return HttpResponse(serializer.data["url"],status = 201)
-        else:
-            return HttpResponse(serializer.errors, status = 400)
-
-class FeedbackViewset(CurrentUserAuthorMixin, viewsets.ModelViewSet):
+class FeedbackViewset(viewsets.ModelViewSet):
     """
-    Strict viewset that only allows users to:
-    GET Shapes which they have authored
-    POST Shapes to projects they are part of
+    Viewset that lets anyone post, but only lets admin users GET feedback.
     """
     queryset = Feedback.objects.all()
     serializer_class = FeedbackSerializer
@@ -193,11 +131,26 @@ class FeedbackViewset(CurrentUserAuthorMixin, viewsets.ModelViewSet):
         else:
             return Response(status=401)
 
+# ================================================
+# Utility views
+
+@api_view(("GET",))
+def projects(request:HttpRequest)->HttpResponse:
+    """
+    Get list of countries assigned to current user.
+    """
+    try:
+        countries = Country.objects.all().filter(assignees__pk = request.user.profile.pk)
+        return Response(CountryMetaSerializer(countries,many=True,context={"request":request}).data)
+    except Exception as e:
+        return Response([])
+
 def projectInfo(request:HttpRequest):
+    """
+    Returns the currently active project text.
+    """
     verbose = request.GET.get("verbose","false") == "true"
-
     project = ProjectDescription.objects.filter(active=True).first()
-
     if project is None:
         data = {"status":"error",
                 "title":"Missing",
@@ -207,10 +160,13 @@ def projectInfo(request:HttpRequest):
         data = {"status":"ok",
                 "title":project.title,
                 "description":description}
-
     return JsonResponse(data)
 
 def waiver(request:HttpRequest)->HttpResponse:
+    """
+    Endpoint for recieving accept / reject on the user data waiver (POST), and
+    for returning the waiver text (GET).
+    """
     if request.method == "GET":
         try:
             wt = WaiverText.objects.filter(active=True).first().content
@@ -234,6 +190,10 @@ def waiver(request:HttpRequest)->HttpResponse:
 
 @require_http_methods(["POST"])
 def updateCountries(request):
+    """
+    Updating the countries available to the system.
+    """
+
     if not request.user.is_staff:
         return JsonResponse({"status":"error","messages":"permission denied"},status=status.HTTP_403_FORBIDDEN)
 
@@ -274,6 +234,9 @@ def updateCountries(request):
     return JsonResponse({"status":"success","saved":saved,"updated":updated})
 
 def editProfile(request:HttpRequest)->HttpResponse:
+    """
+    Updating the metadata associated with each user.
+    """
     if request.method == "GET":
         profile = request.user.profile
         form = ProfileForm(profile.meta)
@@ -288,6 +251,9 @@ def editProfile(request:HttpRequest)->HttpResponse:
         return HttpResponse(status=405)
 
 def hasProfile(request:HttpRequest)->HttpResponse:
+    """
+    Simple Y/N on whether or not user has registered a profile.
+    """
     return JsonResponse({"status":"ok","profile":bool(request.user.profile.meta)})
 
 def projectChoices(request:HttpRequest)->HttpResponse:

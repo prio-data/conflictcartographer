@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 
 from api.models import Country,Shape,NonAnswer
-from api.testutils import ApiTestCase
+from api.testutils import ApiTestCase,randomFeature
 
 class QuarterizingTest(ApiTestCase):
     def setUp(self):
@@ -64,7 +64,7 @@ class QuarterizingTest(ApiTestCase):
             except m.DoesNotExist:
                 self.fail()
 
-        self.shapes_post(shape={},country=c["url"],values={"a":"b"})
+        self.shapes_post(shape=randomFeature(),country=c["url"],values={"a":"b"})
 
         s,data = self.project_status(c["gwno"])
         self.assertEqual(data["shapes"],1)

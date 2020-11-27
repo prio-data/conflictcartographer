@@ -106,12 +106,14 @@ class Answer(Model):
         super().save(*args,**kwargs)
 
 class Shape(Answer):
-    #Name collision
     mutex=["api.models.NonAnswer"]
+
+    #Name collision
     country = ForeignKey(Country,related_name="Shapes",on_delete=CASCADE,null=False)
 
-    shape =  JSONField(default = dict, null = False)
-    values = JSONField(default = dict)
+    shape =  JSONField(null = False, blank = False)
+    values = JSONField(default = dict, blank = True)
+
     def __str__(self):
         return f"Shape {self.quarter}/{self.year}@{self.country.name}"
 

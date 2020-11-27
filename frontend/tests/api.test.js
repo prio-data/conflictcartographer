@@ -107,7 +107,7 @@ test("Test api post on layer create", async ()=>{
          "shapes/?country=1":{data:[]}
       },
       post: {
-         "shapes": "http://posted.shape/1/"
+         "shapes": {url: "http://posted.shape/1/"}
       }
    })
 
@@ -141,19 +141,14 @@ test("Test api post on layer create", async ()=>{
    expect(c.vm.layers).toHaveLength(1)
    expect(api.posts()).toHaveLength(1)
 
-   //let payload = api.posts()[0].args.data
-   //expect(
-
-   /*
+   let payload = api.posts()[0].args.data
    expect(payload).toMatchObject({
       country: "http://get.my.shape/1/",
-      shape: [f],
+      shape: f,
       values: {
          intensity: 0,
          confidence: 50
       },
       url: "http://posted.shape/1/"
    })
-   */
-
 })

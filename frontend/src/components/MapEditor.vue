@@ -126,7 +126,7 @@ export default {
 
          this.$store.state.api.post.rel("shapes",{data:toPost})
             .then((r)=>{
-               toPost.url = r.data
+               toPost.url = r.data.url
                this.layers.push(toPost)
             })
             .catch((e)=>{

@@ -1,7 +1,16 @@
 import json
 
+import geojson
+
 from django.test import TestCase
 from django.urls import reverse
+
+def randomFeature():
+    return {
+        "type":"Feature",
+        "geometry": geojson.utils.generate_random("Polygon"),
+        "properties":{}
+    }
 
 def returnData(inner):
     def wrapper(*args,**kwargs):

@@ -34,13 +34,18 @@ class ApiRequestsTest(ApiTestCase):
         # Test posting a shape
         requestData = {
             "shape":{},
-            "intensity":5,
-            "confidence":5,
+            "values":{
+                "intensity":5,
+                "confidence":5,
+            },
             "country":countries[0]["url"]
             }
 
         s,c = self.shapes_post(**requestData)
         self.assertEqual(s,201)
+        self.assertEqual(set(json.loads(c).keys()),
+                {"url","country","shape","values","date"}
+            )
 
         # Test posting a shape with arbitrary data
         requestData = {

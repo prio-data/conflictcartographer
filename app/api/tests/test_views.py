@@ -63,8 +63,7 @@ class ApiViewsTest(TestCase):
         r = self.client.get(reverse("assigned"))
         self.assertEqual(r.status_code,200)
         self.assertEqual(r.json(),[])
-
-    """
+    
     def test_baddata(self):
         u = User.objects.create_user(username="bad",password="bad")
         c = Country.objects.create(name="x",iso2c="xx",gwno=10,shape={},simpleshape={},active=True)
@@ -76,7 +75,7 @@ class ApiViewsTest(TestCase):
         ctry,*_ = self.client.get(reverse("assigned")).json()
 
         r = self.client.post(reverse("shape-list"),data="Hello world!",content_type="text")
-        self.assertEqual(r.status_code,401)
+        self.assertEqual(r.status_code,415)
 
         r = self.client.post(reverse("shape-list"),data={
                 "something":"wrong",
@@ -107,9 +106,7 @@ class ApiViewsTest(TestCase):
                 },
                 "country":ctry["url"]
             },content_type="application/json")
-        print(r.content)
         self.assertEqual(r.status_code,201)
-        """
 
     def test_util_views(self):
         u = User.objects.create_user(username="someone",password="something")
