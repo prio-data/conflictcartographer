@@ -91,7 +91,7 @@ class FeedbackViewset(AdminModelViewSet):
 # ========================================================
 
 router = DefaultRouter()
-router.register(r"shapes",ShapeViewSet,basename="adminshape")
-router.register(r"users",UserViewSet,basename="user")
-router.register(r"countries",CountryViewset,basename="admincountry")
-router.register(r"feedback",FeedbackViewset,basename="feedback")
+router.register(r"shapes",ShapeViewSet,basename="admin_shape")
+router.register(r"users",UserViewSet,basename="admin_user")
+router.register(r"countries",CountryViewset,basename="admin_country")
+router.register(r"feedback",FeedbackViewset,basename="admin_feedback")
