@@ -20,6 +20,10 @@ from invitations.services.imports import parseInviteFile,bulkCreateInvites
 from invitations.services.email import dispatchInvitation,renderEmailTemplate
 
 def referralRedirect(request,refkey):
+
+    if request.user.is_authenticated:
+        return redirect("/")
+
     try:
         Invitation.objects.get(refkey = refkey)
     except Invitation.DoesNotExist:
@@ -30,6 +34,9 @@ def referralRedirect(request,refkey):
 
 def referralSignup(request):
     refkey = request.session.get("invitation",False)
+
+    if request.user.is_authenticated:
+        return redirect("/")
 
     if not refkey:
         return HttpResponse(status = 403)
