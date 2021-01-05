@@ -25,6 +25,7 @@ from cartographer.views import cartographer
 import api.urls
 from api.admin_views import router as api_admin_router
 import invitations.urls
+from closedMiddleware.views import closed
 #import adminext.urls
 
 urlpatterns = [
@@ -38,6 +39,8 @@ urlpatterns = [
     path("test/reg/",lambda r: render(r,"django_registration/registration_form.html",{"form":UserCreationForm()})),
     path("test/redir/",lambda r: render(r,"django_registration/registration_complete.html",{"form":UserCreationForm()})),
     path("test/login/",lambda r: render(r,"registration/login.html",{"form":AuthenticationForm()})),
+
+    path("closed/",closed,name="closed"),
 ]
 
 urlpatterns += api.urls.urlpatterns

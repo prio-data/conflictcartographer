@@ -23,6 +23,8 @@ import os
 # ================================================
 # ================================================
 
+# Weird inversion ...
+ACTIVE = os.getenv("APP_DISABLED",True) is True
 
 SECRET_KEY = os.getenv("SECRET_KEY","fgsfds")
 DEBUG = False if os.getenv("PRODUCTION") else True 
@@ -101,6 +103,7 @@ INSTALLED_APPS = [
     "webpack_loader",
     "cartographer",
     "api",
+    "closedMiddleware"
 ]
 
 MIDDLEWARE = [
@@ -113,6 +116,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     #"livereload.middleware.LiveReloadScript",
+    "closedMiddleware.middleware.check_active"
 ]
 
 ROOT_URLCONF = 'conflictcartographer.urls'
