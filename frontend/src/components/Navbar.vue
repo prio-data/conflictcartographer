@@ -8,7 +8,7 @@
    <div id="navbar-buttons">
       <button v-on:click="$emit('goback')">Back</button>
       <button v-on:click="$emit('logout')">Log out</button>
-      <button v-on:click="$emit('helpme')">?</button>
+      <button v-on:click="$emit('helpme')">Help</button>
    </div>
    <div></div>
 </div>
@@ -32,7 +32,7 @@
 
 #navbar-buttons
    display: grid
-   grid-template-columns: 2fr 2fr 1fr
+   grid-template-columns: 1fr 1fr 1fr 
    column-gap: 10px
    grid-area: two 
 
