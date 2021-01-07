@@ -8,5 +8,10 @@ Login
 {% endblock %}
 
 {% block buttons %}
-<a id="registerlink" href="/accounts/register">Register</a>
+<a id="registerlink" href="/accounts/register">Register new user</a>
+<a id="registerlink" href="{% url 'password_reset' %}">Reset password</a>
 {% endblock %}
+
+{% block submitname %}
+Login
+{% endblock %} 

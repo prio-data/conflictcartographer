@@ -52,9 +52,6 @@ if os.getenv("DB_SSL"):
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') # ???
 
-SENDGRID_API_KEY = os.getenv("EMAIL_API_KEY")
-EMAIL_FROM_ADDRESS = os.getenv("EMAIL_FROM_ADDRESS") 
-
 # ================================================
 # ================================================
 # ================================================
@@ -160,7 +157,17 @@ REST_FRAMEWORK = {
 # ================================================
 # EMAIL STUFF 
 
-EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+
+SENDGRID_API_KEY = os.getenv("EMAIL_API_KEY")
+EMAIL_FROM_ADDRESS = os.getenv("EMAIL_FROM_ADDRESS") 
+DEFAULT_FROM_EMAIL = os.getenv("EMAIL_FROM_ADDRESS") 
+
+
+if not DEBUG and SENDGRID_API_KEY:
+    EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
 EMAIL_INTERVAL = 1
 
 DEFAULT_EMAIL_TITLE = "Invitation to participate in an expert survey"
