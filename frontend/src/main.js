@@ -1,17 +1,17 @@
 import Vue from 'vue'
+/*
 import VueCookies from "vue-cookies"
 import VueResource from "vue-resource"
 import vueDebounce from "vue-debounce"
+*/
 
 import "leaflet/dist/leaflet.css"
 import "leaflet-draw/dist/leaflet.draw.css"
 
-import App from './App.vue'
+//import App from './App.vue'
 import store from "./store/store.js"
-
-import "./skeleton/skeleton.css"
-import "./skeleton/normalize.css"
 import "./sass/style.sass"
+import Router from "@/router"
 
 // Leaflet fixing
 import {Icon} from "leaflet"
@@ -22,15 +22,19 @@ Icon.Default.mergeOptions({
   shadowUrl: require("leaflet/dist/images/marker-shadow.png")
 });
 
-Vue.config.productionTip = false
-Vue.config.devtools = true
-Vue.use(VueResource)
-Vue.use(VueCookies)
-Vue.use(vueDebounce)
+// API setup
+let csrf_token = /(?<=csrftoken\=)[^;]+/.exec(document.cookie)
+if(!csrf_token !== null){
+   store.commit("initApi",csrf_token[0])
+} else {
+   console.log("No CSRF token found...")
+}
+
+let app = document.querySelector("#app")
+let rv = document.createElement("router-view")
+app.appendChild(rv)
 
 new Vue({
-   el: "#app",
-   store,
-   delimiters: ["[[","]]"],
-   render: h => h(App),
+   router:Router,
+   store:store,
 }).$mount('#app')

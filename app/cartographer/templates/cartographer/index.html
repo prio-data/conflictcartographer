@@ -23,15 +23,12 @@
    </noscript>
    
    <div id="app"> 
-      <app>
-      </app>
    </div>
 
    {% csrf_token %}
    {{ data|json_script:"dat"}}
    {{ sessionInfo|json_script:"sessionInfo"}}
    <script src="{% static "js/app.js" %}"></script>
-
    {% if isdebug %}
       <script>console.log("Running in debug mode")</script>
    {% endif %}

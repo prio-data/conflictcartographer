@@ -6,7 +6,10 @@ Vue.use(VueResource);
 
 const path = (...args)=> [...args].join("/")+"/"
 
-const Api = function(csrftoken){
+const Api = function(csrftoken,url){
+   if(url !== undefined){
+      url = "/api"
+   }
    this.url = "/api" 
 
    this.staticArgs = {
