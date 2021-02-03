@@ -3,7 +3,8 @@ import VueRouter from "vue-router"
 import Vue from "vue"
 
 import LoadingRouter from "@/components/LoadingRouter"
-import App from "@/App"
+import CountryAssign from "@/components/CountryAssign"
+import Menu from "@/components/Menu"
 
 Vue.use(VueRouter)
 
@@ -13,10 +14,10 @@ const EditMeta = {template: `Edit your metadata`}
 
 const routes = [
    {path: "/",component: LoadingRouter},
-   {path: "/assign",component: CountrySelect},
+   {path: "/assign",component: CountryAssign},
    {path: "/ctry/:gwno",component: DataEntry},
-   {path: "/meta",component: EditMeta},
-   {path: "/menu",component: App},
+   {path: "/profile",component: EditMeta},
+   {path: "/menu",component: Menu},
 ]
 
 
