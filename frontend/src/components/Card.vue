@@ -1,5 +1,5 @@
 <template>
-   <div id="father" class="container">
+   <div class="container">
       <div class="card">
          <div class="holder header">
             <slot name="header"></slot>
@@ -17,6 +17,7 @@
    </div>
 </template>
 <style lang="sass" scoped>
+@import "@/sass/variables"
 
 .holder
    overflow: hidden
@@ -49,10 +50,10 @@
    width: 100%
    pointer-events: none
 
-@media only screen and (min-width: 415px)
+@media only screen and (min-width: $mob-width)
    .card
-      width: 415px*1.1
-      height: 736px*1.1
+      width: $mob-width*1.1
+      height: $mob-height*1.1
       margin: 20px 0
       box-shadow: 0px 3px 5px 2px #eee
       border: 1px solid gray

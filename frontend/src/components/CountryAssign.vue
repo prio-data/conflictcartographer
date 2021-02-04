@@ -45,8 +45,6 @@ div.footer-container
    display: grid
 
 button.continue
-   border: none
-   border-radius: 10px
    margin: 10px
 
 #help-overlay
@@ -69,13 +67,13 @@ button.continue
 </style>
 <script>
 import Card from "@/components/Card"
-import AssignedCountry from "@/components/AssignedCountry"
+//import AssignedCountry from "@/components/AssignedCountry"
 import Multiselect from "vue-multiselect"
 import "@/sass/global.sass"
 
 export default {
    name: "CountryAssign",
-   components: {Card,AssignedCountry,Multiselect},
+   components: {Card,Multiselect},
 
    data(){
       return {
