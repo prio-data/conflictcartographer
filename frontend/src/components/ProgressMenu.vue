@@ -6,14 +6,13 @@
 
       <template v-slot:content>
          <div class="menu">
-
-            <div class="category nextup">
-               <h2>Next up: {{ next.name }}</h2>
+            <div class="nextup">
+               <h2>Next up: {{ next? next.name : ""}}</h2>
                <div class="next panel">
                   <CountryView v-if="next !== undefined" :country="next">
                   </CountryView>
                </div>
-               <button class="continue">Add predictions for {{next.name}}</button>
+               <button v-on:click="go_to_next" class="continue">Add predictions for {{ next? next.name : ""}}</button>
             </div>
 
             <div class="category pending">
@@ -65,7 +64,7 @@ div
 
 .nextup
    display: grid
-   grid-template-rows: auto 2fr 1fr
+   grid-template-rows: 30px 2fr 1fr
 
 .mock-ctry
    display: inline-block
@@ -73,7 +72,11 @@ div
    width: 100px
    background: red
 
-.category h2
+.category
+   display: grid
+   grid-template-rows: 30px 1fr
+
+h2
    line-height: 10px
 
 .next div
@@ -85,8 +88,10 @@ div
    display: inline-block
 
 .hlist
-   overflow: auto
+   overflow-x: auto
+   overflow-y: hidden
    white-space: nowrap
+   height: 100px 
 
 .next
    display: grid
@@ -119,6 +124,12 @@ export default {
       }
    },
 
+   methods:{
+      go_to_next(){
+         this.$router.push(`/ctry/${this.next.gwno}`)
+      }
+   },
+
    mounted(){
       // ask for next
       this.next = mock_countries()
@@ -127,7 +138,7 @@ export default {
       this.pending = mock_countries(5)
 
       // ask for fulfilled
-      this.fulfilled = mock_countries(8)
+      //this.fulfilled = mock_countries(8)
    }
 }
 </script>

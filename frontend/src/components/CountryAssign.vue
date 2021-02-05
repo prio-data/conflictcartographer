@@ -19,7 +19,7 @@
       </template>
       <template v-slot:footer>
          <div class="footer-container">
-            <button class="continue">Proceed</button>
+            <button v-on:click="to_router" class="continue">Finished</button>
          </div>
       </template>
       <template v-slot:overlay>
@@ -100,6 +100,10 @@ export default {
       },
       removeHelp(c){
          this.helptext = "Great! Thanks. Now click the button below to proceed"
+      },
+
+      to_router(){
+         this.$router.push("/")
       }
    },
 
