@@ -332,6 +332,7 @@ export default {
          toStyle.setStyle((feature)=>{
             let style = BASE_STYLE
             style.color = colorGradient((feature.properties.intensity)/5,COLORS.low,COLORS.high)
+            style.fillOpacity = ((feature.properties.confidence/100)*0.5) + 0.2
             if(feature.properties.selected !== undefined){
                style.opacity = 0.9 
                style.weight = 9
