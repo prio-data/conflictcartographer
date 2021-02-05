@@ -7,16 +7,15 @@ import CountryAssign from "@/components/CountryAssign"
 import Menu from "@/components/Menu"
 import MapEditor from "@/components/MapEditor"
 import ProgressMenu from "@/components/ProgressMenu"
+import MetaQuestionaire from "@/components/MetaQuestionaire"
 
 Vue.use(VueRouter)
-
-const EditMeta = {template: `Edit your metadata`}
 
 const routes = [
    {path: "/",component: LoadingRouter},
    {path: "/assign",component: CountryAssign},
    {path: "/ctry/:gwno",component: MapEditor},
-   {path: "/profile",component: EditMeta},
+   {path: "/questionaire",component: MetaQuestionaire},
    {path: "/menu",component: Menu},
    {path: "/progress",component: ProgressMenu},
 ]
