@@ -24,7 +24,7 @@
       </template>
       <template v-slot:overlay>
          <div id="help-overlay">
-            <p class="helptext">
+            <p>
                {{ helptext }}
             </p>
          </div>
@@ -58,7 +58,7 @@ button.continue
 #help-overlay p
    font-size: 30px
    margin: 20px
-   transform: translate(0,-100px)
+   //transform: translate(0,-100px)
 
 @media only screen and (min-height: 600px)
    #help-overlay

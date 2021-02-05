@@ -6,10 +6,10 @@ import LoadingRouter from "@/components/LoadingRouter"
 import CountryAssign from "@/components/CountryAssign"
 import Menu from "@/components/Menu"
 import MapEditor from "@/components/MapEditor"
+import ProgressMenu from "@/components/ProgressMenu"
 
 Vue.use(VueRouter)
 
-const CountrySelect = {template: `<div>Select some countries</div>`}
 const EditMeta = {template: `Edit your metadata`}
 
 const routes = [
@@ -18,6 +18,7 @@ const routes = [
    {path: "/ctry/:gwno",component: MapEditor},
    {path: "/profile",component: EditMeta},
    {path: "/menu",component: Menu},
+   {path: "/progress",component: ProgressMenu},
 ]
 
 
