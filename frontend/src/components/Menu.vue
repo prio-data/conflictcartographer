@@ -6,13 +6,7 @@
             v-on:logout="logout"
             v-on:helpme="toggleMenuInfo"
             title="Conflict Cartographer"/> 
-         <MapEditor
-            v-if="currentProject !== null"
-            v-bind:project="currentProject"
-            />
-         <ProjectMenu 
-            v-on:projectSelected="projectSelected"
-            v-else/>
+         <ProjectMenu v-on:projectSelected="projectSelected"/>
          <Monogram/>
          <Modal 
             v-if="showMenuInfo"

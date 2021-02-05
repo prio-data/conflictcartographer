@@ -6,12 +6,13 @@
       <template v-slot:content>
          <div class="assignments-layout">
             <multiselect 
-               v-model="value" 
+               v-model="values" 
                :options="options" 
                :searchable="true"
                :close-on-select="false"
                :multiple="true"
                :max-height="500"
+               :loading="!loaded"
                @open="removeHelp"
                >
             </multiselect>
@@ -79,14 +80,19 @@ export default {
       return {
          countries: [
          ],
-         value: "",
+         values: [],
          helptext: "Please select the countries that you consider yourself an expert on by clicking the above list.",
+         got_alternatives:false,
+         got_assigned:false,
       }
    },
 
    computed:{
       options(){
          return this.countries.map(c=>c.name)
+      },
+      loaded(){
+         return this.got_alternatives && this.got_assigned
       }
    },
    
@@ -103,31 +109,38 @@ export default {
       },
 
       to_router(){
-         this.$router.push("/")
+         this.$store.state.api.post.rel("profile/assigned",{
+            data:{
+               selected: this.values 
+            }
+         })
+         .then((r)=>{
+            this.$router.push("/")
+         })
+         .catch((e)=>{
+            console.log(e)
+         })
       }
    },
 
    mounted(){
-      // Mocking
-      let randomName = (length)=>{
-         let letters = "abcdefghijklmnopqrstuvwxyz"
-         if(length === undefined){
-            length = 8
-         }
-         let current = ""
-         for(let i = 0; i < length; i++){
-            current = current + letters[Math.abs(Math.round(Math.random()*letters.length)-1)]
-         }
-         return current
-      }
-
-      for(let i = 0; i < 32; i++){
-         this.countries.push({
-            url: `http://www.foo.bar/${i}`,
-            name: randomName(),
-            gwno: i
+      this.$store.state.api.get.rel("projects")
+         .then((r)=>{
+            this.countries = r.data.projects
+            this.got_alternatives = true
          })
-      }
+         .catch((e)=>{
+            console.log(e)
+         })
+      this.$store.state.api.get.rel("profile/assigned")
+         .then((r)=>{
+            console.log(r)
+            this.values = r.data.countries.map((prj)=>prj.name)
+            this.got_assigned = true
+         })
+         .catch((e)=>{
+            console.log(e)
+         })
    }
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
    <div>
-      <h2>{{question.title}}</h2>
+      <h2>{{question.label}}</h2>
       <p>{{question.description}}</p>
       <input v-model="question.value" type="text">
    </div>

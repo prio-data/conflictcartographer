@@ -5,6 +5,7 @@
          v-on:startdraw="startdraw"
          v-on:startdelete="startdelete"
          v-on:reset="neutral"
+         v-on:nonanswer="non_answer"
          :mode="mode"
          >
          <template v-if="mode===4 && selectedLayer !== undefined" v-slot:editor-panel>
@@ -356,6 +357,17 @@ export default {
          }
          return base
       },
+
+      non_answer(){
+         this.$store.state.api.post.rel(`nonanswer/${this.$route.params.gwno}`)
+            .then((r)=>{
+               this.$router.push("/")
+            })
+            .catch((e)=>{
+               console.log("yee")
+            })
+
+      }
    }
 }
 </script>

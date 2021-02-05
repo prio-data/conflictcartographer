@@ -21,7 +21,7 @@
          </div>
          <div class="control-panel navigation-controls button-panel">
             <button v-on:click="go_to_router" class="continue">Submit</button>
-            <button class="alt" v-on:click="toggle">Help</button>
+            <button class="alt" v-on:click="$emit('nonanswer')">No answer</button>
          </div>
    </div>
 </template>
@@ -72,9 +72,6 @@ export default {
       }
    },
    methods:{
-      toggle(){
-         this.value = !this.value
-      },
       go_to_router(){
          this.$router.push("/")
       }

@@ -16,7 +16,7 @@
             </div>
 
             <div class="category pending">
-               <h2>Pending: {{ Math.round(((pending.length+1) / all.length)*100,2)}}%</h2>
+               <h2>Pending: {{ Math.round(((pending.length) / all.length)*100,2)}}%</h2>
                <div class="hlist panel">
                   <CountryView v-for="country in pending" :key="country.gwno" :country="country">
                   </CountryView>
@@ -120,7 +120,11 @@ export default {
 
    computed:{
       all(){
-         return [this.next].concat(this.pending).concat(this.fulfilled)
+         let all = this.pending.concat(this.fulfilled)
+         if(this.next !== undefined){
+            all = all.concat([this.next])
+         }
+         return all
       }
    },
 
@@ -131,14 +135,23 @@ export default {
    },
 
    mounted(){
-      // ask for next
-      this.next = mock_countries()
+      this.$store.state.api.get.rel("profile/assigned")
+         .then((all)=>{
+            return this.$store.state.api.get.rel("profile/unfulfilled")
+               .then((unfulfilled)=>{
+                  console.log(unfulfilled)
+                  this.pending = unfulfilled.data.countries
+                  let pending_names = this.pending.map((ctry)=>ctry.name)
+                  this.fulfilled = all.data.countries.filter((ctry)=>{
+                     return !pending_names.includes(ctry.name) 
+                  })
+                  this.next = this.pending.pop()
+                  if(this.next === undefined){
+                     this.$router.push("/")
+                  }
 
-      // ask for pending
-      this.pending = mock_countries(5)
-
-      // ask for fulfilled
-      //this.fulfilled = mock_countries(8)
+               })
+         })
    }
 }
 </script>

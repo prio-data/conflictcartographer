@@ -9,14 +9,14 @@
             <p>Please add some details about yourself</p>
          </div>
          <div id="questions">
-            <Question v-for="question in questions" :question="question" :key="question.title"></Question>
+            <Question v-for="question in questions" :question="question" :key="question.label"></Question>
          </div>
       </div>
    </template>
    <template v-slot:footer>
       <div class="footer-buttons">
          <button v-on:click="to_router" class="continue">Submit</button>
-         <button class="alt">Skip</button>
+         <button v-on:click="skip" class="alt">Skip</button>
       </div>
    </template>
 </Card>
@@ -39,12 +39,14 @@ import Question from "@/components/Question"
 
 const QUESTIONS = [
    {
-      "title":"Profession",
+      "title":"profession",
+      "label": "Profession",
       "description":"What is your current profession?",
       "value":"",
    },
    {
-      "title":"Institution",
+      "title":"affiliation",
+      "label": "Affiliation",
       "description":"What is your institutional affiliation?",
       "value":"",
    },
@@ -59,7 +61,28 @@ export default {
    methods: {
       to_router(){
          // Post metadata to API
-         this.$router.push("/")
+         this.$store.state.api.post.rel("profile/meta",{
+            data: this.questions
+         })
+         .then((r)=>{
+            this.$router.push("/")
+         })
+         .catch((e)=>{
+            console.log(e)
+         })
+      },
+      skip(){
+         this.$store.state.api.post.rel("profile/meta",{
+               data: [
+                  {"title":"skipped","value":"true"}
+               ]
+            })
+         .then((r)=>{
+            this.$router.push("/")
+         })
+         .catch((e)=>{
+            console.log(e)
+         })
       }
    },
    components: {Card,Question}

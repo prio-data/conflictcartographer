@@ -43,11 +43,9 @@ export default {
       let SIM_DELAY = ()=>{return 250 + (250*Math.random())}
 
       this.status = "Checking assigned countries"
-      this.$store.state.api.get.rel("assigned")
-      new Promise(r=>setTimeout(r,SIM_DELAY(),{data:[1,2,3]}))
-
+      this.$store.state.api.get.rel("profile/assigned")
          .then((assigned_countries)=>{
-            if(assigned_countries.data.length == 0){
+            if(assigned_countries.data.countries.length == 0){
                this.$router.push("/assign")
                return true
             } else {
@@ -57,10 +55,10 @@ export default {
          .then((done)=>{
             if(!done){
                this.status = "Checking status of assigned"
-               return new Promise(r=>setTimeout(r,SIM_DELAY(),{data:{status:"finished"}}))//this.$store.state.api.get.rel("next")
-                  .then((next)=>{
-                     if(next.data.status == "active"){
-                        // this.$router.push(`/ctry/${next.gwno}`)
+               return this.$store.state.api.get.rel("unfulfilled")
+                  .then((unfulfilled)=>{
+                     if(unfulfilled.data.countries.length>0){
+                        this.$router.push("/progress")
                         return true
                      } else {
                         return false
@@ -69,18 +67,14 @@ export default {
             } else {
                return done 
             }})
-
          .then((done)=>{
             if(!done){
                this.status = "Checking profile status"
-               return new Promise(r=>setTimeout(r,SIM_DELAY(),{data:{meta:{foo:"bar"},prompted:true}}))//this.$store.state.api.get.rel("profile")
+               return this.$store.state.api.get.rel("profile/exists")
                   .then((profile)=>{
-
-                     let hasmeta = Object.keys(profile.data.meta).length > 0
-                     let prompted = profile.data.prompted
-
-                     if(!(hasmeta | prompted)){
-                        this.$router.push("/profile")
+                     let hasmeta = profile.data.profile
+                     if(!hasmeta){
+                        this.$router.push("/questionaire")
                         return true
                      } else {
                         return false

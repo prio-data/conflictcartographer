@@ -21,7 +21,7 @@
                   </ProjectView>
                </div>
                <div class="pmcard">
-                  <CountryPicker v-on:addedProject="refreshProjects"/>
+                  <button class="alt to-assign" v-on:click="go_to_assign">Assign more countries</button>
                </div>
             </div>
             <Spinner v-else/>
@@ -32,6 +32,10 @@
 
 <style lang="sass" scoped>
 @import "@/sass/variables.sass"
+
+.to-assign
+   height: 100px 
+   width: 100%
 
 div#pm-wrapper
    display: grid
@@ -119,13 +123,14 @@ h1#menuheader
 
       methods: {
          chosen: function(project){
-            this.$emit("projectSelected",project)
+            console.log(project)
+            this.$router.push(`ctry/${project.gwno}`)
          },
          refreshProjects(){
             this.projectsLoaded = false
             this.$store.state.api.get.rel("assigned")
                .then((r)=>{
-                  this.projects = r.data
+                  this.projects = r.data.countries
                   this.projects = this.projects.sort((a,b)=>{ 
                      if(a.name < b.name){return -1}
                      if(a.name > b.name){return 1}
@@ -135,6 +140,9 @@ h1#menuheader
                .catch((e)=>{
                   console.log(e)
                })
+         },
+         go_to_assign(){
+            this.$router.push("/assign")
          }
       },
 
