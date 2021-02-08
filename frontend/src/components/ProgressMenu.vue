@@ -71,7 +71,8 @@
    height: 100%
    display: grid
    place-items: center
-   color: black
+   color: #333
+   z-index: 999
 
 #plot
    height: 420px
@@ -172,7 +173,9 @@ export default {
                fit_to_geojson(map,this.next.shape)
                let layer = L.geoJson(this.next.shape,{
                   style:{
-                     color: "black"
+                     color: "white",
+                     opacity: 1,
+                     fillOpacity: 1
 
                   }
                })

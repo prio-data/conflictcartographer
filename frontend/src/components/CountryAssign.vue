@@ -40,6 +40,9 @@
    background: $ui-highlight
    font-size: 20px
 
+input[type=text].multiselect__input
+   background: none
+
 .multiselect__option--highlight:after
    background: $ui-darkergray
 
