@@ -1,6 +1,9 @@
 <template>
    <div class="container">
       <div class="card">
+         <div class="overlay loading-cover" :class="{loaded: loaded}">
+            <Spinner></Spinner>
+         </div>
          <div class="holder header">
             <slot name="header"></slot>
          </div>
@@ -18,6 +21,27 @@
 </template>
 <style lang="sass" scoped>
 @import "@/sass/variables"
+
+@keyframes fade
+   0%
+      opacity: 100% 
+   100%
+      opacity: 0%
+      display: none
+
+.overlay.loading-cover
+   background: #aaa 
+   height: 100%
+   width: 100%
+   display: grid
+   place-items: center
+   z-index: 999
+   pointer-events: none
+
+.overlay.loading-cover.loaded
+   animation-name: fade
+   animation-duration: 0.5s 
+   animation-fill-mode: forwards
 
 .holder
    overflow: hidden
@@ -67,7 +91,15 @@
 
 </style>
 <script>
+import Spinner from "@/components/Spinner"
 export default {
-   name: "Card"
+   name: "Card",
+   components:{Spinner},
+   props: {
+      loaded: {
+         type: Boolean,
+         default: false 
+      }
+   }
 }
 </script>

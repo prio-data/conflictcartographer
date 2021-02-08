@@ -1,5 +1,5 @@
 <template>
-<Card>
+<Card :loaded="true">
    <template v-slot:header>
       <h1>PERSONALIA</h1>
    </template>

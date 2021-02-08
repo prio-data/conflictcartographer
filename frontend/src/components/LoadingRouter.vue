@@ -4,29 +4,21 @@ based on their current participation status. The routing follows a
 hand-holding strategy designed to maximize participation.
 -->
 <template>
-   <div id="root">
-      <div class="card">
-         <h1>Loading...</h1>
-         <p class="status">{{ status }}</p>
-      </div>
+<Card>
+   <!--
+   <div class="card">
+      <h1>Loading...</h1>
+      <p class="status">{{ status }}</p>
    </div>
+   -->
+</Card>
 </template>
-<style scoped>
-div {
-   height: 100vh;
-   width: 100vw;
-   display: grid;
-   place-items: center;
-}
-.card {
-   height: 200px;
-}
-</style>
 <script>
 import Spinner from "@/components/widgets/Spinner"
+import Card from "@/components/Card"
 
 export default {
-   components: {Spinner},
+   components: {Card,Spinner},
 
    data(){
       return {

@@ -1,5 +1,5 @@
 <template>
-   <Card>
+   <Card :loaded="loaded">
       <template v-slot:header>
          <h1>COUNTRY ASSIGNMENTS</h1>
       </template>
