@@ -1,6 +1,6 @@
 <template>
    <div id="mapeditor">
-      <div id="map"></div>
+      <div id="map" ref="map"></div>
       <EditorOverlay 
          v-on:startdraw="startdraw"
          v-on:startdelete="startdelete"
@@ -100,7 +100,7 @@ export default {
       LayerEditor,
    },
    
-   props: ["project"],
+   //props: ["project"],
 
    data(){
       return {
@@ -157,9 +157,8 @@ export default {
             this.projectShape = r.data.shape
             this.absUrl = r.data.url
 
-            this.map = new L.Map("map")
+            this.map = new L.Map(this.$refs.map)
             configure_map(this.map,this.projectShape)
-
             this.map.on(L.Draw.Event.CREATED,(e)=>{
                this.created(e.layer)
             })
@@ -191,12 +190,12 @@ export default {
                   this.restyle()
                })
                .catch((e)=>{
-                  console.log(e)
+                  console.error(`Error adding layers: ${e}`)
                })
 
          })
          .catch((e)=>{
-            console.log(e)
+            console.error(`Error mounting map: ${e}`)
          })
 
          document.addEventListener("keydown",(e)=>{
