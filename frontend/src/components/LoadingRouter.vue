@@ -55,7 +55,7 @@ export default {
          .then((done)=>{
             if(!done){
                this.status = "Checking status of assigned"
-               return this.$store.state.api.get.rel("unfulfilled")
+               return this.$store.state.api.get.rel("profile/unfulfilled")
                   .then((unfulfilled)=>{
                      if(unfulfilled.data.countries.length>0){
                         this.$router.push("/progress")
