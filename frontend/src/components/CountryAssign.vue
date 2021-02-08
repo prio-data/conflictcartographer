@@ -33,6 +33,20 @@
    </Card>
 </template>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+
+<style lang="sass">
+@import "@/sass/variables.sass"
+.multiselect__tag
+   background: $ui-highlight
+   font-size: 20px
+
+.multiselect__option--highlight:after
+   background: $ui-darkergray
+
+.multiselect__option--highlight
+   background: $ui-highlight
+</style>
+
 <style lang="sass" scoped>
 
 div.assignments-layout

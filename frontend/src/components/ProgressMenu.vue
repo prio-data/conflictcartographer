@@ -1,113 +1,127 @@
 <template>
-   <Card>
+   <Card :loaded="loaded">
       <template v-slot:header>
-         <h1>PROGRESS</h1>
+         <h1>NEXT UP</h1>
       </template>
 
       <template v-slot:content>
-         <div class="menu">
-            <div class="nextup">
-               <h2>Next up: {{ next? next.name : ""}}</h2>
-               <div class="next panel">
-                  <CountryView v-if="next !== undefined" :country="next">
-                  </CountryView>
+         <div id="status-menu">
+            <div id="status-nextup">
+               <div v-if="next !== undefined" id="status-nextup-overlay">
+                  <h1>
+                     {{ next.name }}
+                  </h1>
                </div>
-               <button v-on:click="go_to_next" class="continue">Add predictions for {{ next? next.name : ""}}</button>
-            </div>
-
-            <div class="category pending">
-               <h2>Pending: {{ Math.round(((pending.length) / all.length)*100,2)}}%</h2>
-               <div class="hlist panel">
-                  <CountryView v-for="country in pending" :key="country.gwno" :country="country">
-                  </CountryView>
+               <div id="plot">
                </div>
             </div>
-
-            <div class="category pending">
-               <h2>Fulfillled: {{ Math.round((fulfilled.length / all.length)*100,2) }}%</h2>
-               <div class="fulfilled hlist panel">
-                  <CountryView v-for="country in fulfilled" :key="country.gwno" :country="country">
-                  </CountryView>
+            <div id="status-other">
+               <div class="list-category">
+                  <p>Pending</p>
+                  <div v-if="pending.length>0" class="hlist pending">
+                     <div v-for="country in pending " :key="country.gwno">{{country.iso2c}}</div>
+                  </div>
+               </div>
+               <div class="list-category">
+                  <p>Fulfilled</p>
+                  <div v-if="fulfilled.length>0" class="hlist fulfilled">
+                     <div v-for="country in fulfilled" :key="country.gwno">{{country.iso2c}}</div>
+                  </div>
                </div>
             </div>
-
          </div>
       </template>
 
       <template v-slot:footer>
-         <div class="controls-holder">
-            <button class="alt fill">Change Assigned</button>
+         <div class="footer-buttons">
+            <button v-on:click="go_to_next" class="continue">Add predictions for {{ next? next.name : ""}}</button>
+            <button v-on:click="go_to_assign" class="alt">Change Assigned</button>
          </div>
       </template>
 
    </Card>
 </template>
+
 <style lang="sass" scoped>
 
 @import "@/sass/variables"
 
-div
-   grid-gap: $menu-gaps
+#status-menu
+   display: grid
+   grid-template-rows: auto 1fr 
+   justify-items: center
+   width: 100%
+   height: 90%
 
-.controls-holder
-   padding: $menu-gaps
-   height: 100%
+#status-menu>div
    width: 100%
 
-.menu
+#status-nextup
    display: grid
-   grid-template-rows: 2fr 1fr 1fr
-   grid-template-columns: 100% 
-   width: 100% 
+   place-items: center
+   background: $ui-highlight 
+   padding: 10px 0 
+   position: relative
+
+#status-nextup-overlay
+   position: absolute
+   top: 0
+   left: 0
+   width: 100%
    height: 100%
-   padding: 0 $menu-gaps
-
-.nextup
    display: grid
-   grid-template-rows: 30px 2fr 1fr
+   place-items: center
+   color: black
 
-.mock-ctry
-   display: inline-block
-   height: 100% 
-   width: 100px
-   background: red
+#plot
+   height: 420px
+   width: 420px 
+   cursor: default
 
-.category
+#status-other
    display: grid
-   grid-template-rows: 30px 1fr
+   grid-template-rows: 1fr 1fr
+   padding: 0 20px
 
-h2
-   line-height: 10px
+.list-category
+   display: grid
+   grid-template-rows: 1fr 1fr
 
-.next div
-   width: 200px
-
-.hlist div
+.hlist>div
    margin: 0 $menu-gaps/2
-   width: 100px
+   width: 40px
    display: inline-block
+   background: $ui-highlight 
+   padding: 4px
+   font-weight: bold
 
 .hlist
    overflow-x: auto
    overflow-y: hidden
    white-space: nowrap
-   height: 100px 
-
-.next
-   display: grid
-   height: 100%
-   place-items: center
-
-.panel
-   padding: 10px
-   background: #aaa
-   border-radius: 10px
+   //background: #ddd
+   border-radius: 2px
+   padding: 10px 10px
 
 </style>
+
+<style>
+.leaflet-container {
+    background: none;
+    outline: 0;
+}
+</style>
+
 <script>
 import Card from "@/components/Card"
 import CountryView from "@/components/CountryView"
 import {mock_countries} from "@/mocking"
+//import * as d3 from "d3"
+import L from "leaflet"
+import "leaflet/dist/leaflet.css"
+import {fit_to_geojson,TILE_URL} from "@/configure_map"
+
+
 export default {
    components: {Card,CountryView},
    data(){
@@ -115,6 +129,7 @@ export default {
          next: undefined,
          pending: [],
          fulfilled: [],
+         loaded: false 
       }
    },
 
@@ -131,26 +146,49 @@ export default {
    methods:{
       go_to_next(){
          this.$router.push(`/ctry/${this.next.gwno}`)
+      },
+      go_to_assign(){
+         this.$router.push("/assign")
       }
    },
 
    mounted(){
-      this.$store.state.api.get.rel("profile/assigned")
-         .then((all)=>{
-            return this.$store.state.api.get.rel("profile/unfulfilled")
-               .then((unfulfilled)=>{
-                  console.log(unfulfilled)
-                  this.pending = unfulfilled.data.countries
-                  let pending_names = this.pending.map((ctry)=>ctry.name)
-                  this.fulfilled = all.data.countries.filter((ctry)=>{
-                     return !pending_names.includes(ctry.name) 
-                  })
-                  this.next = this.pending.pop()
-                  if(this.next === undefined){
-                     this.$router.push("/")
-                  }
+      let map = new L.Map("plot")
+      map.zoomControl.remove()
+      map.attributionControl.remove()
+      map.dragging.disable();
+      map.touchZoom.disable();
+      map.doubleClickZoom.disable();
+      map.scrollWheelZoom.disable();
+      map.boxZoom.disable();
+      map.keyboard.disable();
 
+      this.$store.state.api.get.rel("profile/next")
+         .then((rsp)=>{
+            if(rsp.data.status != "active"){
+               this.$router.push("/")
+            } else {
+               this.next = rsp.data.next
+               fit_to_geojson(map,this.next.shape)
+               let layer = L.geoJson(this.next.shape,{
+                  style:{
+                     color: "black"
+
+                  }
                })
+               layer.addTo(map)
+               this.loaded = true
+
+               this.$store.state.api.get.rel("profile/pending")
+                  .then((r)=>{
+                     let not_next = r.data.countries.filter((ctry)=>ctry.gwno != this.next.gwno)
+                     this.pending = not_next 
+                  })
+               this.$store.state.api.get.rel("profile/fulfilled")
+                  .then((r)=>{
+                     this.fulfilled = r.data.countries
+                  })
+            }
          })
    }
 }

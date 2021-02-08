@@ -20,7 +20,6 @@
       </HelptextOverlay>
    </div>
 </template>
-
 <style scoped lang="sass">
 @import "../sass/variables.sass"
 
@@ -29,11 +28,47 @@ $darken: 0.4
 #map
    height: 100vh
    width: 100vw
+   background: #aaa 
 
 #mapeditor
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale
   color: #2c3e50
+// Editing dots
+.leaflet-editing-icon
+   //width: 5px !important
+   //height: 5px !important
+   //top: 5px !important 
+   //left: 5px !important
+   border-radius: 10px
+   border: none
+   background: $drawcolor
+.leaflet-marker-pane div:nth-child(2)
+   background: $ui_highlight
+
+
+.leaflet-touch .leaflet-control-zoom-display 
+  width: $tbsize + 8px
+  height: $tbsize + 8px
+  font-size: 18px
+  line-height: $tbsize - ($tbsize / 4) 
+.leaflet-touch .leaflet-bar a, .leaflet-touch .leaflet-toolbar-0 > li > a 
+  width: $tbsize + 4px
+  height: $tbsize + 4px
+  font-size: $tbsize / 2 
+  line-height: $tbsize + 5px
+  background-size: 314px 30px
+.leaflet-touch .leaflet-draw-toolbar.leaflet-bar a 
+  background-position-y: 6px
+.leaflet-touch .leaflet-draw-actions a, .leaflet-touch .leaflet-control-toolbar .leaflet-toolbar-1 > li > .leaflet-toolbar-icon 
+  font-size: $tbsize / 2 
+  line-height: $tbsize + 4px
+  height: $tbsize + 4px
+.leaflet-touch .leaflet-draw-actions, .leaflet-touch .leaflet-toolbar-1 
+  left: $tbsize + 5px
+.leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar
+   border: none
+
 </style>
 
 <script>
@@ -43,6 +78,8 @@ import L from "leaflet"
 import "leaflet-draw" 
 import "leaflet-boundary-canvas"
 import bbox from "geojson-bbox"
+
+import "@/sass/leaflet_custom.sass"
 
 import colorGradient from "@/util/colorGradient.js"
 import Spinner from "@/components/Spinner"
@@ -218,7 +255,7 @@ export default {
       startdraw(){
          this.mode = MODES.drawing
          if(this.map !== undefined){
-            this.drawing = new L.Draw.Polygon(this.map,{})
+            this.drawing = new L.Draw.Polygon(this.map,{shapeOptions:{color:"grey"}})
             this.drawing.enable()
          } else {
          }

@@ -1,7 +1,8 @@
 
 import L from "leaflet"
+import bbox from "geojson-bbox"
 
-const TILE_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
+export const TILE_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
 
 export function shape_to_latlng_box(shape){
    const box = bbox(shape)
@@ -27,12 +28,16 @@ export function configure_map(map,mask){
 
    new L.TileLayer.BoundaryCanvas(TILE_URL,{
       boundary: mask, 
-      id: "countrytiles"
+      id: "countrytiles",
+      opacity: 0.9
    }).addTo(map)
-
 
    map.zoomSnap = 0.1
    map.setMaxZoom(9)
    map.setMinZoom(6)
    map.attributionControl.remove()
+}
+
+export function fit_to_geojson(map,geojson){
+   map.fitBounds(shape_to_latlng_box(geojson))
 }

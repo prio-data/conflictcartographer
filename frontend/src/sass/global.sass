@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Raleway&display=swap')
+@import "@/sass/variables.sass"
 
 body
    font-family: raleway
@@ -7,6 +8,7 @@ body
 button
    border: none
    border-radius: 10px
+   border-bottom: 4px solid $ui-darkergray
    font-size: 20px
 
 button:hover
@@ -14,17 +16,19 @@ button:hover
 
 button:active
    filter: brightness(0.9)
+   border-top: 4px solid $ui-darkergray
+   border-bottom: none
 
 button:focus
    outline: none
 
 button.continue
-   background: #afa
-   color: #0a0
+   background: $ui-highlight 
+   color: #333 
 
 button.alt
-   background: #aaf
-   color: #00a
+   background: #aaa
+   color: #300
 
 button.fill
    width: 100%
@@ -44,4 +48,21 @@ button.fill
    height: 100%
    grid-auto-flow: column
    grid-gap: 10px
+
+input[type=text]
+   background: #ddd
+   padding: 20px
+   border: none
+   border-radius: 10px
+   outline: none
+   font-size: 20px
+
+.header h1
+   color: #aaa 
+   font-size: 30px
+   line-height: 10px
+
+.header
+   border-bottom: 1px solid #ddd
+   margin-bottom: 8px
 

@@ -52,7 +52,7 @@ class CountryMetaSerializer(serializers.HyperlinkedModelSerializer):
 class CountryShapeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Country
-        fields = ["url","shape"]
+        fields = ["url","shape","name","iso2c","gwno"]
 
 class CountryViewSet(viewsets.ModelViewSet):
     """
@@ -132,7 +132,40 @@ class FeedbackViewset(viewsets.ModelViewSet):
             return Response(status=401)
 
 # ================================================
-# Utility views
+# Project views
+
+def get_fulfilled_projects(user):
+    period_start, period_end = quarterRange()
+    
+    shapes = Shape.objects.filter(author=user,date__gte=period_start,date__lte=period_end)
+    nonAnswers = NonAnswer.objects.filter(author=user,date__gte=period_start,date__lte=period_end)
+    return {sh.country for sh in shapes}.union({na.country for na in nonAnswers})
+
+def get_pending_projects(user):
+    projects = (Country
+            .objects
+            .filter(assignees=user.profile)
+        )
+    return set(projects).difference(get_fulfilled_projects(user))
+
+def next_project(request:HttpRequest)->HttpResponse:
+    pending = get_pending_projects(request.user)
+    if len(pending)>0:
+        next_project = pending.pop()
+        serialized = CountryShapeSerializer(next_project,context={"request":request}).data
+        return JsonResponse({"status":"active","next":serialized})
+    else:
+        return JsonResponse({"status":"finished","next":False})
+
+def pending_projects(request:HttpRequest)->HttpResponse:
+    pending = get_pending_projects(request.user)
+    serialized = CountryMetaSerializer(pending,many=True,context={"request":request}).data
+    return JsonResponse({"countries":serialized})
+
+def fulfilled_projects(request:HttpRequest)->HttpResponse:
+    pending = get_fulfilled_projects(request.user)
+    serialized = CountryMetaSerializer(pending,many=True,context={"request":request}).data
+    return JsonResponse({"countries":serialized})
 
 #@api_view(("GET","POST",))
 def projects(request:HttpRequest)->HttpResponse:

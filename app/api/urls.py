@@ -45,6 +45,10 @@ urlpatterns = [
 
     path("api/profile/assigned/",projects,name="assigned_list"),
     path("api/profile/unfulfilled/",unfulfilled,name="unfulfilled_list"),
+    path("api/profile/next/",next_project,name="next_project"),
+
+    path("api/profile/pending/",pending_projects,name="unfulfilled_list"),
+    path("api/profile/fulfilled/",fulfilled_projects,name="unfulfilled_list"),
 
     # Projects
     path("api/projects/",projectChoices)

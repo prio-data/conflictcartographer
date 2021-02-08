@@ -33,6 +33,7 @@
 <style scoped lang="sass">
 @import "@/sass/variables.sass"
 @import "@/sass/animations.sass"
+@import "@/sass/vueslider"
 
 #mousesensor
    display: k

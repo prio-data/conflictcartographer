@@ -1,6 +1,6 @@
 @import "../sass/variables.sass"
 
-$buttonsize: 80px
+$buttonsize: 40px
 
 // Tile stuff
 .leaflet-tile-container img
@@ -50,12 +50,9 @@ $buttonsize: 80px
    border: none
 
 .leaflet-bar a, .leaflet-bar a:hover, .leaflet-bar a.leaflet-disabled
-  width: $buttonsize !important
-  height: $buttonsize !important
   background: $ui-gray 
   border-bottom: 4px solid $ui-darkgray !important
   border-radius: $roundedness !important
-  font-size: 50px !important
   display: grid
   place-items: center
   content: "*" !important
@@ -74,4 +71,8 @@ $buttonsize: 80px
 .leaflet-draw-draw-polygon.lookatme
   animation: nagging 1s infinite !important
   background: $ui-highlight !important
-  
+
+.leaflet-div-icon
+   border: none
+   border-radius: 15px
+   background: $ui-highlight

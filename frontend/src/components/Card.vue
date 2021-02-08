@@ -63,9 +63,6 @@
 .header 
    text-align: center
 
-   h1
-      font-size: 20px
-
 .overlay
    position: absolute 
    top: 0
