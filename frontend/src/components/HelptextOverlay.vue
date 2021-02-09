@@ -13,7 +13,7 @@
 .helptext
    height: 100%
    width: 100%
-   padding: 20px 60px
+   padding: 30px 60px
    font-size: 25px
 
 .helptext-overlay
@@ -31,7 +31,7 @@
 
    .helptext
       display: grid
-      padding-top: 50px
+      padding-top: 70px
       font-size: 30px
 
 </style>

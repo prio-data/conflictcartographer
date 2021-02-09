@@ -2,12 +2,15 @@
    <div id="mapeditor">
       <div id="map" ref="map"></div>
 
+      <div v-if="pred_start!==undefined" class="overlay" id="prediction-period-display">
+         <div>
+            <h1>Predicting for<br>{{ pred_start }} - {{ pred_end }}</h1>
+         </div>
+      </div>
+
       <div class="overlay" id="map-editor-overlay">
 
          <div id="map-editor-overlay-header">
-            <div></div>
-            <div></div>
-            <div></div>
          </div>
 
          <div id="map-editor-overlay-viewport">
@@ -67,6 +70,23 @@
 <style scoped lang="sass">
 @import "../sass/variables.sass"
 
+#prediction-period-display
+   text-align: center
+   font-size: 10px
+   color: white 
+   margin: 0
+   padding: 0 60px
+
+#prediction-period-display h1
+   background: $ui-highlight
+   border-radius: 10px
+
+@media only screen and (min-width: $mob-width)
+   #prediction-period-display
+      margin: auto 
+      font-size: 16px
+      max-width: $mob-width
+
 #map-editor-overlay
    display: grid
    grid-template-rows: 25px auto 80px
@@ -79,6 +99,7 @@
    display: grid
    grid-auto-flow: column
    grid-template-column: repeat(auto-fill, 1fr)
+   width: 100%
 
 #map-editor-overlay-header>div
    border: 1px solid redgray 
@@ -258,6 +279,8 @@ import {configure_map,shape_to_latlng_box,fit_to_geojson} from "@/configure_map"
 
 import debounce from "@/util/debounce"
 
+import {format_date} from "@/date_formatting"
+
 const COLORS={
    low: "#2b83ba",
    high: "#d7191c",
@@ -337,6 +360,8 @@ export default {
             {key:">1000",value:4},
          ],
 
+         pred_start: undefined,
+         pred_end: undefined,
       }
    },
 
@@ -366,6 +391,15 @@ export default {
    mounted: function(){
       // =======================================
       // When drawn,  
+
+      this.$store.state.api.get.rel("period/next")
+         .then((r)=>{
+            this.pred_start = format_date(r.data.start)
+            this.pred_end = format_date(r.data.end)
+         })
+         .catch((e)=>{
+            console.error(`Error fetching dates: ${e}`)
+         })
 
       this.$store.state.api.get.rel(this.project_url)
          .then((r)=>{
@@ -508,7 +542,8 @@ export default {
          this.selectedLayer = layer
          this.mode = MODES.editing
 
-         fit_to_geojson(this.map,this.selectedLayer.toGeoJSON())
+         let bbox = shape_to_latlng_box(this.selectedLayer.toGeoJSON()).pad(.5)
+         this.map.fitBounds(bbox,{})
          this.restyle()
       },
 
