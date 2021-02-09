@@ -8,9 +8,9 @@
          <div id="status-menu">
             <div id="status-nextup">
                <div v-if="next !== undefined" id="status-nextup-overlay">
-                  <h1>
-                     {{ next.name }}
-                  </h1>
+                  <h2>Conflict intensity predictions for</h2>
+                  <h1>{{ next.name }}</h1>
+                  <h2 v-if="pred_start!==undefined">Between {{ pred_start }} and {{ pred_end }}</h2>
                </div>
                <div id="plot">
                </div>
@@ -63,6 +63,9 @@
    padding: 10px 0 
    position: relative
 
+#status-nextup-overlay h2
+   color: white
+
 #status-nextup-overlay
    position: absolute
    top: 0
@@ -70,6 +73,7 @@
    width: 100%
    height: 100%
    display: grid
+   grid-template-rows: 1fr 6fr 1fr
    place-items: center
    color: #333
    z-index: 999
@@ -122,7 +126,7 @@ import {mock_countries} from "@/mocking"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
 import {fit_to_geojson,TILE_URL} from "@/configure_map"
-
+import {format_date} from "@/date_formatting"
 
 export default {
    components: {Card,CountryView},
@@ -131,7 +135,9 @@ export default {
          next: undefined,
          pending: [],
          fulfilled: [],
-         loaded: false 
+         loaded: false,
+         pred_start:undefined,
+         pred_end:undefined,
       }
    },
 
@@ -182,6 +188,13 @@ export default {
                })
                layer.addTo(map)
                this.loaded = true
+
+               this.$store.state.api.get.rel("period/next")
+                  .then((r)=>{
+                     this.pred_start = format_date(r.data.start)
+                     this.pred_end = format_date(r.data.end)
+                  })
+
 
                this.$store.state.api.get.rel("profile/pending")
                   .then((r)=>{

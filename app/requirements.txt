@@ -40,3 +40,4 @@ sendgrid==6.4.7
 premailer==3.7.0
 coverage==5.3
 geojson==2.5.0
+requests==2.24.0

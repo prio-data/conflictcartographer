@@ -262,3 +262,10 @@ STATICFILES_DIRS = [
     ]
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880
+
+
+# ================================================
+# ================================================
+# SERVICES 
+
+SCHEDULER_URL = os.getenv("SCHEDULER_URL","http://0.0.0.0:1236")

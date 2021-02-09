@@ -6,6 +6,7 @@ from typing import Literal
 import pydantic
 
 import geojson
+import requests
 
 from django.http import HttpResponse,HttpRequest,JsonResponse
 from django.shortcuts import render,redirect
@@ -16,6 +17,8 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 
 from django.views.decorators.http import require_http_methods
+
+from django.conf import settings
 
 from rest_framework import viewsets, status, exceptions, serializers
 from rest_framework.decorators import api_view, permission_classes
@@ -491,4 +494,10 @@ def clearShapes(request: HttpRequest, project: int)->HttpResponse:
     shapes.delete()
     return JsonResponse({"status":"ok","deleted":d})
 
-
+def get_quarter(request:HttpRequest,shift=0)->HttpResponse:
+    quarter_status = requests.get(settings.SCHEDULER_URL,params={"shift":shift})
+    data = quarter_status.json()
+    return JsonResponse({
+        "start":data["start"],
+        "end":data["end"]
+    })
