@@ -382,7 +382,10 @@ export default {
    watch: {
       selectedProps: {
          handler(){
-            this.updated(this.selectedLayer)
+            if(this.selectedLayer !== undefined){
+               this.updated(this.selectedLayer)
+            } else {
+            }
          },
          deep: true
       }
@@ -577,7 +580,6 @@ export default {
       post_update: debounce(function(url,data){
          this.$store.state.api.put.abs(url,{data:data})
             .then((r)=>{
-               console.log(r)
             })
             .catch((e)=>{
                console.log(e)
