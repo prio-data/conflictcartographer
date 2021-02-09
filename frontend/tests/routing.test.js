@@ -81,6 +81,14 @@ let respres=[
    },
 ]
 
+test("Shows info",()=>{
+   let mr = new mockRouter()
+   mount(LoadingRouter,{
+      mocks:{$cookies:{get(){return false}},$router:mr}
+   })
+   expect(mr.path).toMatch("/info")
+})
+
 respres.forEach((pair)=>{
    let {responses,result_path}=pair
    test(`Reaches ${result_path}`,async ()=>{
