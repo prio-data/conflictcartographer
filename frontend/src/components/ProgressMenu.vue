@@ -125,7 +125,7 @@ import {mock_countries} from "@/mocking"
 //import * as d3 from "d3"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
-import {fit_to_geojson,TILE_URL} from "@/configure_map"
+import {fit_to_geojson,shape_to_latlng_box,TILE_URL} from "@/configure_map"
 import {format_date} from "@/date_formatting"
 
 export default {
@@ -177,7 +177,9 @@ export default {
                this.$router.push("/")
             } else {
                this.next = rsp.data.next
-               fit_to_geojson(map,this.next.shape)
+               let bbox = shape_to_latlng_box(this.next.shape).pad(.1)
+               map.fitBounds(bbox)
+               //fit_to_geojson(map,this.next.shape)
                let layer = L.geoJson(this.next.shape,{
                   style:{
                      color: "white",
