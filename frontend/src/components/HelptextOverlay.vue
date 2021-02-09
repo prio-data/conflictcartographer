@@ -10,6 +10,9 @@
 </template>
 <style lang="sass">
 @import "@/sass/variables.sass"
+.helptext h1
+   margin-bottom: 0
+
 .helptext
    height: 100%
    width: 100%
@@ -26,7 +29,7 @@
 @media only screen and (min-width: $mob-width)
    .helptext-overlay
       grid-auto-flow: columns
-      grid-template-columns: 500px 1fr 
+      grid-template-columns: 700px 1fr 
       grid-template-rows: 1fr
 
    .helptext
