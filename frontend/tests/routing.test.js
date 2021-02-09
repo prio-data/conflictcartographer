@@ -88,6 +88,7 @@ respres.forEach((pair)=>{
       let mr = new mockRouter()
       mount(LoadingRouter,{
          mocks:{
+            $cookies:{get(){return true}},
             $store:{state:{api:api}},
             $router: mr 
          }

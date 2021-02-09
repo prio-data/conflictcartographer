@@ -12,6 +12,7 @@ import "leaflet-draw/dist/leaflet.draw.css"
 import store from "./store/store.js"
 import "./sass/style.sass"
 import Router from "@/router"
+import VueCookies from "vue-cookies"
 
 // Leaflet fixing
 import {Icon} from "leaflet"
@@ -22,8 +23,11 @@ Icon.Default.mergeOptions({
   shadowUrl: require("leaflet/dist/images/marker-shadow.png")
 });
 
+Vue.use(VueCookies)
+
 // API setup
-let csrf_token = /(?<=csrftoken\=)[^;]+/.exec(document.cookie)
+//let csrf_token = /(?<=csrftoken\=)[^;]+/.exec(document.cookie)
+let csrf_token = Vue.cookies.get("csrftoken")
 if(!csrf_token !== null){
    store.commit("initApi",csrf_token[0])
 } else {

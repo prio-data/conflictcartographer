@@ -5,7 +5,13 @@
             <Spinner></Spinner>
          </div>
          <div class="holder header">
-            <slot name="header"></slot>
+            <div id="card-header-holder">
+               <button v-on:click="go_to_router" id="card-header-back-button">⌂</button>
+               <div id="card-header-title">
+                  <slot name="header"></slot>
+               </div>
+               <button v-on:click="go_to_info" id="card-header-help-button">?</button>
+            </div>
          </div>
          <div class="holder content">
             <slot name="content"></slot>
@@ -60,7 +66,24 @@
 .content
    overflow-y: auto 
 
-.header 
+#card-header-holder
+   display: grid
+   grid-template-columns: 60px 1fr  60px
+
+#card-header-holder>button
+   border: none
+   background: none
+   color: $ui-darkergray
+   //font-size: 18px
+   font-weight: bold
+
+#card-header-back-button
+   font-size: 30px
+
+#card-header-holder>button:hover
+   color: $ui-highlight
+
+#card-header-title
    text-align: center
 
 .overlay
@@ -97,6 +120,14 @@ export default {
          type: Boolean,
          default: false 
       }
+   },
+   methods:{
+      go_to_router(){
+         this.$router.push("/")
+      },
+      go_to_info(){
+         this.$router.push("/info")
+      },
    }
 }
 </script>

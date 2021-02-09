@@ -8,6 +8,7 @@ import Menu from "@/components/Menu"
 import MapEditor from "@/components/MapEditor"
 import ProgressMenu from "@/components/ProgressMenu"
 import MetaQuestionaire from "@/components/MetaQuestionaire"
+import ProjectInfo from "@/components/ProjectInfo"
 
 Vue.use(VueRouter)
 
@@ -18,6 +19,7 @@ const routes = [
    {path: "/questionaire",component: MetaQuestionaire},
    {path: "/menu",component: Menu},
    {path: "/progress",component: ProgressMenu},
+   {path: "/info",component: ProjectInfo},
 ]
 
 

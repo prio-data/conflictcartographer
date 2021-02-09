@@ -38,6 +38,10 @@ urlpatterns = [
     path("api/profile_meta/",profile_meta,name="profile_meta"),
     path("api/hasprofile/",hasProfile,name="hasprofiledata"),
     path("api/questions/",unfulfilled,name="unfulfilled"),
+
+    # Current project info
+    path("api/info/short/",lambda rq: projectInfo(rq),name="current_info"),
+    path("api/info/verbose/",lambda rq: projectInfo(rq,verbose=True),name="current_info"),
     
     # Profile info
     path("api/profile/meta/",profile_meta,name="profile_meta_detail"),

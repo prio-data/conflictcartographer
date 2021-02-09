@@ -226,11 +226,11 @@ def unfulfilled(request:HttpRequest)->HttpResponse:
         return Response(str(e),status=500)
 
 
-def projectInfo(request:HttpRequest):
+def projectInfo(request:HttpRequest,verbose=False):
     """
     Returns the currently active project text.
     """
-    verbose = request.GET.get("verbose","false") == "true"
+    #verbose = request.GET.get("verbose","false") == "true"
     project = ProjectDescription.objects.filter(active=True).first()
     if project is None:
         data = {"status":"error",
