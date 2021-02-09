@@ -1,7 +1,7 @@
 <template>
    <Card :loaded="loaded">
       <template v-slot:header>
-         <h1>COUNTRY ASSIGNMENTS</h1>
+         <h1>ASSIGNMENTS</h1>
       </template>
       <template v-slot:content>
          <div class="assignments-layout">
@@ -36,15 +36,30 @@
 
 <style lang="sass">
 @import "@/sass/variables.sass"
+
+.multiselect__input:hover, .multiselect__single:hover
+  border-color: red
+
+.multiselect__option--highlight:after
+   background: $ui-gray 
+   color: #333
+
 .multiselect__tag
    background: $ui-highlight
    font-size: 20px
 
+.multiselect__tag-icon:hover
+   background: $ui-light-highlight
+
+.multiselect__tag-icon
+   background: $ui-highlight
+
+.multiselect__tag-icon:after
+   background: $ui-highlight !important
+   color: white 
+
 input[type=text].multiselect__input
    background: none
-
-.multiselect__option--highlight:after
-   background: $ui-darkergray
 
 .multiselect__option--highlight
    background: $ui-highlight
