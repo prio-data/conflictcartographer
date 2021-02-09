@@ -26,8 +26,7 @@ Icon.Default.mergeOptions({
 Vue.use(VueCookies)
 
 // API setup
-//let csrf_token = /(?<=csrftoken\=)[^;]+/.exec(document.cookie)
-let csrf_token = Vue.cookies.get("csrftoken")
+let csrf_token = /(?<=csrftoken\=)[^;]+/.exec(document.cookie)
 if(!csrf_token !== null){
    store.commit("initApi",csrf_token[0])
 } else {

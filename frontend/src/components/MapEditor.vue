@@ -1,17 +1,61 @@
 <template>
    <div id="mapeditor">
       <div id="map" ref="map"></div>
-      <EditorOverlay 
-         v-on:startdraw="startdraw"
-         v-on:startdelete="startdelete"
-         v-on:reset="neutral"
-         v-on:nonanswer="non_answer"
-         :mode="mode"
-         >
-         <template v-if="mode===4 && selectedLayer !== undefined" v-slot:editor-panel>
-            <LayerEditor :layer="selectedLayer"></LayerEditor>
-         </template>
-      </EditorOverlay>
+
+      <div class="overlay" id="map-editor-overlay">
+
+         <div id="map-editor-overlay-header">
+            <div></div>
+            <div></div>
+            <div></div>
+         </div>
+
+         <div id="map-editor-overlay-viewport">
+         </div>
+
+         <div id="map-editor-overlay-controlbar">
+            <div id="map-editor-overlay-buttons">
+
+               <div v-if="mode===1" id="mode-select">
+                  <button id="draw-button" v-on:click="startdraw">Draw</button>
+                  <button id="erase-button" v-on:click="startdelete">Erase</button>
+               </div>
+
+               <div v-else id="mode-cancel">
+                  <button id="neutral-button" v-on:click="neutral">Ok</button>
+               </div>
+
+               <div> 
+                  <button id="submit-button" v-on:click="$router.push('/')">Submit</button>
+                  <button id="nonanswer-button" v-on:click="non_answer">No conflict</button>
+               </div> 
+
+            </div>
+            <div v-if="selectedLayer !== undefined" id="layer-editor-popup">
+               <div class="upper">
+                  <div class="inputcard">
+                     <h2>Intensity</h2>
+                     <div class="intensity-input" v-for="choice in choices" :key="choice.key">
+                        <input type="radio" v-model="selectedLayer.feature.properties.intensity" :value="choice.value">
+                        <label class="cat-label" :for="choice.key">{{ choice.key }} casualties</label>
+                     </div>
+                  </div>
+                  <div class="inputcard">
+                     <h2>Confidence</h2>
+                     <vue-slider 
+                        v-model="selectedLayer.feature.properties.confidence"
+                        :min="0"
+                        :max="100"
+                        :interval="1"
+                        >
+                     </vue-slider>
+                  </div>
+               </div>
+               <button v-on:click="deselect" class="continue">Ok</button>
+            </div>
+         </div>
+      </div>
+
       <HelptextOverlay>
          <h1>
             {{ this.helptexts[this.mode].title }}
@@ -22,6 +66,123 @@
 </template>
 <style scoped lang="sass">
 @import "../sass/variables.sass"
+
+#map-editor-overlay
+   display: grid
+   grid-template-rows: 25px auto 80px
+   justify-items: center
+   overflow: hidden
+   height: 100vh
+   width: 100vw
+
+#map-editor-overlay-header
+   display: grid
+   grid-auto-flow: column
+   grid-template-column: repeat(auto-fill, 1fr)
+
+#map-editor-overlay-header>div
+   border: 1px solid redgray 
+   background: $ui-highlight
+
+#map-editor-overlay-viewport
+   //background: #aff
+
+#map-editor-overlay-controlbar
+   //background: $ui-darkergray
+
+#map-editor-overlay-controlbar
+   //display: grid
+   //place-items: center
+   pointer-events: auto
+   position: relative
+
+#map-editor-overlay-buttons
+   width: 100vw 
+   height: 100%
+   display: grid
+   grid-auto-flow: column
+   grid-template-columns: 1fr 1fr 
+   grid-gap: 10px
+   padding: 10px
+   background: $ui-darkergray
+
+#draw-button
+   background: $ui-gray
+   color: #222
+
+#erase-button
+   background: $ui-highlight
+   
+#neutral-button
+   background: $ui-gray
+   color: #222
+
+#submit-button
+   background: $ui-gray
+   color: #222
+
+#layer-editor-popup button
+   background: $ui-gray
+   color: #222
+
+#nonanswer-button
+   background: $ui-progress-alt 
+
+#map-editor-overlay-buttons button
+   height: 100% 
+   border-bottom: 4px solid #222
+
+#map-editor-overlay-buttons div 
+   display: grid
+   grid-auto-flow: column
+   grid-gap: 10px
+
+$popup-height: 200px
+
+@keyframes pop-up
+   0%
+      transform: translate(0,0)
+   100%
+      transform: translate(0,-$popup-height)
+
+#layer-editor-popup
+   position: absolute
+   top: 0
+   left: 0
+   display: grid
+   //justify-items: center
+   grid-template-rows: $popup-height 70px auto
+   height: $popup-height + 100px
+   width: 100%
+   background: $ui-darkergray
+   animation-name: pop-up
+   animation-duration: 0.2s 
+   animation-fill-mode: forwards
+   z-index: 999
+   scroll: hidden
+   padding: 0 10px
+   color: white
+
+#layer-editor-popup h2 
+   margin-bottom: 7px 
+
+#layer-editor-popup label
+   font-size: 20px 
+
+#layer-editor-popup div.upper
+   display: grid
+   grid-auto-flow: column
+   grid-template-columns: 1fr 1fr
+
+@media only screen and (min-width: $mob-width)
+   #map-editor-overlay-buttons
+      width: $mob-width
+      border-radius: 10px 10px 0 0
+   #map-editor-overlay-controlbar
+      width: $mob-width
+   #layer-editor-popup
+      border-radius: 10px 10px 0 0
+      padding: 0 30px
 
 $darken: 0.4
 
@@ -34,6 +195,7 @@ $darken: 0.4
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale
   color: #2c3e50
+
 // Editing dots
 .leaflet-editing-icon
    //width: 5px !important
@@ -43,6 +205,7 @@ $darken: 0.4
    border-radius: 10px
    border: none
    background: $drawcolor
+
 .leaflet-marker-pane div:nth-child(2)
    background: $ui_highlight
 
@@ -87,7 +250,11 @@ import EditorOverlay from "@/components/EditorOverlay"
 import HelptextOverlay from "@/components/HelptextOverlay"
 import LayerEditor from "@/components/LayerEditor"
 
-import {configure_map,shape_to_latlng_box} from "@/configure_map"
+import VueSlider from "vue-slider-component"
+import "vue-slider-component/theme/default.css"
+import "@/sass/vueslider.sass"
+
+import {configure_map,shape_to_latlng_box,fit_to_geojson} from "@/configure_map"
 
 import debounce from "@/util/debounce"
 
@@ -135,12 +302,14 @@ export default {
       EditorOverlay,
       Spinner,
       LayerEditor,
+      VueSlider
    },
    
    //props: ["project"],
 
    data(){
       return {
+         toggle: true,
          infocus: "",
          layers: [],
 
@@ -159,6 +328,15 @@ export default {
          helptexts: HELPTEXTS,
 
          drawing: undefined,
+
+         choices: [
+            {key:"0-1",value:0},
+            {key:"2-25",value:1},
+            {key:"26-99",value:2},
+            {key:"100-999",value:3},
+            {key:">1000",value:4},
+         ],
+
       }
    },
 
@@ -223,7 +401,6 @@ export default {
                   this.drawnItems.addTo(this.map)
 
                   this.drawnItems.on("click",(e)=>{this.clicked(e.layer)})
-
                   this.restyle()
                })
                .catch((e)=>{
@@ -243,6 +420,9 @@ export default {
    },
 
    methods: {
+      t(){
+         this.toggle = !this.toggle
+      },
       neutral(){
          this.mode = MODES.neutral
          if(this.drawing !== undefined){
@@ -328,7 +508,17 @@ export default {
          this.selectedLayer = layer
          this.mode = MODES.editing
 
+         fit_to_geojson(this.map,this.selectedLayer.toGeoJSON())
          this.restyle()
+      },
+
+      deselect(){
+         if(this.selectedLayer !== undefined){
+            this.selectedLayer.feature.properties.selected = undefined
+         }
+         this.selectedLayer = undefined
+         fit_to_geojson(this.map,this.projectShape)
+         this.mode = MODES.neutral
       },
 
       updated(layer){
