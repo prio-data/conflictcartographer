@@ -95,6 +95,7 @@
    background: $ui-highlight 
    padding: 4px
    font-weight: bold
+   color: white
 
 .hlist
    overflow-x: auto
