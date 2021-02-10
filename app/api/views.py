@@ -6,6 +6,7 @@ from typing import Literal
 import pydantic
 
 import geojson
+import requests
 
 from django.http import HttpResponse,HttpRequest,JsonResponse
 from django.shortcuts import render,redirect
@@ -16,6 +17,8 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 
 from django.views.decorators.http import require_http_methods
+
+from django.conf import settings
 
 from rest_framework import viewsets, status, exceptions, serializers
 from rest_framework.decorators import api_view, permission_classes
@@ -47,12 +50,12 @@ def whoami(request):
 class CountryMetaSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Country
-        fields = ["url","name","gwno"]
+        fields = ["url","name","gwno","iso2c"]
 
 class CountryShapeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Country
-        fields = ["url","shape"]
+        fields = ["url","shape","name","iso2c","gwno"]
 
 class CountryViewSet(viewsets.ModelViewSet):
     """
@@ -132,24 +135,107 @@ class FeedbackViewset(viewsets.ModelViewSet):
             return Response(status=401)
 
 # ================================================
-# Utility views
+# Project views
 
-@api_view(("GET",))
+def get_fulfilled_projects(user):
+    period_start, period_end = quarterRange()
+    
+    shapes = Shape.objects.filter(author=user,date__gte=period_start,date__lte=period_end)
+    nonAnswers = NonAnswer.objects.filter(author=user,date__gte=period_start,date__lte=period_end)
+    return {sh.country for sh in shapes}.union({na.country for na in nonAnswers})
+
+def get_pending_projects(user):
+    projects = (Country
+            .objects
+            .filter(assignees=user.profile)
+        )
+    return set(projects).difference(get_fulfilled_projects(user))
+
+def next_project(request:HttpRequest)->HttpResponse:
+    pending = get_pending_projects(request.user)
+    if len(pending)>0:
+        next_project = pending.pop()
+        serialized = CountryShapeSerializer(next_project,context={"request":request}).data
+        return JsonResponse({"status":"active","next":serialized})
+    else:
+        return JsonResponse({"status":"finished","next":False})
+
+def pending_projects(request:HttpRequest)->HttpResponse:
+    pending = get_pending_projects(request.user)
+    serialized = CountryMetaSerializer(pending,many=True,context={"request":request}).data
+    return JsonResponse({"countries":serialized})
+
+def fulfilled_projects(request:HttpRequest)->HttpResponse:
+    pending = get_fulfilled_projects(request.user)
+    serialized = CountryMetaSerializer(pending,many=True,context={"request":request}).data
+    return JsonResponse({"countries":serialized})
+
+#@api_view(("GET","POST",))
 def projects(request:HttpRequest)->HttpResponse:
     """
     Get list of countries assigned to current user.
     """
-    try:
-        countries = Country.objects.all().filter(assignees__pk = request.user.profile.pk)
-        return Response(CountryMetaSerializer(countries,many=True,context={"request":request}).data)
-    except Exception as e:
-        return Response([])
+    if not request.user.is_authenticated:
+        return JsonResponse({"status":"error","message":"not authenticated"},status=403)
 
-def projectInfo(request:HttpRequest):
+    if request.method == "GET":
+        try:
+            countries = Country.objects.filter(assignees = request.user.profile)
+            serialized = CountryMetaSerializer(countries,many=True,context={"request":request}).data
+            return JsonResponse({"countries":serialized})
+        except Exception as e:
+            return JsonResponse({"message":str(e)},status=500) 
+    elif request.method == "POST":
+        if request.headers["Content-Type"] == "application/json":
+            data = json.loads(request.body)
+        else:
+            return JsonResponse({"status":"error"},415)
+    else:
+        return JsonResponse({"status":"error"},status=405)
+
+    try:
+        profile = request.user.profile
+        countries = Country.objects.filter(name__in=data["selected"])
+        profile.countries.set(countries)
+        profile.save()
+
+        return JsonResponse(data={"status":"ok","n":"countries"},status=205)
+    except KeyError:
+        return JsonResponse({"status":"error"},status=400)
+
+@api_view(("GET",))
+def unfulfilled(request:HttpRequest)->HttpResponse:
+    """
+    Get a list of the countries not currently fulfilled by the user
+    """
+    try:
+        period_start, period_end = quarterRange()
+
+        def has_answered(c:Country):
+            n_shapes = Shape.objects.filter(
+                    author=request.user,
+                    country=c,
+                    date__gte=period_start,date__lte=period_end).count()
+            nonanswers = NonAnswer.objects.filter(author=request.user, country=c, date__gte=period_start,date__lte=period_end).count()
+            return (n_shapes > 0 or nonanswers > 0)
+
+        countries = (Country
+                .objects
+                .filter(assignees__pk=request.user.profile.pk)
+            )
+
+        countries = [c for c in countries if not has_answered(c)]
+        serialized = CountryMetaSerializer(countries,many=True,context={"request":request}).data
+        return JsonResponse({"countries":serialized})
+    except Exception as e:
+        return Response(str(e),status=500)
+
+
+def projectInfo(request:HttpRequest,verbose=False):
     """
     Returns the currently active project text.
     """
-    verbose = request.GET.get("verbose","false") == "true"
+    #verbose = request.GET.get("verbose","false") == "true"
     project = ProjectDescription.objects.filter(active=True).first()
     if project is None:
         data = {"status":"error",
@@ -233,6 +319,32 @@ def updateCountries(request):
 
     return JsonResponse({"status":"success","saved":saved,"updated":updated})
 
+def profile_meta(request:HttpRequest)->HttpResponse:
+    if not request.user.is_authenticated:
+        return HttpResponse(status=403)
+    
+    if request.method=="GET":
+        data = request.user.profile.meta
+        return JsonResponse(data)
+
+    elif request.method=="POST":
+        if request.headers["Content-Type"] == "application/json":
+            data = json.loads(request.body)
+        else:
+            return HttpResponse(status=415)
+    else:
+        return HttpResponse(status=405)
+
+    try:
+        formatted = {q["title"]:q["value"] for q in data}
+    except KeyError:
+        return HttpResponse(status=400)
+
+    request.user.profile.meta = formatted
+    request.user.profile.save()
+    return JsonResponse({"status":"ok"},status=205)
+
+
 def editProfile(request:HttpRequest)->HttpResponse:
     """
     Updating the metadata associated with each user.
@@ -257,9 +369,15 @@ def hasProfile(request:HttpRequest)->HttpResponse:
     return JsonResponse({"status":"ok","profile":bool(request.user.profile.meta)})
 
 def projectChoices(request:HttpRequest)->HttpResponse:
-    projects = CountryViewSet().get_queryset().exclude(assignees__pk = request.user.profile.pk)
-    projects = [{"name":c.name,"pk":c.pk} for c in projects]
-    return JsonResponse({"status":"ok","projects":projects})
+    """
+        Get all projects
+    """
+    if request.method == "GET":
+        projects = CountryViewSet().get_queryset().exclude(assignees__pk = request.user.profile.pk)
+        projects = [{"name":c.name,"pk":c.pk} for c in projects]
+        return JsonResponse({"status":"ok","projects":projects})
+    else:
+        return HttpResponse(status=405)
 
 @require_http_methods(["POST"])
 def editProjects(request:HttpRequest,action:Literal["add","remove"])->HttpResponse:
@@ -378,3 +496,10 @@ def clearShapes(request: HttpRequest, project: int)->HttpResponse:
     shapes.delete()
     return JsonResponse({"status":"ok","deleted":d})
 
+def get_quarter(request:HttpRequest,shift=0)->HttpResponse:
+    quarter_status = requests.get(settings.SCHEDULER_URL,params={"shift":shift})
+    data = quarter_status.json()
+    return JsonResponse({
+        "start":data["start"],
+        "end":data["end"]
+    })

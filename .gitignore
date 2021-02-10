@@ -28,3 +28,4 @@ cert/*
 penv.env
 .coverage
 htmlcov/
+depr/

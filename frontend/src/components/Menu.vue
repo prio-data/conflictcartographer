@@ -6,13 +6,7 @@
             v-on:logout="logout"
             v-on:helpme="toggleMenuInfo"
             title="Conflict Cartographer"/> 
-         <MapEditor
-            v-if="currentProject !== null"
-            v-bind:project="currentProject"
-            />
-         <ProjectMenu 
-            v-on:projectSelected="projectSelected"
-            v-else/>
+         <ProjectMenu v-on:projectSelected="projectSelected"/>
          <Monogram/>
          <Modal 
             v-if="showMenuInfo"
@@ -30,7 +24,7 @@
 </template>
 
 <style lang="sass">
-   @import "./sass/variables.sass"
+   @import "@/sass/variables.sass"
 
    div#main
       background: $ui-background 
@@ -43,14 +37,14 @@
 
 <script>
 
-import ProjectMenu from "./components/ProjectMenu.vue"
-import MapEditor from "./components/MapEditor.vue"
-import Navbar from "./components/Navbar.vue"
-import Modal from "./components/Modal.vue"
-import Monogram from "./components/Monogram.vue"
-import Spinner from "./components/Spinner"
+import ProjectMenu from "@/components/ProjectMenu.vue"
+import MapEditor from "@/components/MapEditor.vue"
+import Navbar from "@/components/Navbar.vue"
+import Modal from "@/components/Modal.vue"
+import Monogram from "@/components/Monogram.vue"
+import Spinner from "@/components/Spinner"
 
-import menu_tutorial from "./content/menu_tutorial.vue"
+import menu_tutorial from "@/content/menu_tutorial.vue"
 
 export default {
    name: 'app',
@@ -93,7 +87,7 @@ export default {
    },
 
    beforeMount: function(){
-      this.$store.commit("initApi",this.$cookies.get("csrftoken"))
+      //this.$store.commit("initApi",this.$cookies.get("csrftoken"))
       this.$store.state.api.get.rel("currentproject",{params:{verbose:false}})
          .then((r)=>{
             this.state = "loaded"

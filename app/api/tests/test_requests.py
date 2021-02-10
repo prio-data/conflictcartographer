@@ -27,7 +27,8 @@ class ApiRequestsTest(ApiTestCase):
         self.assertTrue(login)
 
         # Get assigned countries
-        s, countries = self.project_assigned()
+        s, assigned = self.project_assigned()
+        countries = assigned["countries"]
         self.assertEqual(s,200)
         self.assertEqual(countries[0]["gwno"],1)
 

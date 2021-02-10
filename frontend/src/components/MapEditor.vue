@@ -1,144 +1,636 @@
 <template>
-   <div id="mapeditor" class="row">
-      <div v-if="projectShape">
-         <div id="mainwindow">
-            <Leaflet id="map"
-               v-on:created="created"
-               :layers="layers"
-               :infocus="infocus"
-               :mask="projectShape"
-               /> 
+   <div id="mapeditor">
+      <div id="map" ref="map"></div>
+
+      <div v-if="pred_start!==undefined" class="overlay" id="prediction-period-display">
+         <div>
+            <h1>Predicting for<br>{{ pred_start }} - {{ pred_end }}</h1>
          </div>
-         <div id="toolbarContainer">
-            <div></div>
-            <div id="toolbar">
-               <h1>Drawn areas:</h1>
-               <div v-for="layer in layers" v-bind:key="layer.url">
-                  <LayerView
-                     v-on:focus="focus"
-                     v-on:deleted="deleteLayer(layer)" 
-                     :layer="layer"/>
+      </div>
+
+      <div class="overlay" id="map-editor-overlay">
+
+         <div id="map-editor-overlay-header">
+         </div>
+
+         <div id="map-editor-overlay-viewport">
+         </div>
+
+         <div id="map-editor-overlay-controlbar">
+            <div id="map-editor-overlay-buttons">
+
+               <div v-if="mode===1" id="mode-select">
+                  <button id="draw-button" v-on:click="startdraw">Draw</button>
+                  <button id="erase-button" v-on:click="startdelete">Erase</button>
                </div>
+
+               <div v-else id="mode-cancel">
+                  <button id="neutral-button" v-on:click="neutral">Ok</button>
+               </div>
+
+               <div> 
+                  <button id="submit-button" v-on:click="$router.push('/')">Submit</button>
+                  <button id="nonanswer-button" v-on:click="non_answer">No conflict</button>
+               </div> 
+
+            </div>
+            <div v-if="selectedLayer !== undefined" id="layer-editor-popup">
+               <div class="upper">
+                  <div class="inputcard">
+                     <h2>Intensity</h2>
+                     <div class="intensity-input" v-for="choice in choices" :key="choice.key">
+                        <input type="radio" v-model="selectedLayer.feature.properties.intensity" :value="choice.value">
+                        <label class="cat-label" :for="choice.key">{{ choice.key }} casualties</label>
+                     </div>
+                  </div>
+                  <div class="inputcard">
+                     <h2>Confidence</h2>
+                     <vue-slider 
+                        v-model="selectedLayer.feature.properties.confidence"
+                        :min="0"
+                        :max="100"
+                        :interval="1"
+                        >
+                     </vue-slider>
+                  </div>
+               </div>
+               <button v-on:click="deselect" class="continue">Ok</button>
             </div>
          </div>
       </div>
-      <Spinner v-else/>
+
+      <HelptextOverlay>
+         <h1>
+            {{ this.helptexts[this.mode].title }}
+         </h1>
+         {{ this.helptexts[this.mode].text }}
+      </HelptextOverlay>
    </div>
 </template>
-
 <style scoped lang="sass">
 @import "../sass/variables.sass"
 
+#prediction-period-display
+   text-align: center
+   font-size: 10px
+   color: white 
+   margin: 0
+   padding: 0 60px
+
+#prediction-period-display h1
+   background: $ui-highlight
+   border-radius: 10px
+
+@media only screen and (min-width: $mob-width)
+   #prediction-period-display
+      margin: auto 
+      font-size: 16px
+      max-width: $mob-width
+
+#map-editor-overlay
+   display: grid
+   grid-template-rows: 25px auto 80px
+   justify-items: center
+   overflow: hidden
+   height: 100vh
+   width: 100vw
+
+#map-editor-overlay-header
+   display: grid
+   grid-auto-flow: column
+   grid-template-column: repeat(auto-fill, 1fr)
+   width: 100%
+
+#map-editor-overlay-header>div
+   border: 1px solid redgray 
+   background: $ui-highlight
+
+#map-editor-overlay-viewport
+   //background: #aff
+
+#map-editor-overlay-controlbar
+   //background: $ui-darkergray
+
+#map-editor-overlay-controlbar
+   //display: grid
+   //place-items: center
+   pointer-events: auto
+   position: relative
+
+#map-editor-overlay-buttons
+   width: 100vw 
+   height: 100%
+   display: grid
+   grid-auto-flow: column
+   grid-template-columns: 1fr 1fr 
+   grid-gap: 10px
+   padding: 10px
+   background: $ui-darkergray
+
+#draw-button
+   background: $ui-gray
+   color: #222
+
+#erase-button
+   background: $ui-highlight
+   
+#neutral-button
+   background: $ui-gray
+   color: #222
+
+#submit-button
+   background: $ui-gray
+   color: #222
+
+#layer-editor-popup button
+   background: $ui-gray
+   color: #222
+
+#nonanswer-button
+   background: $ui-progress-alt 
+
+#map-editor-overlay-buttons button
+   height: 100% 
+   border-bottom: 4px solid #222
+
+#map-editor-overlay-buttons div 
+   display: grid
+   grid-auto-flow: column
+   grid-gap: 10px
+
+$popup-height: 200px
+
+@keyframes pop-up
+   0%
+      transform: translate(0,0)
+   100%
+      transform: translate(0,-$popup-height)
+
+#layer-editor-popup
+   position: absolute
+   top: 0
+   left: 0
+   display: grid
+   //justify-items: center
+   grid-template-rows: $popup-height 70px auto
+   height: $popup-height + 100px
+   width: 100%
+   background: $ui-darkergray
+   animation-name: pop-up
+   animation-duration: 0.2s 
+   animation-fill-mode: forwards
+   z-index: 999
+   scroll: hidden
+   padding: 0 10px
+   color: white
+
+#layer-editor-popup h2 
+   margin-bottom: 7px 
+
+#layer-editor-popup label
+   font-size: 20px 
+
+#layer-editor-popup div.upper
+   display: grid
+   grid-auto-flow: column
+   grid-template-columns: 1fr 1fr
+
+@media only screen and (min-width: $mob-width)
+   #map-editor-overlay-buttons
+      width: $mob-width
+      border-radius: 10px 10px 0 0
+   #map-editor-overlay-controlbar
+      width: $mob-width
+   #layer-editor-popup
+      border-radius: 10px 10px 0 0
+      padding: 0 30px
+
 $darken: 0.4
+
+#map
+   height: 100vh
+   width: 100vw
+   background: #aaa 
 
 #mapeditor
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale
   color: #2c3e50
 
-#mainwindow
-   float: left
+// Editing dots
+.leaflet-editing-icon
+   //width: 5px !important
+   //height: 5px !important
+   //top: 5px !important 
+   //left: 5px !important
+   border-radius: 10px
+   border: none
+   background: $drawcolor
+
+.leaflet-marker-pane div:nth-child(2)
+   background: $ui_highlight
 
 
-h1
-   color: white
+.leaflet-touch .leaflet-control-zoom-display 
+  width: $tbsize + 8px
+  height: $tbsize + 8px
+  font-size: 18px
+  line-height: $tbsize - ($tbsize / 4) 
+.leaflet-touch .leaflet-bar a, .leaflet-touch .leaflet-toolbar-0 > li > a 
+  width: $tbsize + 4px
+  height: $tbsize + 4px
+  font-size: $tbsize / 2 
+  line-height: $tbsize + 5px
+  background-size: 314px 30px
+.leaflet-touch .leaflet-draw-toolbar.leaflet-bar a 
+  background-position-y: 6px
+.leaflet-touch .leaflet-draw-actions a, .leaflet-touch .leaflet-control-toolbar .leaflet-toolbar-1 > li > .leaflet-toolbar-icon 
+  font-size: $tbsize / 2 
+  line-height: $tbsize + 4px
+  height: $tbsize + 4px
+.leaflet-touch .leaflet-draw-actions, .leaflet-touch .leaflet-toolbar-1 
+  left: $tbsize + 5px
+.leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar
+   border: none
 
-div#toolbarContainer
-   position: absolute
-   top: 0
-   right: 0
-   display: grid
-   grid-template-rows: $menu-el-height $map_height auto
-   width: 300px
-   margin: 0px
-
-div#toolbar
-   overflow-y: scroll
-   background: rgba(0,0,0,$darken)
-   padding: 0px $menu-gaps 0px $menu-gaps
-   margin: 0px
 </style>
 
 <script>
+//import {LMap, LGeoJson} from "vue2-leaflet"
+import L from "leaflet"
 
-//import Toolbar from "@/components/Toolbar.vue"
+import "leaflet-draw" 
+import "leaflet-boundary-canvas"
+import bbox from "geojson-bbox"
 
-import Leaflet from '@/components/Leaflet.vue'
+import "@/sass/leaflet_custom.sass"
+
+import colorGradient from "@/util/colorGradient.js"
 import Spinner from "@/components/Spinner"
-import LayerView from "@/components/LayerView"
+import EditorOverlay from "@/components/EditorOverlay"
+import HelptextOverlay from "@/components/HelptextOverlay"
+import LayerEditor from "@/components/LayerEditor"
+
+import VueSlider from "vue-slider-component"
+import "vue-slider-component/theme/default.css"
+import "@/sass/vueslider.sass"
+
+import {configure_map,shape_to_latlng_box,fit_to_geojson} from "@/configure_map"
+
+import debounce from "@/util/debounce"
+
+import {format_date} from "@/date_formatting"
+
+const COLORS={
+   low: "#2b83ba",
+   high: "#d7191c",
+}
+
+const MODES={
+   neutral: 1,
+   drawing: 2,
+   deleting: 3,
+   editing: 4
+}
+
+const HELPTEXTS={
+   1: {
+      title:"Data entry",
+      text:"Click draw to begin",
+   },
+   2: {
+      title:"Draw",
+      text:"Draw a shape by clicking to place vertices.",
+   },
+   3: {
+      title:"Erase",
+      text:"Click shapes to erase them",
+   },
+   4: {
+      title:"Editing",
+      text:"Change the values of a shape",
+   }
+}
+
+const BASE_STYLE = {
+   fillOpacity: 0.3,
+   opacity: 0.2,
+   weight: 3
+}
 
 export default {
    name: 'MapEditor',
    components: {
-      Leaflet,
-      //Toolbar,
+      HelptextOverlay,
+      EditorOverlay,
       Spinner,
-      LayerView,
+      LayerEditor,
+      VueSlider
    },
    
-   props: ["project"],
+   //props: ["project"],
 
    data(){
       return {
+         toggle: true,
          infocus: "",
          layers: [],
-         projectShape: undefined 
+
+         projectShape: undefined,
+         absUrl: undefined,
+
+         map: undefined,
+
+         drawnItems: new L.geoJSON(undefined),
+         pendingItems: new L.featureGroup(),
+
+         mode: MODES.neutral,
+
+         selectedLayer: undefined,
+
+         helptexts: HELPTEXTS,
+
+         drawing: undefined,
+
+         choices: [
+            {key:"0-1",value:0},
+            {key:"2-25",value:1},
+            {key:"26-99",value:2},
+            {key:"100-999",value:3},
+            {key:">1000",value:4},
+         ],
+
+         pred_start: undefined,
+         pred_end: undefined,
+      }
+   },
+
+   computed:{
+      project_url(){
+         return `countries/${this.$route.params.gwno}`
+      },
+      gwno(){
+         return this.$route.params.gwno
+      },
+      selectedProps(){
+         if(this.selectedLayer !== undefined){
+            return this.selectedLayer.feature.properties
+         }
+      }
+   },
+
+   watch: {
+      selectedProps: {
+         handler(){
+            if(this.selectedLayer !== undefined){
+               this.updated(this.selectedLayer)
+            } else {
+            }
+         },
+         deep: true
       }
    },
 
    mounted: function(){
-      this.$store.state.api.get.abs(this.project.url)
+      // =======================================
+      // When drawn,  
+
+      this.$store.state.api.get.rel("period/next")
+         .then((r)=>{
+            this.pred_start = format_date(r.data.start)
+            this.pred_end = format_date(r.data.end)
+         })
+         .catch((e)=>{
+            console.error(`Error fetching dates: ${e}`)
+         })
+
+      this.$store.state.api.get.rel(this.project_url)
          .then((r)=>{
             this.projectShape = r.data.shape
-            this.$store.state.api.get.rel("shapes",{params: {country: this.project.gwno}})
+            this.absUrl = r.data.url
+
+            this.map = new L.Map(this.$refs.map)
+            configure_map(this.map,this.projectShape)
+            this.map.on(L.Draw.Event.CREATED,(e)=>{
+               this.created(e.layer)
+            })
+
+            const box = bbox(this.projectShape)
+            const getbox = (box) => [[box[3],box[0]],[box[1],box[2]]]
+            const bbox_latlng = L.latLngBounds(getbox(box))
+
+            this.map.fitBounds(bbox_latlng)
+            this.map.setMaxBounds(bbox_latlng.pad(2))
+
+            this.pendingItems.addTo(this.map)
+
+            this.$store.state.api.get.rel("shapes",{params: {country: this.gwno}})
                .then((r)=>{
                   this.layers = r.data
+                  let features = r.data.map((db_shape)=>{
+                     let feature = db_shape.shape
+                     feature.properties = db_shape.values 
+                     feature.properties.url = db_shape.url
+                     return feature 
+                  })
+
+                  this.drawnItems.addData(features)
+                  this.drawnItems.addTo(this.map)
+
+                  this.drawnItems.on("click",(e)=>{this.clicked(e.layer)})
+                  this.restyle()
                })
                .catch((e)=>{
-                  console.log(e)
+                  console.error(`Error adding layers: ${e}`)
                })
 
          })
          .catch((e)=>{
-            console.log(e)
+            console.error(`Error mounting map: ${e}`)
+         })
+
+         document.addEventListener("keydown",(e)=>{
+            if(e.key=="Escape"){
+               this.neutral()
+            }
          })
    },
 
    methods: {
-      deleteLayer(layer){
-         let i = this.layers.indexOf(this.layers.find((lyr)=>lyr.url == layer.url))
-         if(i > -1){
-            this.layers.splice(i,1)
+      t(){
+         this.toggle = !this.toggle
+      },
+      neutral(){
+         this.mode = MODES.neutral
+         if(this.drawing !== undefined){
+            this.drawing.disable()
+         }
+         this.selectedLayer.feature.properties.selected = undefined 
+         this.restyle()
+      },
+
+      startdraw(){
+         this.mode = MODES.drawing
+         if(this.map !== undefined){
+            this.drawing = new L.Draw.Polygon(this.map,{shapeOptions:{color:"grey"}})
+            this.drawing.enable()
          } else {
-            console.log(i)
          }
       },
 
-      created(feature){
+      startdelete(){
+         this.mode = MODES.deleting 
+      },
+
+      clicked(layer){
+         if(this.mode == MODES.deleting){
+            this.deleted(layer)
+         } else {
+            this.selected(layer)
+         }
+      },
+
+      deleted(layer){
+         if(this.mode == MODES.deleting){
+            this.drawnItems.removeLayer(layer)
+            this.$store.state.api.del.abs(layer.feature.properties.url)
+               .then((r)=>{
+                  this.drawnItems.removeLayer(layer)
+               })
+               .catch((e)=>{
+                  this.drawnItems.addLayer(layer)
+               })
+         }
+      },
+
+      created(layer){
+         this.pendingItems.clearLayers()
+         this.pendingItems.addLayer(layer.setStyle({color:"gray",opacity:0.5}))
+         this.map.addLayer(this.pendingItems)
+
+         let geojson = layer.toGeoJSON()
+         let values = {
+            intensity: this.$store.state.defaultIntensity,
+            confidence: this.$store.state.defaultConfidence,
+         }
+
          let toPost = {
-            shape: feature, 
-            values: {
-               intensity: this.$store.state.defaultIntensity,
-               confidence: this.$store.state.defaultConfidence,
-            },
-            country: this.project.url 
+            shape: geojson, 
+            values: values,
+            country: this.absUrl 
          }
 
          this.$store.state.api.post.rel("shapes",{data:toPost})
             .then((r)=>{
-               toPost.url = r.data.url
-               this.layers.push(toPost)
+               geojson.properties = values
+               geojson.properties.url = r.data.url
+
+               this.drawnItems.addData(geojson)
+               let newlyCreated = this.drawnItems.getLayers().find((lyr)=>lyr.feature.properties.url==r.data.url)
+               this.map.removeLayer(this.pendingItems)
+               this.selected(newlyCreated)
+               this.restyle(newlyCreated)
             })
             .catch((e)=>{
+               console.log(e)
             })
       },
-      focus(layer){
-         if(this.infocus == layer.url){
-            this.infocus = ""
-         } else {
-            this.infocus = layer.url
+
+      selected(layer){
+         if(this.selectedLayer !== undefined){
+            this.selectedLayer.feature.properties.selected = undefined
          }
+
+         layer.feature.properties.selected = true
+         this.selectedLayer = layer
+         this.mode = MODES.editing
+
+         let bbox = shape_to_latlng_box(this.selectedLayer.toGeoJSON()).pad(.5)
+         this.map.fitBounds(bbox,{})
+         this.restyle()
       },
+
+      deselect(){
+         if(this.selectedLayer !== undefined){
+            this.selectedLayer.feature.properties.selected = undefined
+         }
+         this.selectedLayer = undefined
+         fit_to_geojson(this.map,this.projectShape)
+         this.mode = MODES.neutral
+      },
+
+      updated(layer){
+         // API call
+         this.restyle()
+
+         let values ={
+            intensity: layer.feature.properties.intensity,
+            confidence: layer.feature.properties.confidence,
+         }
+
+         let to_post = {
+            shape: layer.feature,
+            values: values,
+            country: this.absUrl,
+         }
+
+         this.post_update(layer.feature.properties.url,to_post)
+      },
+
+      post_update: debounce(function(url,data){
+         this.$store.state.api.put.abs(url,{data:data})
+            .then((r)=>{
+            })
+            .catch((e)=>{
+               console.log(e)
+            })
+      }, 500),
+
+      restyle(layer){
+         let toStyle = layer
+
+         if(toStyle === undefined){
+            toStyle = this.drawnItems
+         }
+
+         toStyle.setStyle((feature)=>{
+            let style = BASE_STYLE
+            style.color = colorGradient((feature.properties.intensity)/5,COLORS.low,COLORS.high)
+            style.fillOpacity = ((feature.properties.confidence/100)*0.5) + 0.2
+            if(feature.properties.selected !== undefined){
+               style.opacity = 0.9 
+               style.weight = 9
+            } else {
+               style.weight = 2
+            }
+            return style
+         })
+
+      },
+
+      computeStyle: function(layer){
+         let base = {
+            color: colorGradient((layer.feature.properties.intensity)/5,COLORS.low,COLORS.high), 
+            fillOpacity: 0.4+((layer.feature.properties.confidence / 100)*0.4)
+         }
+         if(layer.url == this.infocus){
+            base.weight = 5
+         } else {
+            base.weight = 0.1
+         }
+         return base
+      },
+
+      non_answer(){
+         this.$store.state.api.post.rel(`nonanswer/${this.$route.params.gwno}`)
+            .then((r)=>{
+               this.$router.push("/")
+            })
+            .catch((e)=>{
+               console.log("yee")
+            })
+
+      }
    }
 }
 </script>
