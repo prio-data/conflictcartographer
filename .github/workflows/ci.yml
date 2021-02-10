@@ -15,7 +15,8 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v1
         with:
+          repository: ccapp
+          tags: latest
           username: ${{ secrets.ACR_USER }}
           password: ${{ secrets.ACR_PASSWORD }}
           registry: ${{ secrets.ACR_URL }}
-          tags: ccapp:latest
