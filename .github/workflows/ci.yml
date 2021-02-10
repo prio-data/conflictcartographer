@@ -1,27 +1,27 @@
 name: ci
 
 on:
-  push:
-    branches: master
+   push:
+      branches: master
 
 jobs:
-  azure-acr:
-    runs-on: ubuntu-latest
-    steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v2
-      -
-        name: Login to DockerHub
-        uses: docker/login-action@v1 
+   build-and-deploy:
+      runs-on: ubuntu-latest
+      steps:
+      - name: "Checkout Github Action"
+        uses: actions/checkout@main
+      - name: "Login via Azure CLI"
+        uses: azure/login@v1
         with:
-          username: ${{ secrets.ACR_USER}}
-          password: ${{ secrets.ACR_PASSWORD}}
-          registry: ${{ secrets.ACR_URL }}
-      -
-        name: Build and push
-        uses: docker/build-push-action@v1
+           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: "Build and push image"
+        uses: azure/docker-login@v1
         with:
-          repository: ccapp
-          tags: latest
-          registry: ${{ secrets.ACR_URL }}
+           login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+           username: ${{ secrets.REGISTRY_USERNAME }}
+           password: ${{ secrets.REGISTRY_PASSWORD }}
+        - run: |
+           docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/sampleapp:${{ github.sha }}
+           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/sampleapp:${{ github.sha }}
+
+
