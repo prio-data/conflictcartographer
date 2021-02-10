@@ -23,8 +23,6 @@ app/compiled/*
 !app/compiled/.keep
 note
 .vim/
-cert/*
-!cert/.keep
 penv.env
 .coverage
 htmlcov/
