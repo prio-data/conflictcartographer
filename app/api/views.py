@@ -175,6 +175,8 @@ def projects(request:HttpRequest)->HttpResponse:
     """
     Get list of countries assigned to current user.
     """
+    if not request.user.is_authenticated:
+        return JsonResponse({"status":"error","message":"not authenticated"},status=403)
 
     if request.method == "GET":
         try:

@@ -29,7 +29,7 @@ urlpatterns = [
     path("api/clearshapes/<int:project>/",clearShapes,name="clearshapes"),
 
     # Project status
-    path("api/assigned/", projects,name="assigned"),
+    path("api/assigned/", projects),
     path("api/unfulfilled/",unfulfilled,name="unfulfilled"),
 
     # Metadata entry
@@ -51,7 +51,7 @@ urlpatterns = [
     path("api/profile/meta/",profile_meta,name="profile_meta_detail"),
     path("api/profile/exists/",hasProfile,name="profile_meta_exists"),
 
-    path("api/profile/assigned/",projects,name="assigned_list"),
+    path("api/profile/assigned/",projects,name="assigned"),
     path("api/profile/unfulfilled/",unfulfilled,name="unfulfilled_list"),
     path("api/profile/next/",next_project,name="next_project"),
 

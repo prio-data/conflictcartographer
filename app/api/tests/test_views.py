@@ -54,7 +54,10 @@ class ApiViewsTest(TestCase):
         self.assertEqual(r.status_code,200)
         self.assertDictEqual(r.json(),{
             "shape":{"shape":"here"},
-            "url":"http://testserver"+path
+            "url":"http://testserver"+path,
+            "name":"Somewhere",
+            "iso2c":"sw",
+            "gwno":123,
         })
 
     def test_nocountries(self):
@@ -62,7 +65,7 @@ class ApiViewsTest(TestCase):
         self.client.login(username="meep",password="meep")
         r = self.client.get(reverse("assigned"))
         self.assertEqual(r.status_code,200)
-        self.assertEqual(r.json(),[])
+        self.assertEqual(r.json()["countries"],[])
     
     def test_baddata(self):
         u = User.objects.create_user(username="bad",password="bad")
@@ -72,7 +75,8 @@ class ApiViewsTest(TestCase):
 
         self.client.login(username="bad",password="bad")
 
-        ctry,*_ = self.client.get(reverse("assigned")).json()
+        assigned = self.client.get(reverse("assigned")).json()
+        ctry = assigned["countries"][0]
 
         r = self.client.post(reverse("shape-list"),data="Hello world!",content_type="text")
         self.assertEqual(r.status_code,415)

@@ -33,7 +33,9 @@ class QuarterizingTest(ApiTestCase):
 
     def test_mutex_answers(self):
         r = self.client.get(reverse("assigned"))
-        c,*_ = json.loads(r.content.decode())
+        assigned_countries = json.loads(r.content.decode())
+        first_country = assigned_countries["countries"][0]
+        #c,*_ = json.loads(r.content.decode())
 
         s = Shape.objects.create(
                 date = date.today()-timedelta(weeks=52),
@@ -64,23 +66,23 @@ class QuarterizingTest(ApiTestCase):
             except m.DoesNotExist:
                 self.fail()
 
-        self.shapes_post(shape=randomFeature(),country=c["url"],values={"a":"b"})
+        self.shapes_post(shape=randomFeature(),country=first_country["url"],values={"a":"b"})
 
-        s,data = self.project_status(c["gwno"])
+        s,data = self.project_status(first_country["gwno"])
         self.assertEqual(data["shapes"],1)
         self.assertFalse(data["nonanswer"])
 
         
-        self.nonanswer(c["gwno"])
+        self.nonanswer(first_country["gwno"])
 
-        s,data = self.project_status(c["gwno"])
+        s,data = self.project_status(first_country["gwno"])
         self.assertEqual(data["shapes"],0)
         self.assertTrue(data["nonanswer"])
 
 
-        self.shapes_post(shape={},country=c["url"],values={"c":"d"})
+        self.shapes_post(shape={},country=first_country["url"],values={"c":"d"})
 
-        s,data = self.project_status(c["gwno"])
+        s,data = self.project_status(first_country["gwno"])
         self.assertEqual(data["shapes"],1)
         self.assertFalse(data["nonanswer"])
 
