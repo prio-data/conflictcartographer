@@ -69,7 +69,7 @@ export default {
             .then((done)=>{
                if(!done){
                   this.status = "Proceeding to menu"
-                  this.$router.push("/menu")
+                  this.$router.push("/status")
                } else {
                }
             })
