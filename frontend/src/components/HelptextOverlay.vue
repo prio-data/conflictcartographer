@@ -15,7 +15,7 @@
 
 .helptext
    height: 100%
-   width: 100%
+   width: 90%
    padding: 30px 60px
    font-size: 25px
 
