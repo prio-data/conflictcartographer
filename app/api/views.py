@@ -185,23 +185,27 @@ def projects(request:HttpRequest)->HttpResponse:
             return JsonResponse({"countries":serialized})
         except Exception as e:
             return JsonResponse({"message":str(e)},status=500) 
+
     elif request.method == "POST":
         if request.headers["Content-Type"] == "application/json":
             data = json.loads(request.body)
         else:
             return JsonResponse({"status":"error"},415)
-    else:
-        return JsonResponse({"status":"error"},status=405)
 
-    try:
+        try:
+            selected = data["selected"]
+        except KeyError:
+            return HttpResponse(status=400)
+
         profile = request.user.profile
         countries = Country.objects.filter(name__in=data["selected"])
         profile.countries.set(countries)
         profile.save()
 
-        return JsonResponse(data={"status":"ok","n":"countries"},status=205)
-    except KeyError:
-        return JsonResponse({"status":"error"},status=400)
+        return HttpResponse(status=205)
+
+    else:
+        return JsonResponse({"status":"error"},status=405)
 
 @api_view(("GET",))
 def unfulfilled(request:HttpRequest)->HttpResponse:

@@ -150,7 +150,8 @@ export default {
             this.$router.push("/")
          })
          .catch((e)=>{
-            console.log(e)
+            console.error(e)
+            this.$router.push("/")
          })
       }
    },
@@ -162,16 +163,16 @@ export default {
             this.got_alternatives = true
          })
          .catch((e)=>{
-            console.log(e)
+            console.error(e)
          })
       this.$store.state.api.get.rel("profile/assigned")
          .then((r)=>{
-            console.log(r)
+            console.error(r)
             this.values = r.data.countries.map((prj)=>prj.name)
             this.got_assigned = true
          })
          .catch((e)=>{
-            console.log(e)
+            console.error(e)
          })
    }
 }
