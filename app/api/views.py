@@ -346,7 +346,7 @@ def profile_meta(request:HttpRequest)->HttpResponse:
 
     request.user.profile.meta = formatted
     request.user.profile.save()
-    return JsonResponse({"status":"ok"},status=205)
+    return HttpResponse(status=205)
 
 
 def editProfile(request:HttpRequest)->HttpResponse:
