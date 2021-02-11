@@ -16,7 +16,7 @@
                </div>
             </div>
             <div id="status-other">
-               <CountryStatusTable :countries="assigned">
+               <CountryStatusTable v-if="assigned.length>0" :countries="assigned">
                </CountryStatusTable>
             </div>
          </div>

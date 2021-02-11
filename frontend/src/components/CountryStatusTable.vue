@@ -31,6 +31,6 @@ th
 import CountrySummary from "@/components/widgets/CountrySummary"
 export default {
    props: ["countries"],
-   components: {CountrySummary}
+   components: {CountrySummary},
 }
 </script>
