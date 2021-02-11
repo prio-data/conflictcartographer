@@ -9,6 +9,7 @@ import MapEditor from "@/components/MapEditor"
 import ProgressMenu from "@/components/ProgressMenu"
 import MetaQuestionaire from "@/components/MetaQuestionaire"
 import ProjectInfo from "@/components/ProjectInfo"
+import StatusScreen from "@/components/StatusScreen"
 
 Vue.use(VueRouter)
 
@@ -20,6 +21,7 @@ const routes = [
    {path: "/menu",component: Menu},
    {path: "/progress",component: ProgressMenu},
    {path: "/info",component: ProjectInfo},
+   {path: "/status",component: StatusScreen},
 ]
 
 

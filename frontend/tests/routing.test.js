@@ -77,7 +77,7 @@ let respres=[
             },
          },
       },
-      result_path: "/menu"
+      result_path: "/status"
    },
 ]
 

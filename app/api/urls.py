@@ -59,5 +59,7 @@ urlpatterns = [
     path("api/profile/fulfilled/",fulfilled_projects,name="unfulfilled_list"),
 
     # Projects
-    path("api/projects/",projectChoices)
+    path("api/projects/",projectChoices),
+    path("api/projects/<int:project>/status/",projectStatus,name="project_detail_status"),
+    path("api/projects/<int:project>/clear/",clearShapes,name="project_clear"),
 ]

@@ -16,18 +16,8 @@
                </div>
             </div>
             <div id="status-other">
-               <div class="list-category">
-                  <p>Pending</p>
-                  <div v-if="pending.length>0" class="hlist pending">
-                     <div v-for="country in pending " :key="country.gwno">{{country.iso2c}}</div>
-                  </div>
-               </div>
-               <div class="list-category">
-                  <p>Fulfilled</p>
-                  <div v-if="fulfilled.length>0" class="hlist fulfilled">
-                     <div v-for="country in fulfilled" :key="country.gwno">{{country.iso2c}}</div>
-                  </div>
-               </div>
+               <CountryStatusTable :countries="assigned">
+               </CountryStatusTable>
             </div>
          </div>
       </template>
@@ -35,7 +25,6 @@
       <template v-slot:footer>
          <div class="footer-buttons">
             <button v-on:click="go_to_next" class="continue">Add predictions for {{ next? next.name : ""}}</button>
-            <button v-on:click="go_to_assign" class="alt">Change Assigned</button>
          </div>
       </template>
 
@@ -84,9 +73,10 @@
    cursor: default
 
 #status-other
-   display: grid
-   grid-template-rows: 1fr 1fr
-   padding: 0 20px
+   padding: 20px
+
+#status-other table
+   width: 100%
 
 .list-category
    display: grid
@@ -121,6 +111,7 @@
 <script>
 import Card from "@/components/Card"
 import CountryView from "@/components/CountryView"
+import CountryStatusTable from "@/components/CountryStatusTable"
 import {mock_countries} from "@/mocking"
 //import * as d3 from "d3"
 import L from "leaflet"
@@ -129,15 +120,16 @@ import {fit_to_geojson,shape_to_latlng_box,TILE_URL} from "@/configure_map"
 import {format_date} from "@/date_formatting"
 
 export default {
-   components: {Card,CountryView},
+   components: {Card,CountryView,CountryStatusTable},
    data(){
       return {
          next: undefined,
-         pending: [],
-         fulfilled: [],
+         //pending: [],
+         //fulfilled: [],
          loaded: false,
          pred_start:undefined,
          pred_end:undefined,
+         assigned: [],
       }
    },
 
@@ -197,15 +189,11 @@ export default {
                      this.pred_end = format_date(r.data.end)
                   })
 
-
-               this.$store.state.api.get.rel("profile/pending")
+               this.$store.state.api.get.rel("profile/assigned")
                   .then((r)=>{
-                     let not_next = r.data.countries.filter((ctry)=>ctry.gwno != this.next.gwno)
-                     this.pending = not_next 
-                  })
-               this.$store.state.api.get.rel("profile/fulfilled")
-                  .then((r)=>{
-                     this.fulfilled = r.data.countries
+                     this.assigned = r.data.countries.filter((ctry)=>{
+                        return ctry.gwno !== this.next.gwno
+                     })
                   })
             }
          })
