@@ -72,10 +72,11 @@
 
 #prediction-period-display
    text-align: center
-   font-size: 10px
+   font-size: 8px
    color: white 
    margin: 0
    padding: 0 60px
+   max-width: 320px 
 
 #prediction-period-display h1
    background: $ui-highlight
@@ -281,6 +282,8 @@ import debounce from "@/util/debounce"
 
 import {format_date} from "@/date_formatting"
 
+L.drawLocal.draw.handlers.polygon.tooltip.start = ""
+
 const COLORS={
    low: "#2b83ba",
    high: "#d7191c",
@@ -465,7 +468,9 @@ export default {
          if(this.drawing !== undefined){
             this.drawing.disable()
          }
-         this.selectedLayer.feature.properties.selected = undefined 
+         if(this.selectedLayer !== undefined){
+            this.selectedLayer.feature.properties.selected = undefined 
+         }
          this.restyle()
       },
 
@@ -554,6 +559,7 @@ export default {
          if(this.selectedLayer !== undefined){
             this.selectedLayer.feature.properties.selected = undefined
          }
+         this.restyle()
          this.selectedLayer = undefined
          fit_to_geojson(this.map,this.projectShape)
          this.mode = MODES.neutral
