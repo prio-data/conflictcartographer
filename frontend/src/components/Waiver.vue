@@ -44,7 +44,7 @@ export default {
    methods: {
       agree(){
          this.$store.state.api.post.rel("waiver",{data:{"agree":true}})
-            .then((r)=>{
+            .then(()=>{
                window.location.reload()
             })
             .error((e)=>{

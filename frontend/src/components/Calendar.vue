@@ -83,6 +83,8 @@ export default {
                return "Oct Nov Dec"
             case 4: 
                return "Jan Feb Mar"
+            default:
+               return ""
          }
       }
    },
@@ -102,7 +104,7 @@ export default {
             this.loaded = true
          })
          .catch((e)=>{
-            console.log(e)
+            console.error(e)
          })
    }
 }

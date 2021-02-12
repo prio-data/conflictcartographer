@@ -41,7 +41,7 @@ export default {
             this.description = r.data.description
          })
          .catch((e)=>{
-            console.log(e)
+            console.error(e)
             this.title = "Error"
             this.description = "Error fetching project description.".repeat(20)
          })

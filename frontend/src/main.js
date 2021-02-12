@@ -30,7 +30,7 @@ let csrf_token = /(?<=csrftoken\=)[^;]+/.exec(document.cookie)
 if(!csrf_token !== null){
    store.commit("initApi",csrf_token[0])
 } else {
-   console.log("No CSRF token found...")
+   console.error("No CSRF token found...")
 }
 
 let app = document.querySelector("#app")

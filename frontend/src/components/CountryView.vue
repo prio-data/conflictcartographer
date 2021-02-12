@@ -34,7 +34,5 @@
 export default {
    name: "CountryView",
    props: ["country"],
-   mounted(){ 
-   },
 }
 </script>

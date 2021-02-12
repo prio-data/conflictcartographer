@@ -95,7 +95,7 @@ export default {
             this.loaded = true
          })
          .catch((e)=>{
-            console.log(e)
+            console.error(e)
          })
    }
 }

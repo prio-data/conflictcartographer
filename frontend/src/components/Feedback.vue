@@ -67,11 +67,11 @@ export default {
                message: this.feedback,
                stars: this.stars
             }})
-            .then((r)=>{
+            .then(()=>{
                this.toggle()
             })
             .catch((e)=>{
-               console.log(e)
+               console.error(e)
             })
       }
    }

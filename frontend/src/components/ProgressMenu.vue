@@ -110,17 +110,14 @@
 
 <script>
 import Card from "@/components/Card"
-import CountryView from "@/components/CountryView"
 import CountryStatusTable from "@/components/CountryStatusTable"
-import {mock_countries} from "@/mocking"
-//import * as d3 from "d3"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
-import {fit_to_geojson,shape_to_latlng_box,TILE_URL} from "@/configure_map"
+import {shape_to_latlng_box} from "@/configure_map"
 import {format_date} from "@/date_formatting"
 
 export default {
-   components: {Card,CountryView,CountryStatusTable},
+   components: {Card,CountryStatusTable},
    data(){
       return {
          next: undefined,

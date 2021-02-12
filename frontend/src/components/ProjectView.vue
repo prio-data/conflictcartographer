@@ -132,7 +132,7 @@ export default { name: "ProjectView",
    methods: {
       deselect(){
          this.$store.state.api.post.rel("editprojects/remove",{data: {"pk":this.project.gwno}})
-            .then((r)=>{
+            .then(()=>{
                this.$emit("deselected")
             })
             .catch((e)=>{
@@ -141,7 +141,7 @@ export default { name: "ProjectView",
       },
       nonanswer(){
          this.$store.state.api.post.rel(`nonanswer/${this.project.gwno}`)
-            .then((r)=>{
+            .then(()=>{
                this.$emit("deselected")
             })
             .catch((e)=>{
@@ -150,7 +150,7 @@ export default { name: "ProjectView",
       },
       clear(){
          this.$store.state.api.post.rel(`clearshapes/${this.project.gwno}`)
-            .then((r)=>{
+            .then(()=>{
                this.$emit("deselected")
             })
             .catch((e)=>{

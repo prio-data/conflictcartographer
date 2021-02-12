@@ -267,10 +267,7 @@ import bbox from "geojson-bbox"
 import "@/sass/leaflet_custom.sass"
 
 import colorGradient from "@/util/colorGradient.js"
-import Spinner from "@/components/Spinner"
-import EditorOverlay from "@/components/EditorOverlay"
 import HelptextOverlay from "@/components/HelptextOverlay"
-import LayerEditor from "@/components/LayerEditor"
 
 import VueSlider from "vue-slider-component"
 import "vue-slider-component/theme/default.css"
@@ -325,9 +322,6 @@ export default {
    name: 'MapEditor',
    components: {
       HelptextOverlay,
-      EditorOverlay,
-      Spinner,
-      LayerEditor,
       VueSlider
    },
    
@@ -378,6 +372,8 @@ export default {
       selectedProps(){
          if(this.selectedLayer !== undefined){
             return this.selectedLayer.feature.properties
+         } else {
+            return undefined
          }
       }
    },
@@ -387,7 +383,6 @@ export default {
          handler(){
             if(this.selectedLayer !== undefined){
                this.updated(this.selectedLayer)
-            } else {
             }
          },
          deep: true
@@ -479,7 +474,6 @@ export default {
          if(this.map !== undefined){
             this.drawing = new L.Draw.Polygon(this.map,{shapeOptions:{color:"grey"}})
             this.drawing.enable()
-         } else {
          }
       },
 
@@ -499,10 +493,11 @@ export default {
          if(this.mode == MODES.deleting){
             this.drawnItems.removeLayer(layer)
             this.$store.state.api.del.abs(layer.feature.properties.url)
-               .then((r)=>{
+               .then(()=>{
                   this.drawnItems.removeLayer(layer)
                })
                .catch((e)=>{
+                  console.error(e)
                   this.drawnItems.addLayer(layer)
                })
          }
@@ -537,7 +532,7 @@ export default {
                this.restyle(newlyCreated)
             })
             .catch((e)=>{
-               console.log(e)
+               console.error(e)
             })
       },
 
@@ -585,10 +580,8 @@ export default {
 
       post_update: debounce(function(url,data){
          this.$store.state.api.put.abs(url,{data:data})
-            .then((r)=>{
-            })
             .catch((e)=>{
-               console.log(e)
+               console.error(e)
             })
       }, 500),
 
@@ -629,11 +622,11 @@ export default {
 
       non_answer(){
          this.$store.state.api.post.rel(`nonanswer/${this.$route.params.gwno}`)
-            .then((r)=>{
+            .then(()=>{
                this.$router.push("/")
             })
             .catch((e)=>{
-               console.log("yee")
+               console.error(e)
             })
 
       }

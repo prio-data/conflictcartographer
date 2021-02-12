@@ -64,11 +64,11 @@ export default {
          this.$store.state.api.post.rel("profile/meta",{
             data: this.questions
          })
-         .then((r)=>{
+         .then(()=>{
             this.$router.push("/")
          })
          .catch((e)=>{
-            console.log(e)
+            console.error(e)
          })
       },
       skip(){
@@ -77,11 +77,11 @@ export default {
                   {"title":"skipped","value":"true"}
                ]
             })
-         .then((r)=>{
+         .then(()=>{
             this.$router.push("/")
          })
          .catch((e)=>{
-            console.log(e)
+            console.error(e)
          })
       }
    },

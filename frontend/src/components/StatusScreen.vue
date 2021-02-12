@@ -65,7 +65,7 @@ export default {
          .then((r)=>{
             this.submitted = r.data.countries
          })
-         .catch(()=>{
+         .catch((e)=>{
             console.error(e)
          })
    },

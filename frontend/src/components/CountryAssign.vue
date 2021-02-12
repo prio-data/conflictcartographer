@@ -138,7 +138,7 @@ export default {
             this.countries.splice(unassigned,1)
          }
       },
-      removeHelp(c){
+      removeHelp(){
          this.helptext = "Great! Thanks. Now click the button below to proceed"
       },
 
@@ -148,7 +148,7 @@ export default {
                selected: this.values 
             }
          })
-         .then((r)=>{
+         .then(()=>{
             this.$router.push("/")
          })
          .catch((e)=>{

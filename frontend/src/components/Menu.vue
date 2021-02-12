@@ -38,7 +38,6 @@
 <script>
 
 import ProjectMenu from "@/components/ProjectMenu.vue"
-import MapEditor from "@/components/MapEditor.vue"
 import Navbar from "@/components/Navbar.vue"
 import Modal from "@/components/Modal.vue"
 import Monogram from "@/components/Monogram.vue"
@@ -51,7 +50,6 @@ export default {
    components: {
       Navbar,
       ProjectMenu,
-      MapEditor,
       Modal,
       Monogram,
       menu_tutorial,
@@ -89,16 +87,13 @@ export default {
    beforeMount: function(){
       //this.$store.commit("initApi",this.$cookies.get("csrftoken"))
       this.$store.state.api.get.rel("currentproject",{params:{verbose:false}})
-         .then((r)=>{
+         .then(()=>{
             this.state = "loaded"
          })
          .catch((e)=>{
             this.state = "error"
             this.error = e
          })
-
-
-      let sessionInfo = JSON.parse(document.getElementById("sessionInfo").textContent);
    },
 
    mounted: function(){

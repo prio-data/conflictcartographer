@@ -4,7 +4,7 @@
          <div id="boxHolder">
             <p class="label">Country:</p>
             <select id="selectbox" name="country" v-model="selected">
-               <option v-for="c in choices" :value="c.pk">{{c.name}}</option>
+               <option v-for="c in choices" :value="c.pk" :key="c.pk">{{c.name}}</option>
             </select>
          </div>
          <div id="dispatch" class="divbutton" v-on:click="dispatch">Add</div>
@@ -106,17 +106,18 @@ export default {
                this.active=true
             })
             .catch((e)=>{
+               console.error(e)
                this.active=false
             })
       },
       dispatch(){
          this.active = false
          this.$store.state.api.post.rel("editprojects/add",{data:{"pk":this.selected}})
-            .then((r)=>{
+            .then(()=>{
                this.$emit("addedProject")
                })
             .catch((e)=>{
-               console.log(e)
+               console.error(e)
             })
       }
    }

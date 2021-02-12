@@ -8,11 +8,10 @@ hand-holding strategy designed to maximize participation.
 </Card>
 </template>
 <script>
-import Spinner from "@/components/widgets/Spinner"
 import Card from "@/components/Card"
 
 export default {
-   components: {Card,Spinner},
+   components: {Card},
 
    data(){
       return {
@@ -24,7 +23,8 @@ export default {
       this.status = "Checking assigned countries"
       if(!this.$cookies.get("informed")){
          this.$router.push("/info")
-      } else {
+      } 
+      else {
          this.$store.state.api.get.rel("profile/assigned")
             .then((assigned_countries)=>{
                if(assigned_countries.data.countries.length == 0){
@@ -70,7 +70,6 @@ export default {
                if(!done){
                   this.status = "Proceeding to menu"
                   this.$router.push("/status")
-               } else {
                }
             })
       }
