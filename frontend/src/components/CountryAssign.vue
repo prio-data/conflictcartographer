@@ -13,6 +13,8 @@
                :multiple="true"
                :max-height="500"
                :loading="!loaded"
+               selectLabel=""
+               deselectLabel=""
                @open="removeHelp"
                >
             </multiselect>
@@ -113,7 +115,7 @@ export default {
          countries: [
          ],
          values: [],
-         helptext: "Please select the countries that you consider yourself an expert on by clicking the above list.",
+         helptext: "Please select the countries you wish to provide predictions for.",
          got_alternatives:false,
          got_assigned:false,
       }
