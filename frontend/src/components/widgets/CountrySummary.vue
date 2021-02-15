@@ -3,10 +3,10 @@
       <td>
          {{ country.name }}
       </td>
-      <td>
+      <td class="only-wide">
          <span v-if="shapes!==undefined">{{shapes}} prediction-areas</span>
       </td>
-      <td>
+      <td class="only-wide">
          <span v-if="nonanswer">No conflict</span>
       </td>
       <td>
