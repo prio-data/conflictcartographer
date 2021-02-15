@@ -212,6 +212,7 @@ $darken: 0.4
    height: 100vh
    width: 100vw
    background: #aaa 
+   filter: contrast(1) // Somehow necessary for proper Z indexing
 
 #mapeditor
   -webkit-font-smoothing: antialiased
