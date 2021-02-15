@@ -1,8 +1,8 @@
 <template>
    <table cellspacing=0 cellpadding=0 id="country-status-table">
       <th>Name</th>
-      <th>Shapes</th>
-      <th>No-conflict</th>
+      <th class="only-wide">Shapes</th>
+      <th class="only-wide">No-conflict</th>
       <th></th>
       <th></th>
       <CountrySummary :country="country" v-for="country in countries" :key="country.gwno">

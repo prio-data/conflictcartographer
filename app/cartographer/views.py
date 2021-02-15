@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import render
 from django.core import serializers
 from django.http import HttpResponse
@@ -7,24 +9,17 @@ from  django.conf import settings
 
 # Create your views here.
 
+manifest = {
+    "name":"Conflict-Cartographer",
+    "author":"pedlan@prio.org",
+    "version":"0.1",
+    "display":"standalone",
+    "description":"A data collection app",
+}
+
 def cartographer(request):
     if request.user.is_authenticated:
-        if request.method == "GET":
-
-            #shapes = DrawnShape.objects.all()
-
-            context = {#"data": serializers.serialize("json",shapes),
-                    "sessionInfo": {"username":request.user.username,
-                                    "isdebug":settings.DEBUG,
-                                    "uk":request.user.pk}} 
-            return render(request,"cartographer/index.html",context)
-        elif request.method == "POST":
-            #DrawnShape.objects.all().delete()
-            data = request.body.decode()
-            print(f"Recieved: {data} from {request.user}")
-            shapes = serializers.deserialize("json",data)
-            for shape in shapes: 
-                shape.save()
-            return HttpResponse("You posted!!")
+        context = {"manifest":json.dumps(manifest)} 
+        return render(request,"cartographer/index.html",context)
     else:
         return redirect("accounts/login")
