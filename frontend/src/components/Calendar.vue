@@ -83,6 +83,8 @@ export default {
                return "Oct Nov Dec"
             case 4: 
                return "Jan Feb Mar"
+            default:
+               return ""
          }
       }
    },
@@ -94,7 +96,7 @@ export default {
       }
    },
    mounted(){
-      this.$store.state.api.get.rel("calendar")
+      this.$api.get.rel("calendar")
          .then((r)=>{
             let d = r.data
             this.year = d.year
@@ -102,7 +104,7 @@ export default {
             this.loaded = true
          })
          .catch((e)=>{
-            console.log(e)
+            console.error(e)
          })
    }
 }

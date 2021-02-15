@@ -89,13 +89,13 @@ export default {
    },
 
    mounted(){
-      this.$store.state.api.get.rel("hasprofile")
+      this.$api.get.rel("hasprofile")
          .then((r)=>{
             this.hasprofile=r.data.profile 
             this.loaded = true
          })
          .catch((e)=>{
-            console.log(e)
+            console.error(e)
          })
    }
 }

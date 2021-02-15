@@ -55,18 +55,9 @@
       props: ["title"],
 
       computed: {
-         username: function(){
-            return this.$store.state.sessionInfo.username
-         },
          projectname: function(){
-            let project = this.$store.state.currentProject
-            return project ? project.name : "Menu"
-
+            return "Menu" 
          },
-
-         anyLoading: function(){
-            return this.$store.state.menustatus != 0
-         }
       }
 
    }

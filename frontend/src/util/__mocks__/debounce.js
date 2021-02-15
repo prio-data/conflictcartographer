@@ -1,4 +1,4 @@
-export default function debounce(func, wait, immediate) {
+export default function debounce(func){
    /* Disables debouncing for testing */
    return func
 }

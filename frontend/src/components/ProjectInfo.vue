@@ -40,7 +40,7 @@ export default {
       }
    },
    mounted(){
-      this.$store.state.api.get.rel("info/verbose")
+      this.$api.get.rel("info/verbose")
          .then((r)=>{
             this.title = r.data.title
             this.body = r.data.description

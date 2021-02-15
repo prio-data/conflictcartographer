@@ -62,16 +62,16 @@ export default {
    },
    methods: {
       submit(){
-         this.$store.state.api.post.rel("feedback",{
+         this.$api.post.rel("feedback",{
             data: {
                message: this.feedback,
                stars: this.stars
             }})
-            .then((r)=>{
+            .then(()=>{
                this.toggle()
             })
             .catch((e)=>{
-               console.log(e)
+               console.error(e)
             })
       }
    }

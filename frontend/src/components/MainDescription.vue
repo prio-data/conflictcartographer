@@ -35,13 +35,13 @@ export default {
       }
    },
    mounted(){
-      this.$store.state.api.get.rel("currentproject")
+      this.$api.get.rel("currentproject")
          .then((r)=>{
             this.title = r.data.title
             this.description = r.data.description
          })
          .catch((e)=>{
-            console.log(e)
+            console.error(e)
             this.title = "Error"
             this.description = "Error fetching project description.".repeat(20)
          })

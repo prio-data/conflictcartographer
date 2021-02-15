@@ -12,7 +12,7 @@
          <Spinner v-else/>
          <div class="pane projects">
             <div id="projectlist" v-if="projectsLoaded">
-               <div v-for="project in projects" class="pmcard">
+               <div v-for="project in projects" class="pmcard" :key="project.url">
                   <ProjectView class="card"
                      :key="project.url"
                      :project="project"
@@ -83,7 +83,6 @@ h1#menuheader
    import Profile from "@/components/Profile"
    import Waiver from "@/components/Waiver"
    import MainDescription from "@/components/MainDescription"
-   import CountryPicker from "@/components/CountryPicker"
    import Calendar from "@/components/Calendar"
    import Feedback from "@/components/Feedback"
    import Share from "@/components/Share"
@@ -106,16 +105,12 @@ h1#menuheader
          Profile,
          MainDescription,
          Waiver,
-         CountryPicker,
          Calendar,
          Feedback,
          Share,
       },
 
       computed: {
-         user(){
-            return this.$store.state.sessionInfo.uk
-         },
          loaded(){
             return this.projectsLoaded && this.profileLoaded
          }
@@ -123,12 +118,11 @@ h1#menuheader
 
       methods: {
          chosen: function(project){
-            console.log(project)
             this.$router.push(`ctry/${project.gwno}`)
          },
          refreshProjects(){
             this.projectsLoaded = false
-            this.$store.state.api.get.rel("assigned")
+            this.$api.get.rel("assigned")
                .then((r)=>{
                   this.projects = r.data.countries
                   this.projects = this.projects.sort((a,b)=>{ 
@@ -138,7 +132,7 @@ h1#menuheader
                   })
                   this.projectsLoaded = true})
                .catch((e)=>{
-                  console.log(e)
+                  console.error(e)
                })
          },
          go_to_assign(){
@@ -147,10 +141,8 @@ h1#menuheader
       },
 
       mounted(){
-         let api = this.$store.state.api
-
          this.refreshProjects()
-         api.get.rel("whoami")
+         this.$api.get.rel("whoami")
             .then((r)=>{
                this.profile = r.data
                this.profileLoaded = true
