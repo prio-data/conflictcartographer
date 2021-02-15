@@ -43,7 +43,7 @@ export default {
    },
    methods: {
       agree(){
-         this.$store.state.api.post.rel("waiver",{data:{"agree":true}})
+         this.$api.post.rel("waiver",{data:{"agree":true}})
             .then(()=>{
                window.location.reload()
             })
@@ -54,7 +54,7 @@ export default {
    },
 
    mounted(){
-      this.$store.state.api.get.rel("waiver")
+      this.$api.get.rel("waiver")
          .then((r)=>{
             this.loaded = true
             this.waiver = r.data.message

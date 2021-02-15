@@ -53,7 +53,7 @@ export default {
    },
 
    mounted(){
-      this.$store.state.api.get.rel("period/next")
+      this.$api.get.rel("period/next")
          .then((r)=>{
             this.start_pred = format_date(r.data.start)
             this.end_pred = format_date(r.data.end)
@@ -61,7 +61,7 @@ export default {
          .catch((e)=>{
             console.error(e)
          })
-      this.$store.state.api.get.rel("profile/assigned")
+      this.$api.get.rel("profile/assigned")
          .then((r)=>{
             this.submitted = r.data.countries
          })

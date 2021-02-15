@@ -86,7 +86,7 @@ export default {
 
    beforeMount: function(){
       //this.$store.commit("initApi",this.$cookies.get("csrftoken"))
-      this.$store.state.api.get.rel("currentproject",{params:{verbose:false}})
+      this.$api.get.rel("currentproject",{params:{verbose:false}})
          .then(()=>{
             this.state = "loaded"
          })

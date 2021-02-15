@@ -37,7 +37,7 @@ export default {
    },
    methods: {
       share(){
-         this.$store.state.api.post.rel("share",{data: {email: this.email, message: this.message}})
+         this.$api.post.rel("share",{data: {email: this.email, message: this.message}})
             .then(()=>{
                this.msg = "Thanks!"
                this.toggle()

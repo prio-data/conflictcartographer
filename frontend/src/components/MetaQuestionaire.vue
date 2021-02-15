@@ -61,7 +61,7 @@ export default {
    methods: {
       to_router(){
          // Post metadata to API
-         this.$store.state.api.post.rel("profile/meta",{
+         this.$api.post.rel("profile/meta",{
             data: this.questions
          })
          .then(()=>{
@@ -72,7 +72,7 @@ export default {
          })
       },
       skip(){
-         this.$store.state.api.post.rel("profile/meta",{
+         this.$api.post.rel("profile/meta",{
                data: [
                   {"title":"skipped","value":"true"}
                ]

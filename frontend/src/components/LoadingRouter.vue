@@ -25,7 +25,7 @@ export default {
          this.$router.push("/info")
       } 
       else {
-         this.$store.state.api.get.rel("profile/assigned")
+         this.$api.get.rel("profile/assigned")
             .then((assigned_countries)=>{
                if(assigned_countries.data.countries.length == 0){
                   this.$router.push("/assign")
@@ -37,7 +37,7 @@ export default {
             .then((done)=>{
                if(!done){
                   this.status = "Checking status of assigned"
-                  return this.$store.state.api.get.rel("profile/unfulfilled")
+                  return this.$api.get.rel("profile/unfulfilled")
                      .then((unfulfilled)=>{
                         if(unfulfilled.data.countries.length>0){
                            this.$router.push("/progress")
@@ -52,7 +52,7 @@ export default {
             .then((done)=>{
                if(!done){
                   this.status = "Checking profile status"
-                  return this.$store.state.api.get.rel("profile/exists")
+                  return this.$api.get.rel("profile/exists")
                      .then((profile)=>{
                         let hasmeta = profile.data.profile
                         if(!hasmeta){

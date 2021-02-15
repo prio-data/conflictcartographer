@@ -40,7 +40,7 @@ export default {
       }
    },
    mounted(){
-      this.$store.state.api.get.rel(`projects/${this.country.gwno}/status`)
+      this.$api.get.rel(`projects/${this.country.gwno}/status`)
          .then((r)=>{
             this.shapes = r.data.shapes
             this.nonanswer = r.data.nonanswer
@@ -56,9 +56,9 @@ export default {
       clear(){
          let rq
          if(this.shapes>0){
-            rq = this.$store.state.api.get.rel(`projects/${this.country.gwno}/clear`)
+            rq = this.$api.get.rel(`projects/${this.country.gwno}/clear`)
          } else {
-            rq = this.$store.state.api.post.rel(`nonanswer/${this.country.gwno}`)
+            rq = this.$api.post.rel(`nonanswer/${this.country.gwno}`)
          }
          rq.then(()=>{
                this.$router.push("/")

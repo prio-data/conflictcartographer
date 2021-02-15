@@ -15,7 +15,7 @@
                :loading="!loaded"
                selectLabel=""
                deselectLabel=""
-               @open="removeHelp"
+               @open="remove_help"
                >
             </multiselect>
          </div>
@@ -125,25 +125,19 @@ export default {
       options(){
          return this.countries.map(c=>c.name)
       },
+
       loaded(){
          return this.got_alternatives && this.got_assigned
       }
    },
    
    methods: {
-      unassignCountry(c){
-         // Make an API call
-         let unassigned = this.countries.findIndex(ctry=>ctry.gwno == c.gwno)
-         if(unassigned > -1){
-            this.countries.splice(unassigned,1)
-         }
-      },
-      removeHelp(){
+      remove_help(){
          this.helptext = "Great! Thanks. Now click the button below to proceed"
       },
 
       to_router(){
-         this.$store.state.api.post.rel("profile/assigned",{
+         this.$api.post.rel("profile/assigned",{
             data:{
                selected: this.values 
             }
@@ -159,7 +153,7 @@ export default {
    },
 
    mounted(){
-      this.$store.state.api.get.rel("projects")
+      this.$api.get.rel("projects")
          .then((r)=>{
             this.countries = r.data.projects
             this.got_alternatives = true
@@ -167,7 +161,7 @@ export default {
          .catch((e)=>{
             console.error(e)
          })
-      this.$store.state.api.get.rel("profile/assigned")
+      this.$api.get.rel("profile/assigned")
          .then((r)=>{
             console.error(r)
             this.values = r.data.countries.map((prj)=>prj.name)

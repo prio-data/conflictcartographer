@@ -325,7 +325,14 @@ export default {
       VueSlider
    },
    
-   //props: ["project"],
+   props: {
+      defaultIntensity: {
+         default: 0
+      },
+      defaultConfidence: {
+         default: 50 
+      },
+   },
 
    data(){
       return {
@@ -393,7 +400,7 @@ export default {
       // =======================================
       // When drawn,  
 
-      this.$store.state.api.get.rel("period/next")
+      this.$api.get.rel("period/next")
          .then((r)=>{
             this.pred_start = format_date(r.data.start)
             this.pred_end = format_date(r.data.end)
@@ -402,7 +409,7 @@ export default {
             console.error(`Error fetching dates: ${e}`)
          })
 
-      this.$store.state.api.get.rel(this.project_url)
+      this.$api.get.rel(this.project_url)
          .then((r)=>{
             this.projectShape = r.data.shape
             this.absUrl = r.data.url
@@ -422,7 +429,7 @@ export default {
 
             this.pendingItems.addTo(this.map)
 
-            this.$store.state.api.get.rel("shapes",{params: {country: this.gwno}})
+            this.$api.get.rel("shapes",{params: {country: this.gwno}})
                .then((r)=>{
                   this.layers = r.data
                   let features = r.data.map((db_shape)=>{
@@ -492,7 +499,7 @@ export default {
       deleted(layer){
          if(this.mode == MODES.deleting){
             this.drawnItems.removeLayer(layer)
-            this.$store.state.api.del.abs(layer.feature.properties.url)
+            this.$api.del.abs(layer.feature.properties.url)
                .then(()=>{
                   this.drawnItems.removeLayer(layer)
                })
@@ -510,8 +517,8 @@ export default {
 
          let geojson = layer.toGeoJSON()
          let values = {
-            intensity: this.$store.state.defaultIntensity,
-            confidence: this.$store.state.defaultConfidence,
+            intensity: this.defaultIntensity,
+            confidence: this.defaultConfidence,
          }
 
          let toPost = {
@@ -520,7 +527,7 @@ export default {
             country: this.absUrl 
          }
 
-         this.$store.state.api.post.rel("shapes",{data:toPost})
+         this.$api.post.rel("shapes",{data:toPost})
             .then((r)=>{
                geojson.properties = values
                geojson.properties.url = r.data.url
@@ -579,7 +586,7 @@ export default {
       },
 
       post_update: debounce(function(url,data){
-         this.$store.state.api.put.abs(url,{data:data})
+         this.$api.put.abs(url,{data:data})
             .catch((e)=>{
                console.error(e)
             })
@@ -621,7 +628,7 @@ export default {
       },
 
       non_answer(){
-         this.$store.state.api.post.rel(`nonanswer/${this.$route.params.gwno}`)
+         this.$api.post.rel(`nonanswer/${this.$route.params.gwno}`)
             .then(()=>{
                this.$router.push("/")
             })

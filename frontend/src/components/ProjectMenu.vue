@@ -111,9 +111,6 @@ h1#menuheader
       },
 
       computed: {
-         user(){
-            return this.$store.state.sessionInfo.uk
-         },
          loaded(){
             return this.projectsLoaded && this.profileLoaded
          }
@@ -125,7 +122,7 @@ h1#menuheader
          },
          refreshProjects(){
             this.projectsLoaded = false
-            this.$store.state.api.get.rel("assigned")
+            this.$api.get.rel("assigned")
                .then((r)=>{
                   this.projects = r.data.countries
                   this.projects = this.projects.sort((a,b)=>{ 
@@ -144,10 +141,8 @@ h1#menuheader
       },
 
       mounted(){
-         let api = this.$store.state.api
-
          this.refreshProjects()
-         api.get.rel("whoami")
+         this.$api.get.rel("whoami")
             .then((r)=>{
                this.profile = r.data
                this.profileLoaded = true

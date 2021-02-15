@@ -94,7 +94,7 @@ export default {
    },
    methods: {
       activate(){
-         this.choices = this.$store.state.api.get.rel("projectchoices")
+         this.choices = this.$api.get.rel("projectchoices")
             .then((r)=>{
                this.choices = r.data.projects
                this.choices = this.choices.sort((a,b)=>{
@@ -112,7 +112,7 @@ export default {
       },
       dispatch(){
          this.active = false
-         this.$store.state.api.post.rel("editprojects/add",{data:{"pk":this.selected}})
+         this.$api.post.rel("editprojects/add",{data:{"pk":this.selected}})
             .then(()=>{
                this.$emit("addedProject")
                })
