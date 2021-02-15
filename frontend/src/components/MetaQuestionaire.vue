@@ -61,27 +61,27 @@ export default {
    methods: {
       to_router(){
          // Post metadata to API
-         this.$store.state.api.post.rel("profile/meta",{
+         this.$api.post.rel("profile/meta",{
             data: this.questions
          })
-         .then((r)=>{
+         .then(()=>{
             this.$router.push("/")
          })
          .catch((e)=>{
-            console.log(e)
+            console.error(e)
          })
       },
       skip(){
-         this.$store.state.api.post.rel("profile/meta",{
+         this.$api.post.rel("profile/meta",{
                data: [
                   {"title":"skipped","value":"true"}
                ]
             })
-         .then((r)=>{
+         .then(()=>{
             this.$router.push("/")
          })
          .catch((e)=>{
-            console.log(e)
+            console.error(e)
          })
       }
    },

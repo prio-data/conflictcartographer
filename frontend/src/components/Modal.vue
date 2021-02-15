@@ -82,7 +82,7 @@ export default {
       }
    },
    mounted() {
-      this.$store.state.api.get.rel("currentproject",{"params":{"verbose":true}})
+      this.$api.get.rel("currentproject",{"params":{"verbose":true}})
          .then((r)=>{
             this.status = "loaded" 
             this.title = r.data.title

@@ -6,7 +6,7 @@ Vue.use(VueResource);
 
 const path = (...args)=> [...args].join("/")+"/"
 
-const Api = function(csrftoken,url){
+export default function(csrftoken,url){
    if(url !== undefined){
       url = "/api"
    }
@@ -21,10 +21,14 @@ const Api = function(csrftoken,url){
    }
 
    this._requestSet = (method)=>{
-      //return function(url,...args){
       let rq = (url,...args)=>{
          args = {...this.staticArgs, ...args[0]}
          return Axios({method: method, url: url,...args})
+            .catch((e)=>{
+               // Here i could reroute to an error page which
+               // would let the user report the issue?
+               console.log(`There was an error: ${e}`)
+            })
       }
       return {
          rel: (url,...args)=>{
@@ -32,7 +36,6 @@ const Api = function(csrftoken,url){
          },
          abs: rq
       }
-      //}
    }
 
    this.get = this._requestSet("get")
@@ -40,5 +43,3 @@ const Api = function(csrftoken,url){
    this.put = this._requestSet("put")
    this.del = this._requestSet("delete")
 };
-
-export default Api

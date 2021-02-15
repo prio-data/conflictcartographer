@@ -8,11 +8,10 @@ hand-holding strategy designed to maximize participation.
 </Card>
 </template>
 <script>
-import Spinner from "@/components/widgets/Spinner"
 import Card from "@/components/Card"
 
 export default {
-   components: {Card,Spinner},
+   components: {Card},
 
    data(){
       return {
@@ -24,8 +23,9 @@ export default {
       this.status = "Checking assigned countries"
       if(!this.$cookies.get("informed")){
          this.$router.push("/info")
-      } else {
-         this.$store.state.api.get.rel("profile/assigned")
+      } 
+      else {
+         this.$api.get.rel("profile/assigned")
             .then((assigned_countries)=>{
                if(assigned_countries.data.countries.length == 0){
                   this.$router.push("/assign")
@@ -37,7 +37,7 @@ export default {
             .then((done)=>{
                if(!done){
                   this.status = "Checking status of assigned"
-                  return this.$store.state.api.get.rel("profile/unfulfilled")
+                  return this.$api.get.rel("profile/unfulfilled")
                      .then((unfulfilled)=>{
                         if(unfulfilled.data.countries.length>0){
                            this.$router.push("/progress")
@@ -52,7 +52,7 @@ export default {
             .then((done)=>{
                if(!done){
                   this.status = "Checking profile status"
-                  return this.$store.state.api.get.rel("profile/exists")
+                  return this.$api.get.rel("profile/exists")
                      .then((profile)=>{
                         let hasmeta = profile.data.profile
                         if(!hasmeta){
@@ -70,7 +70,6 @@ export default {
                if(!done){
                   this.status = "Proceeding to menu"
                   this.$router.push("/status")
-               } else {
                }
             })
       }

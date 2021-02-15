@@ -131,8 +131,8 @@ export default { name: "ProjectView",
 
    methods: {
       deselect(){
-         this.$store.state.api.post.rel("editprojects/remove",{data: {"pk":this.project.gwno}})
-            .then((r)=>{
+         this.$api.post.rel("editprojects/remove",{data: {"pk":this.project.gwno}})
+            .then(()=>{
                this.$emit("deselected")
             })
             .catch((e)=>{
@@ -140,8 +140,8 @@ export default { name: "ProjectView",
          })
       },
       nonanswer(){
-         this.$store.state.api.post.rel(`nonanswer/${this.project.gwno}`)
-            .then((r)=>{
+         this.$api.post.rel(`nonanswer/${this.project.gwno}`)
+            .then(()=>{
                this.$emit("deselected")
             })
             .catch((e)=>{
@@ -149,8 +149,8 @@ export default { name: "ProjectView",
             })
       },
       clear(){
-         this.$store.state.api.post.rel(`clearshapes/${this.project.gwno}`)
-            .then((r)=>{
+         this.$api.post.rel(`clearshapes/${this.project.gwno}`)
+            .then(()=>{
                this.$emit("deselected")
             })
             .catch((e)=>{
@@ -160,7 +160,7 @@ export default { name: "ProjectView",
    },
 
    mounted(){
-      this.$store.state.api.get.rel(`projectstatus/${this.project.gwno}`)
+      this.$api.get.rel(`projectstatus/${this.project.gwno}`)
          .then((r)=>{
             this.status = r.data
             this.loaded = true

@@ -110,17 +110,14 @@
 
 <script>
 import Card from "@/components/Card"
-import CountryView from "@/components/CountryView"
 import CountryStatusTable from "@/components/CountryStatusTable"
-import {mock_countries} from "@/mocking"
-//import * as d3 from "d3"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
-import {fit_to_geojson,shape_to_latlng_box,TILE_URL} from "@/configure_map"
+import {shape_to_latlng_box} from "@/configure_map"
 import {format_date} from "@/date_formatting"
 
 export default {
-   components: {Card,CountryView,CountryStatusTable},
+   components: {Card,CountryStatusTable},
    data(){
       return {
          next: undefined,
@@ -154,6 +151,7 @@ export default {
 
    mounted(){
       let map = new L.Map("plot")
+
       map.zoomControl.remove()
       map.attributionControl.remove()
       map.dragging.disable();
@@ -163,7 +161,7 @@ export default {
       map.boxZoom.disable();
       map.keyboard.disable();
 
-      this.$store.state.api.get.rel("profile/next")
+      this.$api.get.rel("profile/next")
          .then((rsp)=>{
             if(rsp.data.status != "active"){
                this.$router.push("/")
@@ -171,7 +169,7 @@ export default {
                this.next = rsp.data.next
                let bbox = shape_to_latlng_box(this.next.shape).pad(.1)
                map.fitBounds(bbox)
-               //fit_to_geojson(map,this.next.shape)
+
                let layer = L.geoJson(this.next.shape,{
                   style:{
                      color: "white",
@@ -180,16 +178,17 @@ export default {
 
                   }
                })
+
                layer.addTo(map)
                this.loaded = true
 
-               this.$store.state.api.get.rel("period/next")
+               this.$api.get.rel("period/next")
                   .then((r)=>{
                      this.pred_start = format_date(r.data.start)
                      this.pred_end = format_date(r.data.end)
                   })
 
-               this.$store.state.api.get.rel("profile/assigned")
+               this.$api.get.rel("profile/assigned")
                   .then((r)=>{
                      this.assigned = r.data.countries.filter((ctry)=>{
                         return ctry.gwno !== this.next.gwno

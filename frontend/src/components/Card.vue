@@ -97,8 +97,9 @@
 @media only screen and (min-width: $mob-width)
    .card
       width: $mob-width*1.1
-      height: $mob-height*1.1
-      margin: 20px 0
+      height: 90vh 
+      max-height: $mob-height*1.1
+      margin: max(20px,4vh) 0
       box-shadow: 0px 3px 5px 2px #eee
       border: 1px solid gray
 
