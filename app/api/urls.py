@@ -46,6 +46,7 @@ urlpatterns = [
     path("api/period/current/",get_quarter,name="current_span"),
     path("api/period/next/",lambda rq: get_quarter(rq,shift=1),name="next_span"),
     path("api/period/previous/",lambda rq: get_quarter(rq,shift=-1),name="previous_span"),
+    path("api/period/next/<int:shift>/",get_quarter,name="selectable_span"),
     
     # Profile info
     path("api/profile/meta/",profile_meta,name="profile_meta_detail"),
