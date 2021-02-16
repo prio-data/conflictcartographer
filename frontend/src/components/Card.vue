@@ -1,5 +1,5 @@
 <template>
-   <div class="container">
+   <vue100vh class="container">
       <div class="card">
          <div class="overlay loading-cover" :class="{loaded: loaded}">
             <Spinner></Spinner>
@@ -23,7 +23,7 @@
             <slot name="overlay"></slot>
          </div>
       </div>
-   </div>
+   </vue100vh>
 </template>
 <style lang="sass" scoped>
 @import "@/sass/variables"
@@ -54,7 +54,6 @@
 
 .container
    width: 100vw
-   height: 100vh
 
 .card
    height: 100%
@@ -113,9 +112,11 @@
 </style>
 <script>
 import Spinner from "@/components/Spinner"
+import vue100vh from 'vue-100vh'
+
 export default {
    name: "Card",
-   components:{Spinner},
+   components:{Spinner,vue100vh},
    props: {
       loaded: {
          type: Boolean,
