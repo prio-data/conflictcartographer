@@ -49,9 +49,6 @@
    width: 50vw 
    overflow: auto
 
-.closewrapper
-   text-align center
-
 .closebutton
    display: inline-block
 
