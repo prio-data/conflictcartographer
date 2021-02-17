@@ -6,7 +6,6 @@ from typing import Literal
 import pydantic
 
 import geojson
-import requests
 
 from django.http import HttpResponse,HttpRequest,JsonResponse
 from django.shortcuts import render,redirect
@@ -33,6 +32,8 @@ from api.models import Country,ProjectDescription,WaiverText,NonAnswer
 from cartographer.services import currentQuarter,currentYear,quarterRange
 from api.validation import CountryFeatureCollection
 from api.forms import ProfileForm
+from api import service_calls 
+from api.view_decorators import service_proxy_error
 
 # ================================================
 # Utility views 
@@ -500,10 +501,11 @@ def clearShapes(request: HttpRequest, project: int)->HttpResponse:
     shapes.delete()
     return JsonResponse({"status":"ok","deleted":d})
 
-def get_quarter(request:HttpRequest,shift=0)->HttpResponse:
-    quarter_status = requests.get(settings.SCHEDULER_URL,params={"shift":shift})
-    data = quarter_status.json()
-    return JsonResponse({
-        "start":data["start"],
-        "end":data["end"]
-    })
+@service_proxy_error
+def get_current_quarter(request:HttpRequest,shift=0)->HttpResponse:
+    data = service_calls.span_from_today(shift=shift)
+    return JsonResponse(data)
+
+@service_proxy_error
+def is_open(request:HttpRequest)->HttpResponse:
+    return JsonResponse(service_calls.today_is_open())
