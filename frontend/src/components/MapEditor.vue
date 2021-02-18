@@ -58,17 +58,25 @@
             </div>
          </div>
       </vue100vh>
-
-      <HelptextOverlay>
-         <h1>
-            {{ this.helptexts[this.mode].title }}
-         </h1>
-         {{ this.helptexts[this.mode].text }}
-      </HelptextOverlay>
+      <Slideover :start_open="true" :size="300" :direction="2">
+         <div id="right-info">
+            <h2>Variable information</h2>
+            Here's some super important information!
+         </div>
+      </Slideover>
    </div>
 </template>
 <style scoped lang="sass">
 @import "../sass/variables.sass"
+
+#right-info
+   width: 100%
+   height: 100%
+   background: #f0f0f0
+   color: #222
+   padding: 10px
+   padding-left: 20px
+   border-left: 4px solid #aaa
 
 #prediction-period-display
    text-align: center
@@ -105,12 +113,6 @@
 #map-editor-overlay-header>div
    border: 1px solid redgray 
    background: $ui-highlight
-
-#map-editor-overlay-viewport
-   //background: #aff
-
-#map-editor-overlay-controlbar
-   //background: $ui-darkergray
 
 #map-editor-overlay-controlbar
    //display: grid
@@ -272,6 +274,7 @@ import "@/sass/leaflet_custom.sass"
 
 import colorGradient from "@/util/colorGradient.js"
 import HelptextOverlay from "@/components/HelptextOverlay"
+import Slideover from "@/components/Slideover"
 
 import VueSlider from "vue-slider-component"
 import "vue-slider-component/theme/default.css"
@@ -329,7 +332,8 @@ export default {
    components: {
       HelptextOverlay,
       VueSlider,
-      vue100vh
+      vue100vh,
+      Slideover,
    },
    
    props: {
