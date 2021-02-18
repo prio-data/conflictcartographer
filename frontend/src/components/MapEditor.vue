@@ -30,7 +30,7 @@
 
                <div> 
                   <button id="submit-button" v-on:click="$router.push('/')">Submit</button>
-                  <button id="nonanswer-button" v-on:click="non_answer">No conflict</button>
+                  <button v-if="allow_rescind" id="nonanswer-button" v-on:click="non_answer">No conflict</button>
                </div> 
 
             </div>
@@ -58,7 +58,7 @@
             </div>
          </div>
       </vue100vh>
-      <Slideover :start_open="true" :size="300" :direction="2">
+      <Slideover :start_open="false" :size="300" :direction="2">
          <div id="right-info">
             <h2>Variable information</h2>
             Here's some super important information!
@@ -349,7 +349,6 @@ export default {
       return {
          toggle: true,
          infocus: "",
-         layers: [],
 
          projectShape: undefined,
          absUrl: undefined,
@@ -377,6 +376,7 @@ export default {
 
          pred_start: undefined,
          pred_end: undefined,
+         allow_rescind: true,
       }
    },
 
@@ -393,7 +393,7 @@ export default {
          } else {
             return undefined
          }
-      }
+      },
    },
 
    watch: {
@@ -442,7 +442,10 @@ export default {
 
             this.$api.get.rel("shapes",{params: {country: this.gwno}})
                .then((r)=>{
-                  this.layers = r.data
+                  if(r.data.length>0){
+                     this.allow_rescind=false
+                  }
+
                   let features = r.data.map((db_shape)=>{
                      let feature = db_shape.shape
                      feature.properties = db_shape.values 
@@ -510,6 +513,10 @@ export default {
       deleted(layer){
          if(this.mode == MODES.deleting){
             this.drawnItems.removeLayer(layer)
+            if(this.drawnItems.getLayers().length == 0){
+               this.allow_rescind = true
+            }
+
             this.$api.del.abs(layer.feature.properties.url)
                .then(()=>{
                   this.drawnItems.removeLayer(layer)
@@ -544,6 +551,8 @@ export default {
                geojson.properties.url = r.data.url
 
                this.drawnItems.addData(geojson)
+               this.allow_rescind = false 
+
                let newlyCreated = this.drawnItems.getLayers().find((lyr)=>lyr.feature.properties.url==r.data.url)
                this.map.removeLayer(this.pendingItems)
                this.selected(newlyCreated)
