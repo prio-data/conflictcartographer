@@ -73,6 +73,14 @@
             Here's some super important information!
          </div>
       </Slideover>
+
+      <!-- Big helptext -->
+      <HelptextOverlay>
+         <h1>
+            {{ this.helptexts[this.mode].title }}
+         </h1>
+         {{ this.helptexts[this.mode].text }}
+      </HelptextOverlay>
    </div>
 </template>
 <style scoped lang="sass">
