@@ -42,6 +42,7 @@ button:hover
 #root
    width: 100vw
    overflow: hidden
+   z-index: 999
 
 #slidein-content
    pointer-events: auto
