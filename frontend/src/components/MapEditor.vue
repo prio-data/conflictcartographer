@@ -8,7 +8,7 @@
          </div>
       </div>
 
-      <div class="overlay" id="map-editor-overlay">
+      <vue100vh class="overlay" id="map-editor-overlay">
 
          <div id="map-editor-overlay-header">
          </div>
@@ -57,7 +57,7 @@
                <button v-on:click="deselect" class="continue">Ok</button>
             </div>
          </div>
-      </div>
+      </vue100vh>
 
       <HelptextOverlay>
          <h1>
@@ -197,11 +197,14 @@ $popup-height: 200px
    grid-template-columns: 1fr 1fr
 
 @media only screen and (min-width: $mob-width)
+
    #map-editor-overlay-buttons
       width: $mob-width
       border-radius: 10px 10px 0 0
+
    #map-editor-overlay-controlbar
       width: $mob-width
+
    #layer-editor-popup
       border-radius: 10px 10px 0 0
       padding: 0 30px
@@ -274,6 +277,8 @@ import VueSlider from "vue-slider-component"
 import "vue-slider-component/theme/default.css"
 import "@/sass/vueslider.sass"
 
+import vue100vh from "vue-100vh"
+
 import {configure_map,shape_to_latlng_box,fit_to_geojson} from "@/configure_map"
 
 import debounce from "@/util/debounce"
@@ -323,7 +328,8 @@ export default {
    name: 'MapEditor',
    components: {
       HelptextOverlay,
-      VueSlider
+      VueSlider,
+      vue100vh
    },
    
    props: {

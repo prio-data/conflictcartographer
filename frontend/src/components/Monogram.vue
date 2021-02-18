@@ -28,7 +28,6 @@ export default {
 img
    max-height: 100%
    max-width: 100%
-   float:right
    margin: 12px
 
 </style>

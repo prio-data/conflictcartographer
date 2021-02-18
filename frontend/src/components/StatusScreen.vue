@@ -1,7 +1,7 @@
 
 <template>
    <Card :loaded="loaded">
-      <template v-slot:header><h2>Great job!</h2></template>
+      <template v-slot:header><h1>GREAT JOB!</h1></template>
       <template v-slot:content>
          <div id="thanks-text">
             <h1>
@@ -11,7 +11,11 @@
                If you don't want to revise your predictions, you can now close the
                browser window.
             </p>
-
+            <p>
+               We will begin collection predictions for the next prediction
+               period ({{next_pp_start}}-{{next_pp_end}}) in {{ end_pred }}, 
+               and will be in touch!
+            </p>
             <p>You have submitted predictions for the period {{start_pred}}-{{end_pred}} for:</p>
             <CountryStatusTable :countries="submitted">
             </CountryStatusTable>
@@ -43,12 +47,19 @@ export default {
          start_pred: "",
          end_pred: "",
          submitted: null,
+
+         next_pp_start:"",
+         next_pp_end:"",
       }
    },
       
    computed:{
       loaded(){
-         return this.start_pred!=="" && this.end_pred!=="" && this.submitted!==null 
+         return this.start_pred!=="" && 
+            this.end_pred!=="" && 
+            this.submitted!==null &&
+            this.next_pp_start !== "" &&
+            this.next_pp_end !== ""
       },
    },
 
@@ -67,6 +78,11 @@ export default {
          })
          .catch((e)=>{
             console.error(e)
+         })
+      this.$api.get.rel("period/next/2")
+         .then((r)=>{
+            this.next_pp_start = format_date(r.data.start)
+            this.next_pp_end = format_date(r.data.end)
          })
    },
    methods: {
