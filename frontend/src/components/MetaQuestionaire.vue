@@ -1,7 +1,7 @@
 <template>
 <Card :loaded="true">
    <template v-slot:header>
-      <h1>PERSONALIA</h1>
+      <h1>PROFILE INFORMATION</h1>
    </template>
    <template v-slot:content>
       <div id="content-root">
@@ -15,8 +15,10 @@
    </template>
    <template v-slot:footer>
       <div class="footer-buttons">
-         <button v-on:click="to_router" class="continue">Submit</button>
-         <button v-on:click="skip" class="alt">Skip</button>
+         <button title="Submit profile information"
+            v-on:click="to_router" class="continue">Submit</button>
+         <button title="Skip profile questionaire"
+            v-on:click="skip" class="alt">Skip</button>
       </div>
    </template>
 </Card>
@@ -65,7 +67,7 @@ export default {
             data: this.questions
          })
          .then(()=>{
-            this.$router.push("/")
+            this.$router.back()
          })
          .catch((e)=>{
             console.error(e)
@@ -78,7 +80,7 @@ export default {
                ]
             })
          .then(()=>{
-            this.$router.push("/")
+            this.$router.back()
          })
          .catch((e)=>{
             console.error(e)

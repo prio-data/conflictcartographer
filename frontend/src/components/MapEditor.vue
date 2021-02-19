@@ -16,21 +16,24 @@
 
             <!-- Buttons -->
             <div id="map-editor-overlay-buttons">
-
                <div v-if="mode===1" id="mode-select">
-                  <button id="draw-button" v-on:click="startdraw">Draw</button>
-                  <button id="erase-button" v-on:click="startdelete">Erase</button>
+                  <button title="Draw a prediction shape"
+                     id="draw-button" v-on:click="startdraw">Draw</button>
+                  <button title="Erase prediction shapes"
+                     id="erase-button" v-on:click="startdelete">Erase</button>
                </div>
 
                <div v-else id="mode-cancel">
-                  <button id="neutral-button" v-on:click="neutral">Ok</button>
+                  <button title="Show actions"
+                     id="neutral-button" v-on:click="neutral">Ok</button>
                </div>
 
                <div> 
-                  <button id="submit-button" v-on:click="$router.push('/')">Submit</button>
-                  <button v-if="allow_rescind" id="nonanswer-button" v-on:click="non_answer">No conflict</button>
+                  <button title="Submit predictions"
+                     id="submit-button" v-on:click="$router.push('/')">Submit</button>
+                  <button title="Submit 'No conflict'"
+                     v-if="allow_rescind" id="nonanswer-button" v-on:click="non_answer">No conflict</button>
                </div> 
-
             </div>
 
             <!-- Layer editor -->
@@ -54,7 +57,8 @@
                      </vue-slider>
                   </div>
                </div>
-               <button v-on:click="deselect" class="continue">Ok</button>
+               <button title="Submit prediction shape values"
+                  v-on:click="deselect" class="continue">Ok</button>
             </div>
          </div>
       </vue100vh>
@@ -81,10 +85,29 @@
          </h1>
          {{ this.helptexts[this.mode].text }}
       </HelptextOverlay>
+
+      <transition name="fade">
+         <div v-if="!loaded" id="loading-cover" class="overlay">
+            <Spinner v-if="!loaded"></Spinner>
+         </div>
+      </transition>
+
    </div>
 </template>
 <style scoped lang="sass">
 @import "../sass/variables.sass"
+
+.fade-enter-active, .fade-leave-active
+   transition: opacity 1s
+.fade-enter, .fade-leave-to
+   opacity: 0
+
+#loading-cover
+   background: $ui-gray
+   pointer-events: auto
+   z-index: 9999
+   display: grid
+   place-items: center
 
 #right-info
    width: 100%
@@ -298,6 +321,7 @@ import "@/sass/leaflet_custom.sass"
 import colorGradient from "@/util/colorGradient.js"
 import HelptextOverlay from "@/components/HelptextOverlay"
 import Slideover from "@/components/Slideover"
+import Spinner from "@/components/widgets/Spinner"
 
 import VueSlider from "vue-slider-component"
 import "vue-slider-component/theme/default.css"
@@ -357,6 +381,7 @@ export default {
       VueSlider,
       vue100vh,
       Slideover,
+      Spinner,
    },
    
    props: {
@@ -370,7 +395,7 @@ export default {
 
    data(){
       return {
-         toggle: true,
+         loaded: false, 
          infocus: "",
 
          projectShape: undefined,
@@ -430,79 +455,106 @@ export default {
          deep: true
       }
    },
-
    mounted: function(){
-      // =======================================
-      // When drawn,  
-
-      this.$api.get.rel("period/next")
-         .then((r)=>{
-            this.pred_start = format_date(r.data.start)
-            this.pred_end = format_date(r.data.end)
-         })
-         .catch((e)=>{
-            console.error(`Error fetching dates: ${e}`)
-         })
-
-      this.$api.get.rel(this.project_url)
-         .then((r)=>{
-            this.projectShape = r.data.shape
-            this.absUrl = r.data.url
-
-            this.map = new L.Map(this.$refs.map)
-            configure_map(this.map,this.projectShape)
-            this.map.on(L.Draw.Event.CREATED,(e)=>{
-               this.created(e.layer)
+      this.check_open(()=>{
+         this.init_map(()=>{
+            this.add_drawn_shapes(()=>{
+               this.loaded = true
             })
-
-            const box = bbox(this.projectShape)
-            const getbox = (box) => [[box[3],box[0]],[box[1],box[2]]]
-            const bbox_latlng = L.latLngBounds(getbox(box))
-
-            this.map.fitBounds(bbox_latlng)
-            this.map.setMaxBounds(bbox_latlng.pad(2))
-
-            this.pendingItems.addTo(this.map)
-
-            this.$api.get.rel("shapes",{params: {country: this.gwno}})
-               .then((r)=>{
-                  if(r.data.length>0){
-                     this.allow_rescind=false
-                  }
-
-                  let features = r.data.map((db_shape)=>{
-                     let feature = db_shape.shape
-                     feature.properties = db_shape.values 
-                     feature.properties.url = db_shape.url
-                     return feature 
-                  })
-
-                  this.drawnItems.addData(features)
-                  this.drawnItems.addTo(this.map)
-
-                  this.drawnItems.on("click",(e)=>{this.clicked(e.layer)})
-                  this.restyle()
-               })
-               .catch((e)=>{
-                  console.error(`Error adding layers: ${e}`)
-               })
-
          })
-         .catch((e)=>{
-            console.error(`Error mounting map: ${e}`)
-         })
+      })
 
-         document.addEventListener("keydown",(e)=>{
-            if(e.key=="Escape"){
-               this.neutral()
-            }
-         })
+      this.get_pred_period()
+
+      document.addEventListener("keydown",(e)=>{
+         if(e.key=="Escape"){
+            this.neutral()
+         }
+      })
    },
 
    methods: {
-      t(){
-         this.toggle = !this.toggle
+      /* INITIALIZATION */
+      check_open(callback){
+         this.$api.get.rel("period/open")
+            .then((r)=>{
+               if(!r.data.open){
+                  this.$router.push("/closed")
+               } else {
+                  if(callback!==undefined){
+                     callback()
+                  }
+               }
+            })
       },
+
+      init_map(callback){
+         this.$api.get.rel(this.project_url)
+            .then((r)=>{
+               this.projectShape = r.data.shape
+               this.absUrl = r.data.url
+
+               this.map = new L.Map(this.$refs.map)
+               configure_map(this.map,this.projectShape)
+               this.map.on(L.Draw.Event.CREATED,(e)=>{
+                  this.created(e.layer)
+               })
+
+               const box = bbox(this.projectShape)
+               const getbox = (box) => [[box[3],box[0]],[box[1],box[2]]]
+               const bbox_latlng = L.latLngBounds(getbox(box))
+
+               this.map.fitBounds(bbox_latlng)
+               this.map.setMaxBounds(bbox_latlng.pad(2))
+
+               this.pendingItems.addTo(this.map)
+
+               if(callback!==undefined){
+                  callback()
+               }
+            })
+      },
+
+      add_drawn_shapes(callback){
+         this.$api.get.rel("shapes",{params: {country: this.gwno}})
+            .then((r)=>{
+               if(r.data.length>0){
+                  this.allow_rescind=false
+               }
+
+               let features = r.data.map((db_shape)=>{
+                  let feature = db_shape.shape
+                  feature.properties = db_shape.values 
+                  feature.properties.url = db_shape.url
+                  return feature 
+               })
+
+               this.drawnItems.addData(features)
+               this.drawnItems.addTo(this.map)
+
+               this.drawnItems.on("click",(e)=>{this.clicked(e.layer)})
+               this.restyle()
+               if(callback!==undefined){
+                  callback()
+               }
+            })
+            .catch((e)=>{
+               console.error(`Error adding layers: ${e}`)
+            })
+      },
+
+      get_pred_period(){
+         this.$api.get.rel("period/next")
+            .then((r)=>{
+               this.pred_start = format_date(r.data.start)
+               this.pred_end = format_date(r.data.end)
+            })
+            .catch((e)=>{
+               console.error(`Error fetching dates: ${e}`)
+            })
+      },
+
+      /* INTERACTION */
       neutral(){
          this.mode = MODES.neutral
          if(this.drawing !== undefined){

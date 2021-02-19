@@ -1,7 +1,7 @@
 
 <template>
    <Card :loaded="loaded">
-      <template v-slot:header><h1>GREAT JOB!</h1></template>
+      <template v-slot:header><h1>SUMMARY</h1></template>
       <template v-slot:content>
          <div id="thanks-text">
             <h1>
@@ -23,7 +23,10 @@
       </template>
       <template v-slot:footer>
          <div class="footer-buttons">
-            <button v-on:click="to_change_assigned" class="alt">Change assigned</button>
+            <button title="Go to home menu"
+               v-on:click="$router.push('Menu')" class="continue">Menu</button>
+            <button title="Change assigned countries"
+               v-on:click="to_change_assigned" class="alt">Change assigned</button>
          </div>
       </template>
    </Card>

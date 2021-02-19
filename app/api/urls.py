@@ -65,4 +65,6 @@ urlpatterns = [
     path("api/projects/",projectChoices),
     path("api/projects/<int:project>/status/",projectStatus,name="project_detail_status"),
     path("api/projects/<int:project>/clear/",clearShapes,name="project_clear"),
+
+    path("api/profile/whoami/",whoami,name="profile_detail"),
 ]

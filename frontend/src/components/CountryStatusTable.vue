@@ -1,10 +1,5 @@
 <template>
    <table cellspacing=0 cellpadding=0 id="country-status-table">
-      <th>Name</th>
-      <th class="only-wide">Shapes</th>
-      <th class="only-wide">No-conflict</th>
-      <th></th>
-      <th></th>
       <CountrySummary :country="country" v-for="country in countries" :key="country.gwno">
       </CountrySummary>
    </table>
@@ -16,7 +11,8 @@ table
    border-radius: 4px
    border: none
    background: #ddd
-   padding-top: 20px
+   padding-top: 10px
+   padding-bottom: 20px
 
 td
    border-bottom: 1px solid #f0f0f0 

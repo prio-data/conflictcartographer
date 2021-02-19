@@ -19,60 +19,88 @@ export default {
       }
    },
 
-   mounted(){
-      this.status = "Checking assigned countries"
-      if(!this.$cookies.get("informed")){
-         this.$router.push("/info")
-      } 
-      else {
+   methods:{
+      check_open(was_open,was_closed){
+         this.$api.get.rel("period/open")
+            .then((r)=>{
+               if(r.data.open){
+                  was_open()
+               } else {
+                  was_closed()
+               }
+            })
+      },
+
+      check_informed(callback){
+         if(!this.$cookies.get("informed")){
+            this.$router.push("/info")
+         } else {
+            if(callback!==undefined){
+               callback()
+            }
+         }
+      },
+
+      check_assigned(callback){
          this.$api.get.rel("profile/assigned")
             .then((assigned_countries)=>{
                if(assigned_countries.data.countries.length == 0){
                   this.$router.push("/assign")
-                  return true
                } else {
-                  return false
-               }})
-
-            .then((done)=>{
-               if(!done){
-                  this.status = "Checking status of assigned"
-                  return this.$api.get.rel("profile/unfulfilled")
-                     .then((unfulfilled)=>{
-                        if(unfulfilled.data.countries.length>0){
-                           this.$router.push("/progress")
-                           return true
-                        } else {
-                           return false
-                        }
-                     })
+                  if(callback!==undefined){
+                     callback()
+                  }
+            }})
+      },
+      check_fulfilled(callback){
+         this.$api.get.rel("profile/unfulfilled")
+            .then((unfulfilled)=>{
+               if(unfulfilled.data.countries.length>0){
+                  this.$router.push("/progress")
                } else {
-                  return done 
-               }})
-            .then((done)=>{
-               if(!done){
-                  this.status = "Checking profile status"
-                  return this.$api.get.rel("profile/exists")
-                     .then((profile)=>{
-                        let hasmeta = profile.data.profile
-                        if(!hasmeta){
-                           this.$router.push("/questionaire")
-                           return true
-                        } else {
-                           return false
-                        }
-                     })
+                  if(callback!==undefined){
+                     callback()
+                  }
+               }
+            })
+      },
+      check_metadata(callback){
+         this.$api.get.rel("profile/exists")
+            .then((profile)=>{
+               let hasmeta = profile.data.profile
+               if(!hasmeta){
+                  this.$router.push("/questionaire")
                } else {
-                  return done
-               }})
-
-            .then((done)=>{
-               if(!done){
-                  this.status = "Proceeding to menu"
-                  this.$router.push("/status")
+                  if(callback!==undefined){
+                     callback()
+                  }
                }
             })
       }
+   },
+
+   mounted(){
+      // This is ugly, but it works!
+      this.check_informed(()=>{
+         this.check_open(
+         // Was open
+            ()=>{
+               this.check_assigned(()=>{
+                  this.check_fulfilled(()=>{
+                     this.check_metadata(()=>{
+                        this.$router.push("/status")
+                     })
+                  })
+               })
+            },
+         // Was closed 
+            ()=>{
+               this.check_metadata(()=>{
+                  this.$router.push("/menu")
+               })
+            }
+         )
+      })
    }
 }
 </script>

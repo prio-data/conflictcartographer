@@ -14,10 +14,29 @@ function mockRouter(){
    }
 }
 
+let mock_responses = {"profile/whoami":{name:""}}
+
 let respres=[
    {
       responses:{
          get:{
+            "period/open":{
+               open:false
+            },
+            "profile/exists":{
+               profile: true 
+            },
+            ...mock_responses
+         },
+      },
+      result_path: "/menu"
+   },
+   {
+      responses:{
+         get:{
+            "period/open":{
+               open:true
+            },
             "profile/assigned":{
                countries:[]
             },
@@ -27,6 +46,7 @@ let respres=[
             "profile/exists":{
                profile: false 
             },
+            ...mock_responses
          },
       },
       result_path: "/assign"
@@ -34,6 +54,9 @@ let respres=[
    {
       responses:{
          get:{
+            "period/open":{
+               open:true
+            },
             "profile/assigned":{
                countries:[mock_countries(3)]
             },
@@ -43,6 +66,7 @@ let respres=[
             "profile/exists":{
                profile: false 
             },
+            ...mock_responses
          },
       },
       result_path: "/progress"
@@ -50,6 +74,9 @@ let respres=[
    {
       responses:{
          get:{
+            "period/open":{
+               open:true
+            },
             "profile/assigned":{
                countries:[mock_countries(3)]
             },
@@ -59,6 +86,7 @@ let respres=[
             "profile/exists":{
                profile: false 
             },
+            ...mock_responses
          },
       },
       result_path: "/questionaire"
@@ -66,6 +94,9 @@ let respres=[
    {
       responses:{
          get:{
+            "period/open":{
+               open:true
+            },
             "profile/assigned":{
                countries:[mock_countries(3)]
             },
@@ -75,6 +106,7 @@ let respres=[
             "profile/exists":{
                profile: true
             },
+            ...mock_responses
          },
       },
       result_path: "/status"
@@ -83,8 +115,9 @@ let respres=[
 
 test("Shows info",()=>{
    let mr = new mockRouter()
+   let api = new Api({get:mock_responses})
    mount(LoadingRouter,{
-      mocks:{$cookies:{get(){return false}},$router:mr}
+      mocks:{$cookies:{get(){return false}},$router:mr,$api:api},
    })
    expect(mr.path).toMatch("/info")
 })
