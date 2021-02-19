@@ -46,11 +46,9 @@ export default {
    data(){
       return {
          choices: [
-            {key:"0-1",value:0},
-            {key:"2-25",value:1},
-            {key:"26-99",value:2},
-            {key:"100-999",value:3},
-            {key:">1000",value:4},
+            {key:"Low (1-25)",value:0},
+            {key:"Medium (26-99)",value:1},
+            {key:"High (>100)",value:2},
          ],
       }
    },

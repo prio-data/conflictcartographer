@@ -2,14 +2,10 @@
    <div id="mapeditor">
       <div id="map" ref="map"></div>
 
-      <div v-if="pred_start!==undefined" class="overlay" id="prediction-period-display">
-         <div>
-            <h1>Predicting for<br>{{ pred_start }} - {{ pred_end }}</h1>
-         </div>
-      </div>
+      <!-- Overlays -->
 
+      <!-- Controls -->
       <vue100vh class="overlay" id="map-editor-overlay">
-
          <div id="map-editor-overlay-header">
          </div>
 
@@ -17,6 +13,8 @@
          </div>
 
          <div id="map-editor-overlay-controlbar">
+
+            <!-- Buttons -->
             <div id="map-editor-overlay-buttons">
 
                <div v-if="mode===1" id="mode-select">
@@ -30,20 +28,22 @@
 
                <div> 
                   <button id="submit-button" v-on:click="$router.push('/')">Submit</button>
-                  <button id="nonanswer-button" v-on:click="non_answer">No conflict</button>
+                  <button v-if="allow_rescind" id="nonanswer-button" v-on:click="non_answer">No conflict</button>
                </div> 
 
             </div>
+
+            <!-- Layer editor -->
             <div v-if="selectedLayer !== undefined" id="layer-editor-popup">
-               <div class="upper">
-                  <div class="inputcard">
+               <div id="scale-inputs" class="upper">
+                  <div class="scale-input">
                      <h2>Intensity</h2>
                      <div class="intensity-input" v-for="choice in choices" :key="choice.key">
                         <input type="radio" v-model="selectedLayer.feature.properties.intensity" :value="choice.value">
-                        <label class="cat-label" :for="choice.key">{{ choice.key }} casualties</label>
+                        <label class="cat-label" :for="choice.key">{{ choice.key }}</label>
                      </div>
                   </div>
-                  <div class="inputcard">
+                  <div class="scale-input">
                      <h2>Confidence</h2>
                      <vue-slider 
                         v-model="selectedLayer.feature.properties.confidence"
@@ -59,6 +59,22 @@
          </div>
       </vue100vh>
 
+      <!-- When am i predicting for -->
+      <div v-if="pred_start!==undefined" class="overlay" id="prediction-period-display">
+         <div>
+            <h1>Predicting for<br>{{ pred_start }} - {{ pred_end }}</h1>
+         </div>
+      </div>
+
+      <!-- Right slideover -->
+      <Slideover :start_open="false" :size="300" :direction="2">
+         <div id="right-info">
+            <h2>Variable information</h2>
+            Here's some super important information!
+         </div>
+      </Slideover>
+
+      <!-- Big helptext -->
       <HelptextOverlay>
          <h1>
             {{ this.helptexts[this.mode].title }}
@@ -69,6 +85,15 @@
 </template>
 <style scoped lang="sass">
 @import "../sass/variables.sass"
+
+#right-info
+   width: 100%
+   height: 100%
+   background: #f0f0f0
+   color: #222
+   padding: 10px
+   padding-left: 20px
+   border-left: 4px solid #aaa
 
 #prediction-period-display
    text-align: center
@@ -106,12 +131,6 @@
    border: 1px solid redgray 
    background: $ui-highlight
 
-#map-editor-overlay-viewport
-   //background: #aff
-
-#map-editor-overlay-controlbar
-   //background: $ui-darkergray
-
 #map-editor-overlay-controlbar
    //display: grid
    //place-items: center
@@ -143,10 +162,6 @@
    background: $ui-gray
    color: #222
 
-#layer-editor-popup button
-   background: $ui-gray
-   color: #222
-
 #nonanswer-button
    background: $ui-progress-alt 
 
@@ -159,55 +174,65 @@
    grid-auto-flow: column
    grid-gap: 10px
 
-$popup-height: 200px
+$popup-height: 280px
 
 @keyframes pop-up
    0%
-      transform: translate(0,0)
+      transform: translateY($popup-height)
    100%
-      transform: translate(0,-$popup-height)
+      transform: translateY(0)
 
 #layer-editor-popup
    position: absolute
-   top: 0
+   bottom: 0
    left: 0
+
+   border-radius: 10px 10px 0 0
+   padding: 10px 20px
+
    display: grid
-   //justify-items: center
-   grid-template-rows: $popup-height 70px auto
-   height: $popup-height + 100px
+   grid-template-rows: 3fr 1fr 
+   grid-gap: 10px
+
+   height: $popup-height
    width: 100%
+
    background: $ui-darkergray
+
    animation-name: pop-up
    animation-duration: 0.2s 
    animation-fill-mode: forwards
-   z-index: 999
-   scroll: hidden
-   padding: 0 10px
-   color: white
 
-#layer-editor-popup h2 
-   margin-bottom: 7px 
+   z-index: 99
+
 
 #layer-editor-popup label
    font-size: 20px 
 
-#layer-editor-popup div.upper
+#layer-editor-popup button
+   background: $ui-gray
+   border-bottom: 4px solid #222 
+   color: #222
+
+#scale-inputs
    display: grid
-   grid-auto-flow: column
-   grid-template-columns: 1fr 1fr
+
+.scale-input
+   background: rgba(255,255,255,0.1)
+   padding: 10px 20px
+   color: white
+   border-bottom: 1px solid #222
+
+.scale-input>h2
+   margin: 0
 
 @media only screen and (min-width: $mob-width)
-
    #map-editor-overlay-buttons
       width: $mob-width
       border-radius: 10px 10px 0 0
 
    #map-editor-overlay-controlbar
       width: $mob-width
-
-   #layer-editor-popup
-      border-radius: 10px 10px 0 0
-      padding: 0 30px
 
 $darken: 0.4
 
@@ -272,6 +297,7 @@ import "@/sass/leaflet_custom.sass"
 
 import colorGradient from "@/util/colorGradient.js"
 import HelptextOverlay from "@/components/HelptextOverlay"
+import Slideover from "@/components/Slideover"
 
 import VueSlider from "vue-slider-component"
 import "vue-slider-component/theme/default.css"
@@ -329,7 +355,8 @@ export default {
    components: {
       HelptextOverlay,
       VueSlider,
-      vue100vh
+      vue100vh,
+      Slideover,
    },
    
    props: {
@@ -345,7 +372,6 @@ export default {
       return {
          toggle: true,
          infocus: "",
-         layers: [],
 
          projectShape: undefined,
          absUrl: undefined,
@@ -364,15 +390,14 @@ export default {
          drawing: undefined,
 
          choices: [
-            {key:"0-1",value:0},
-            {key:"2-25",value:1},
-            {key:"26-99",value:2},
-            {key:"100-999",value:3},
-            {key:">1000",value:4},
+            {key:"Low (1-25 casualties)",value:0},
+            {key:"Medium (26-99 casualites)",value:1},
+            {key:"High (>100 casualties)",value:2},
          ],
 
          pred_start: undefined,
          pred_end: undefined,
+         allow_rescind: true,
       }
    },
 
@@ -389,6 +414,9 @@ export default {
          } else {
             return undefined
          }
+      },
+      nchoices(){
+         return Object.keys(this.choices).length
       }
    },
 
@@ -438,7 +466,10 @@ export default {
 
             this.$api.get.rel("shapes",{params: {country: this.gwno}})
                .then((r)=>{
-                  this.layers = r.data
+                  if(r.data.length>0){
+                     this.allow_rescind=false
+                  }
+
                   let features = r.data.map((db_shape)=>{
                      let feature = db_shape.shape
                      feature.properties = db_shape.values 
@@ -506,6 +537,10 @@ export default {
       deleted(layer){
          if(this.mode == MODES.deleting){
             this.drawnItems.removeLayer(layer)
+            if(this.drawnItems.getLayers().length == 0){
+               this.allow_rescind = true
+            }
+
             this.$api.del.abs(layer.feature.properties.url)
                .then(()=>{
                   this.drawnItems.removeLayer(layer)
@@ -540,6 +575,8 @@ export default {
                geojson.properties.url = r.data.url
 
                this.drawnItems.addData(geojson)
+               this.allow_rescind = false 
+
                let newlyCreated = this.drawnItems.getLayers().find((lyr)=>lyr.feature.properties.url==r.data.url)
                this.map.removeLayer(this.pendingItems)
                this.selected(newlyCreated)
@@ -608,7 +645,9 @@ export default {
 
          toStyle.setStyle((feature)=>{
             let style = BASE_STYLE
-            style.color = colorGradient((feature.properties.intensity)/5,COLORS.low,COLORS.high)
+            style.color = colorGradient(
+               (feature.properties.intensity)/this.nchoices, COLORS.low, COLORS.high
+            )
             style.fillOpacity = ((feature.properties.confidence/100)*0.5) + 0.2
             if(feature.properties.selected !== undefined){
                style.opacity = 0.9 
