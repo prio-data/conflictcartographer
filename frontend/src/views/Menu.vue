@@ -8,7 +8,7 @@
             <div id="profile-pic-holder">
                <account-box :size="200"></account-box>
             </div>
-            <div id="menu-links-holder">
+            <div id="menu-content-container">
                <div id="menu-links">
                   <button title="Add new predictions"
                     v-on:click="$router.push('/')"
@@ -32,6 +32,18 @@
                      Profile
                   </button>
                </div>
+               <div class="menu-body" v-if="is_open">
+                  <p v-if="pred_period_start!='' && pred_period_end!=''">
+                     You are currently predicting for {{ pred_period_start }} - {{ pred_period_end }}:
+                  </p>
+                  <CountryStatusTable v-if="assigned != undefined" :countries="assigned"></CountryStatusTable>
+               </div>
+               <div class="menu-body" v-else>
+                  <p v-if="part_period_start != ''">
+                     We are currently not accepting predictions. Check back 1st. {{ part_period_start }}, or
+                     click "Evaluation" to see how you did last prediction period.
+                  </p>
+               </div>
             </div>
          </div>
       </template>
@@ -54,6 +66,10 @@
 <style lang="sass" scoped>
 @import "@/sass/variables"
 
+.menu-body
+   width: 100%
+   display: grid
+
 #participate-button
    background-color: $ui-highlight
 
@@ -64,35 +80,39 @@
    display: grid
    place-items: center
 
-#menu-links-holder
+#menu-content-container
    display: grid
-   place-items: center
+   grid-gap: 20px
+   padding: 0 20px
 
 #menu-links
-   padding: 40px 0
    display: grid
    grid-auto-flow: column
    grid-gap: 10px
    place-items: left 
+   grid-template-columns: repeat(auto-fit, minmax(100px,1fr))
 
 #menu-links button
    display: grid
    background: $ui-darkgray
    padding: 20px 0
    height: 100px
-   width: 100px 
+   //width: 100px 
    font-size: 16px
-
 </style>
 <script>
 import Card from "@/components/Card"
+import CountryStatusTable from "@/components/CountryStatusTable"
+import {format_date} from "@/date_formatting"
+
 import AccountBox from "vue-material-design-icons/AccountBox"
 import AccountEdit from "vue-material-design-icons/AccountEdit"
+
 import MapPlus from "vue-material-design-icons/MapPlus"
 import CheckboxMultipleMarked from "vue-material-design-icons/CheckboxMultipleMarked"
 import ScaleBalance from "vue-material-design-icons/ScaleBalance"
 export default {
-   components: {Card,AccountBox,AccountEdit,MapPlus,CheckboxMultipleMarked,ScaleBalance},
+   components: {Card,AccountBox,AccountEdit,MapPlus,CheckboxMultipleMarked,ScaleBalance,CountryStatusTable},
    computed:{
       loaded(){
          return this.unfulfilled !== undefined && 
@@ -105,6 +125,10 @@ export default {
          is_open: undefined,
          unfulfilled: undefined,
          username: undefined,
+         part_period_start:"",
+         pred_period_start: "",
+         pred_period_end: "",
+         assigned:undefined
       }
    },
    methods:{
@@ -126,11 +150,34 @@ export default {
                this.username = r.data.name
             })
       },
+
+      get_assigned(){
+         this.$api.get.rel("profile/assigned")
+            .then((r)=>{
+               this.assigned = r.data.countries
+            })
+      },
+      get_next_pred_period(){
+         this.$api.get.rel("period/current")
+            .then((r)=>{
+               this.part_period_start = format_date(r.data.end)
+            })
+      },
+      get_pred_period(){
+         this.$api.get.rel("period/next")
+            .then((r)=>{
+               this.pred_period_start = format_date(r.data.start)
+               this.pred_period_end = format_date(r.data.end)
+            })
+      },
    },
    mounted(){
       this.check_open()
       this.check_fulfilled()
       this.fetch_username()
+      this.get_next_pred_period()
+      this.get_assigned()
+      this.get_pred_period()
    }
 }
 </script>

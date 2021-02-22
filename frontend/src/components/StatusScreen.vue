@@ -4,21 +4,26 @@
       <template v-slot:header><h1>SUMMARY</h1></template>
       <template v-slot:content>
          <div id="thanks-text">
+
             <h1>
             Thank you for submitting predictions! 
             </h1>
+
             <p>
                If you don't want to revise your predictions, you can now close the
-               browser window.
+               browser window. You have submitted predictions for the period 
+               {{start_pred}} - {{end_pred}} for:
             </p>
-            <p>
-               We will begin collection predictions for the next prediction
-               period ({{next_pp_start}}-{{next_pp_end}}) in {{ end_pred }}, 
-               and will be in touch!
-            </p>
-            <p>You have submitted predictions for the period {{start_pred}}-{{end_pred}} for:</p>
+
             <CountryStatusTable :countries="submitted">
             </CountryStatusTable>
+
+            <p>
+               The next data-entry period is {{ next_data_entry }}, 
+               where you will predict for conflict in the
+               period {{ next_pred_period_start }} - {{ next_pred_period_end }}. 
+            </p>
+
          </div>
       </template>
       <template v-slot:footer>
@@ -51,8 +56,11 @@ export default {
          end_pred: "",
          submitted: null,
 
-         next_pp_start:"",
-         next_pp_end:"",
+         next_pred_period_start: "",
+         next_pred_period_end: "",
+
+         next_data_entry_start: "",
+         next_data_entry_end: "",
       }
    },
       
@@ -61,8 +69,9 @@ export default {
          return this.start_pred!=="" && 
             this.end_pred!=="" && 
             this.submitted!==null &&
-            this.next_pp_start !== "" &&
-            this.next_pp_end !== ""
+            this.next_pred_period_start !== "" &&
+            this.next_pred_period_end !== "" &&
+            this.next_data_entry !== ""
       },
    },
 
@@ -71,6 +80,9 @@ export default {
          .then((r)=>{
             this.start_pred = format_date(r.data.start)
             this.end_pred = format_date(r.data.end)
+
+            this.next_data_entry = format_date(r.data.end)
+
          })
          .catch((e)=>{
             console.error(e)
@@ -84,8 +96,8 @@ export default {
          })
       this.$api.get.rel("period/next/2")
          .then((r)=>{
-            this.next_pp_start = format_date(r.data.start)
-            this.next_pp_end = format_date(r.data.end)
+            this.next_pred_period_start = format_date(r.data.start)
+            this.next_pred_period_end = format_date(r.data.end)
          })
    },
    methods: {
