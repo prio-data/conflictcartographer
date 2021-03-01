@@ -1,7 +1,7 @@
 <template>
    <Card :loaded="loaded">
       <template v-slot:header>
-         <h1>ASSIGNMENTS</h1>
+         <h1>COUNTRIES</h1>
       </template>
       <template v-slot:content>
          <div class="assignments-layout">
@@ -143,11 +143,10 @@ export default {
             }
          })
          .then(()=>{
-            this.$router.push("/")
+            this.$router.back()
          })
          .catch((e)=>{
-            console.error(e)
-            this.$router.push("/")
+            this.$router.back()
          })
       }
    },

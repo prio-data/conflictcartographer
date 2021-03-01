@@ -24,7 +24,8 @@
 
       <template v-slot:footer>
          <div class="footer-buttons">
-            <button v-on:click="go_to_next" class="continue">Add predictions for {{ next? next.name : ""}}</button>
+            <button title="Add predictions for next country"
+               v-on:click="go_to_next" class="continue">Add predictions for {{ next? next.name : ""}}</button>
          </div>
       </template>
 

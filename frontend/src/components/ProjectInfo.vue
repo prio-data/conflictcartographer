@@ -11,7 +11,8 @@
       </template>
       <template v-slot:footer>
          <div class="footer-buttons">
-            <button v-on:click="go_to_router" class="continue">Proceed</button>
+            <button title="Continue"
+               v-on:click="go_to_router" class="continue">Proceed</button>
          </div>
       </template>
    </Card>
@@ -53,7 +54,7 @@ export default {
    methods:{
       go_to_router(){
          this.$cookies.set("informed",true)
-         this.$router.push("/")
+         this.$router.back()
       }
    },
 }

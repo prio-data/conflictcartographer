@@ -6,7 +6,8 @@
             <div v-if="hide" id="slidein-hidden" 
                :class="content_class"
                :style="slidein_display" key="hidden">
-               <button :style="[show_pos,buttons_style]" id="slidein-show-button" v-on:click="hide=false">
+               <button title="Open slideover"
+                  :style="[show_pos,buttons_style]" id="slidein-show-button" v-on:click="hide=false">
                   {{ show_button_text }}
                </button>
             </div>
@@ -14,8 +15,9 @@
             <div v-else id="slidein-content"
                :class="content_class" key="visible">
                <div id="hide-holder">
-                  <button  id="slidein-hide-button"
-                     :style="[hide_pos,buttons_style]" v-on:click="hide=true">{{ hide_button_text }} </button>
+                  <button title="Close slideover"
+                    id="slidein-hide-button"
+                    :style="[hide_pos,buttons_style]" v-on:click="close">{{ hide_button_text }} </button>
                </div>
                <div id="content-holder">
                   <slot></slot>
@@ -118,11 +120,19 @@ export default {
          hide: true 
       }
    },
+   methods:{
+      close(){
+         this.hide=true
+         this.$emit("was-closed")
+      }
+   },
+
    mounted(){
       if(this.start_open){
          this.hide = false
       }
    },
+
    computed:{
       hide_button_text(){
          switch(this.direction){
