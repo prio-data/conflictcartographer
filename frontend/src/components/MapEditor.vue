@@ -71,10 +71,43 @@
       </div>
 
       <!-- Right slideover -->
-      <Slideover :start_open="false" :size="300" :direction="2">
+      <Slideover 
+         v-on:was-closed="set_was_informed"
+         :start_open="start_open" :size="300" :direction="2">
          <div id="right-info">
-            <h2>Variable information</h2>
-            Here's some super important information!
+            <h2>Variable definition</h2>
+               <p>
+                  For this survey, we use the UCDP GED definition of conflict.
+                  Under this definition, conflict is defined as:
+               </p>
+               <p class="definition">
+                  [A]n incident where armed force was used by an organized actor
+                  against another organized actor, or against civilians,
+                  resulting in at least one (1) direct death at a specific
+                  location and a specific date.
+               </p>
+               <p class="attribution">
+                  Sundberg, Ralph and Erik Melander (2013) Introducing the
+                  UCDP Georeferenced Event Dataset. Journal of Peace Research
+                  50(4)
+               </p>
+               <p>
+                  We ask for a prediction of conflict intensity. In addition,
+                  you are asked to provide your measure of confidence in the
+                  prediction. Confidence is measured on a simple scale of
+                  1-100% which corresponds to your estimate of the chance of
+                  your prediction being correct, against the chance of it not
+                  being correct (meaning there was less or more intensity in
+                  the indicated area than you predicted).
+               </p>
+               <p>
+                  To begin adding predictions, navigate to an area of interest,
+                  press "draw", and draw an area on the map. You are then asked
+                  to add values for conflict intensity and confidence.
+               </p>
+               <p>
+                  Click the arrow to close this dialogue box.
+               </p>
          </div>
       </Slideover>
 
@@ -96,6 +129,17 @@
 </template>
 <style scoped lang="sass">
 @import "../sass/variables.sass"
+
+.definition
+   font-style: italic
+   padding: 10px 0
+   border: 1px solid #ccc
+   border-left: none
+   border-right: none
+
+.attribution
+   font-size: 12px
+
 
 .fade-enter-active, .fade-leave-active
    transition: opacity 1s
@@ -423,6 +467,8 @@ export default {
          pred_start: undefined,
          pred_end: undefined,
          allow_rescind: true,
+
+         start_open: false,
       }
    },
 
@@ -455,7 +501,11 @@ export default {
          deep: true
       }
    },
+   created(){
+      this.start_open = (this.$cookies.get("var_informed")===null)
+   },
    mounted: function(){
+
       this.check_open(()=>{
          this.init_map(()=>{
             this.add_drawn_shapes(()=>{
@@ -486,6 +536,10 @@ export default {
                   }
                }
             })
+      },
+
+      set_was_informed(){
+         this.$cookies.set("var_informed",true)
       },
 
       init_map(callback){

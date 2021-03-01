@@ -17,7 +17,7 @@
                <div id="hide-holder">
                   <button title="Close slideover"
                     id="slidein-hide-button"
-                    :style="[hide_pos,buttons_style]" v-on:click="hide=true">{{ hide_button_text }} </button>
+                    :style="[hide_pos,buttons_style]" v-on:click="close">{{ hide_button_text }} </button>
                </div>
                <div id="content-holder">
                   <slot></slot>
@@ -120,11 +120,19 @@ export default {
          hide: true 
       }
    },
+   methods:{
+      close(){
+         this.hide=true
+         this.$emit("was-closed")
+      }
+   },
+
    mounted(){
       if(this.start_open){
          this.hide = false
       }
    },
+
    computed:{
       hide_button_text(){
          switch(this.direction){
