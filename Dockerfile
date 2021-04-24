@@ -20,4 +20,4 @@ RUN ./manage.py collectstatic --noinput
 
 COPY ./cert/ /cert
 
-CMD ["gunicorn","conflictcartographer.wsgi:application"]
+CMD ["gunicorn","-b","0.0.0.0:80","--forwarded-allow-ips","*","--proxy-allow-from","*","conflictcartographer.wsgi:application"]
