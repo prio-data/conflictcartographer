@@ -114,6 +114,8 @@ class Shape(Answer):
     shape =  JSONField(null = False, blank = False)
     values = JSONField(default = dict, blank = True)
 
+    null_prediction = BooleanField(default = False, blank=True)
+
     def __str__(self):
         return f"Shape {self.quarter}/{self.year}@{self.country.name}"
 
