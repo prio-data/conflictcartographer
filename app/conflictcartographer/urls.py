@@ -15,7 +15,7 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, register_converter
 
 from django.shortcuts import render
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
@@ -27,6 +27,8 @@ from api.admin_views import router as api_admin_router
 import invitations.urls
 from closedMiddleware.views import closed
 #import adminext.urls
+
+from evaluations_api.views import urls as evaluations_api_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -41,6 +43,8 @@ urlpatterns = [
     path("test/login/",lambda r: render(r,"registration/login.html",{"form":AuthenticationForm()})),
 
     path("closed/",closed,name="closed"),
+
+    path("api/eval/", include(evaluations_api_urls)),
 ]
 
 urlpatterns += api.urls.urlpatterns
