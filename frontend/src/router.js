@@ -13,6 +13,7 @@ import Closed from "@/components/Closed"
 
 import Menu from "@/views/Menu"
 import Results from "@/views/Results"
+import ResultsMap from "@/views/ResultsMap"
 
 Vue.use(VueRouter)
 
@@ -22,7 +23,8 @@ const routes = [
    {path: "/ctry/:gwno",component: MapEditor,name:"Editor"},
    {path: "/questionaire",component: MetaQuestionaire,name:"Questionaire"},
    {path: "/menu",component: Menu,name:"Menu"},
-   {path: "/results",component: Results,name:"Results"},
+   {path: "/results/:shift",component: Results,name:"Results"},
+   {path: "/results/:shift/map/:gwno",component: ResultsMap,name:"ResultsMap"},
    {path: "/progress",component: ProgressMenu,name:"Progress"},
    {path: "/info",component: ProjectInfo,name:"Info"},
    {path: "/status",component: StatusScreen,name:"Status"},

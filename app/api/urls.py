@@ -1,9 +1,19 @@
 
-from django.urls import path, include
+from django.urls import path, include, register_converter
 from rest_framework.urls import path
 from rest_framework import routers
 
 from api.views import *
+
+class NegativeIntConverter:
+    regex = r"-?\d+"
+    def to_python(self, value):
+        return int(value)
+
+    def to_url(self, value):
+        return "%d" % value
+
+register_converter(NegativeIntConverter,"nint")
 
 router = routers.DefaultRouter()
 
@@ -47,6 +57,7 @@ urlpatterns = [
     path("api/period/next/",lambda rq: get_current_quarter(rq,shift=1),name="next_span"),
     path("api/period/previous/",lambda rq: get_current_quarter(rq,shift=-1),name="previous_span"),
     path("api/period/next/<int:shift>/",get_current_quarter,name="selectable_span"),
+    path("api/period/<nint:shift>/",get_current_quarter,name="selectable_span_base"),
 
     path("api/period/open/",is_open,name="period_open"),
     

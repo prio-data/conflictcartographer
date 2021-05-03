@@ -17,7 +17,7 @@
                      Participate
                   </button>
                   <button title="View evaluation"
-                     v-on:click="$router.push('/results')">
+                     v-on:click="$router.push('/results/-2/')">
                      <scale-balance :size="40"></scale-balance>
                      Evaluation
                   </button>

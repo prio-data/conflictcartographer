@@ -9,6 +9,9 @@ export function shape_to_latlng_box(shape){
    return L.latLngBounds([[box[3],box[0]],[box[1],box[2]]])
 }
 
+export const getbox = (box)=> [[box[3],box[0]],[box[1],box[2]]]
+export const ll_gj_box = (shape) => L.latLngBounds(getbox(bbox(shape)))
+
 export function configure_map(map,mask){
    // =======================================
    // Disable dragging while drawing 

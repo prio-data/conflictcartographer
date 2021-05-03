@@ -6,6 +6,7 @@ from django.conf import settings
 from django.urls import path,register_converter
 
 from evaluations_api import api,exceptions
+from api.models import Country
 
 scheduler = api.Scheduler(settings.SCHEDULER_URL)
 
@@ -51,7 +52,7 @@ urls.append(path("ged/points/<int:country>/<nint:shift>/",ged_points))
 def ged_buffered(_:HttpRequest, country: int, shift:str):
     return JsonResponse(ged.buffered(country,shift))
 
-urls.append(path("ged/buffered/<int:country>/<nint:shift>/",ged_points))
+urls.append(path("ged/buffered/<int:country>/<nint:shift>/",ged_buffered))
 
 @only_allowed
 def list_preds(request:HttpRequest, country, shift):
@@ -80,11 +81,14 @@ def available_summaries(request:HttpRequest):
     handler = curry(metrics.available,request.user.id)
     return JsonResponse({"countries":handler(shift=request.GET.get("shift"))})
 
-urls.append(path("summary/countries/",available_summaries))
+urls.append(path("countries/",available_summaries))
 
 @only_allowed
 def country_summary(request:HttpRequest,gwno:int):
     handler = curry(metrics.country)(request.user.id)
-    return JsonResponse(handler(gwno,shift=request.GET.get("shift")))
+    data = handler(gwno,shift=request.GET.get("shift"))
+    data["gwno"] = gwno
+    data["name"] = Country.objects.get(gwno = gwno).name 
+    return JsonResponse(data)
 
-urls.append(path("summary/countries/<int:gwno>/",country_summary))
+urls.append(path("countries/<int:gwno>/",country_summary))

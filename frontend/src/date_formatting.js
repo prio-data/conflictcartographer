@@ -14,9 +14,27 @@ const months=[
    "December",
 ]
 
-export function format_date(date){
+const short_months=[
+   "Jan",
+   "Feb",
+   "Mar",
+   "Apr",
+   "May",
+   "Jun",
+   "Jul",
+   "Aug",
+   "Sep",
+   "Oct",
+   "Nov",
+   "Dec",
+]
+
+export function format_date(date,options){
+   options = options? options:{}
    if(typeof(date)==="string"){
       date = new Date(date)
    }
-   return `${months[date.getMonth()]} ${date.getFullYear()}`
+   let lookup = options.short? short_months:months
+   let pf = options.short? ".":""
+   return `${lookup[date.getMonth()]}${pf} ${date.getFullYear()}`
 }
