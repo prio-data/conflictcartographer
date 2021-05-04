@@ -29,15 +29,21 @@
       </template>
       <template v-slot:footer>
          <div class="footer-buttons">
+            <!--
             <button v-on:click="prevShift">
                <PagePreviousOutline :size=30></PagePreviousOutline>
             </button>
+            -->
+            <div></div>
             <div class="results-date-container">
                {{ added_period_string }}
             </div>
+            <div></div>
+            <!--
             <button v-on:click="nextShift">
                <PageNextOutline :size=30></PageNextOutline>
             </button>
+            -->
          </div>
       </template>
    </Card>
@@ -120,11 +126,7 @@ const date_str = (a,b)=>{
 
 export default {
    components: {Card,ScaleBalance,CountrySummary,PagePreviousOutline,PageNextOutline,MapSearchOutline},
-   computed:{
-      loaded(){
-         return true
-      }
-   },
+
    data(){
       return {
          data: [],
