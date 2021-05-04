@@ -18,7 +18,6 @@ const color_good_bad = d3.scaleLinear()
 const props_of = (p) => R.map(R.prop(p))
 
 function prediction_popup(props){
-   console.log(props)
    return `
    <table>
       <tr>

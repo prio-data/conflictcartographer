@@ -291,6 +291,7 @@ $popup-height: 280px
    border-bottom: 1px solid #222
 
 .scale-input>h2
+   color: white
    margin: 0
 
 @media only screen and (min-width: $mob-width)

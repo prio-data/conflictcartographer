@@ -105,6 +105,9 @@ import PageNextOutline from "vue-material-design-icons/PageNextOutline"
 import MapSearchOutline from "vue-material-design-icons/MapSearchOutline"
 import CountrySummary from "@/components/CountrySummary"
 import {format_date} from "@/date_formatting"
+import * as R from "ramda"
+
+const sort_by_name = R.sortBy(R.prop("foo"))
 
 const mock_country_summary = () => {
    return {
@@ -144,14 +147,19 @@ export default {
       fetchData(){
          this.data = []
          this.$api.get.rel("eval/countries",{params:{shift:this.shift}})
-            .then((r)=>{
-               r.data.countries.forEach((ctry)=>{
-                  this.$api.get.rel(`eval/countries/${ctry.country_id}`,{
+            .then(async (r)=>{
+               let countries = r.data.countries.map((ctry)=>{
+                  return this.$api.get.rel(`eval/countries/${ctry.country_id}`,{
                      params: {shift: this.shift}
                      }).then((r)=>{
-                        this.data.push(r.data)
+                        return r.data
                      })
                })
+               await Promise.all(countries)
+                  .then((ctries)=>{
+                     sort_by_name(ctries)
+                     this.data = ctries
+                  })
             })
          this.$api.get.rel(`period/${this.shift}`)
             .then((r)=>{

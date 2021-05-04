@@ -196,7 +196,7 @@ async function fetch_data(map,api,gwno,shift){
       .then((r)=>{
          predictions = L.geoJSON(r.data)
       })
-   await f,r
+   await Promise.all([f,r])
 
    return {
       points: points,
@@ -295,7 +295,6 @@ export default {
             this.stats = stats.list 
             this.metric_summary = stats.hero
             this.loaded = true
-            console.log("yee")
          })
    },
    watch:{

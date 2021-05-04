@@ -33,7 +33,7 @@ DATABASES = {
         "default":{
             "ENGINE":"django.db.backends.postgresql_psycopg2",
             "HOST":os.getenv("DB_HOST","0.0.0.0"),
-            "PORT":os.getenv("DB_PORT","5432"),
+            "PORT":os.getenv("DB_PORT","2345"),
             "USER":os.getenv("DB_USER","conflictcartographer"),
             "PASSWORD":os.getenv("DB_PASSWORD","letmein"),
             "NAME":os.getenv("DB_NAME","cc"),
