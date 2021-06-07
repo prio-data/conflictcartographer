@@ -15,7 +15,7 @@
                      <slot name="header"></slot>
                   </div>
                   <button title="Go to project info"
-                     v-on:click="$router.push('info')" id="card-header-help-button">
+                     v-on:click="$router.push('/info')" id="card-header-help-button">
                      <information></information>
                   </button>
                </div>
