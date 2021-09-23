@@ -32,8 +32,9 @@ from api.models import Country,ProjectDescription,WaiverText,NonAnswer
 from cartographer.services import currentQuarter,currentYear,quarterRange
 from api.validation import CountryFeatureCollection
 from api.forms import ProfileForm
-from api import service_calls 
 from api.view_decorators import service_proxy_error
+
+import service_calls
 
 # ================================================
 # Utility views 
