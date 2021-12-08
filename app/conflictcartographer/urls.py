@@ -26,9 +26,8 @@ import api.urls
 from api.admin_views import router as api_admin_router
 import invitations.urls
 from closedMiddleware.views import closed
-#import adminext.urls
-
 from evaluations_api.views import urls as evaluations_api_urls
+import user_administration.urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -52,3 +51,4 @@ urlpatterns += invitations.urls.urlpatterns
 
 urlpatterns += [path("aapi/",include(api_admin_router.urls))]
 
+urlpatterns += user_administration.urls
