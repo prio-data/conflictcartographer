@@ -14,6 +14,7 @@ import Closed from "@/components/Closed"
 import Menu from "@/views/Menu"
 import Results from "@/views/Results"
 import ResultsMap from "@/views/ResultsMap"
+import Deleteme from "@/views/Deleteme"
 
 Vue.use(VueRouter)
 
@@ -29,6 +30,7 @@ const routes = [
    {path: "/info",component: ProjectInfo,name:"Info"},
    {path: "/status",component: StatusScreen,name:"Status"},
    {path: "/closed",component: Closed,name:"Closed"},
+   {path: "/deleteme",component: Deleteme,name:"Deleteme"},
 ]
 
 const router = new VueRouter({

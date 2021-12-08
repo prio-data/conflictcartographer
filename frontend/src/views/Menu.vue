@@ -13,23 +13,27 @@
                   <button title="Add new predictions"
                     v-on:click="$router.push('/')"
                     v-if="is_open">
-                     <checkbox-multiple-marked :size="40"></checkbox-multiple-marked>
+                     <checkbox-multiple-marked :size="30"></checkbox-multiple-marked>
                      Participate
                   </button>
                   <button title="View evaluation"
                      v-on:click="$router.push('/results/-2/')">
-                     <scale-balance :size="40"></scale-balance>
+                     <scale-balance :size="30"></scale-balance>
                      Evaluation
                   </button>
                   <button title="Change assigned countries"
                      v-on:click="$router.push('/assign')">
-                     <map-plus :size="40"></map-plus>
+                     <map-plus :size="30"></map-plus>
                      Countries
                   </button>
                   <button title="Edit profile information"
                      v-on:click="$router.push('/questionaire')">
-                     <account-edit :size="40"></account-edit>
+                     <account-edit :size="30"></account-edit>
                      Profile
+                  </button>
+                  <button v-on:click="$router.push('deleteme')">
+                     <account-cancel :size="30"></account-cancel>
+                     Delete me
                   </button>
                </div>
                <div class="menu-body" v-if="is_open">
@@ -90,15 +94,15 @@
    grid-auto-flow: column
    grid-gap: 10px
    place-items: left 
-   grid-template-columns: repeat(auto-fit, minmax(100px,1fr))
+   grid-template-columns: repeat(auto-fit, minmax(80px,1fr))
 
 #menu-links button
    display: grid
    background: $ui-darkgray
    padding: 20px 0
-   height: 100px
+   height: 90px
    //width: 100px 
-   font-size: 16px
+   font-size: 15px
 </style>
 <script>
 import Card from "@/components/Card"
@@ -111,8 +115,18 @@ import AccountEdit from "vue-material-design-icons/AccountEdit"
 import MapPlus from "vue-material-design-icons/MapPlus"
 import CheckboxMultipleMarked from "vue-material-design-icons/CheckboxMultipleMarked"
 import ScaleBalance from "vue-material-design-icons/ScaleBalance"
+import AccountCancel from "vue-material-design-icons/AccountCancel"
 export default {
-   components: {Card,AccountBox,AccountEdit,MapPlus,CheckboxMultipleMarked,ScaleBalance,CountryStatusTable},
+   components: {
+      Card,
+      AccountBox,
+      AccountEdit,
+      MapPlus,
+      CheckboxMultipleMarked,
+      ScaleBalance,
+      CountryStatusTable,
+      AccountCancel,
+   },
    computed:{
       loaded(){
          return this.unfulfilled !== undefined && 
