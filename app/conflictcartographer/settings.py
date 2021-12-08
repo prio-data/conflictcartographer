@@ -98,6 +98,7 @@ INSTALLED_APPS = [
     "webpack_loader",
     "cartographer",
     "api",
+    "user_administration",
     "closedMiddleware"
 ]
 
