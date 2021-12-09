@@ -48,14 +48,17 @@ def scrub_user(user: User)-> User:
         if val:
             setattr(user, attribute, salt_and_hash(val))
 
+    if User.objects.filter(username = user.username).exists():
+        user = scrub_user(user)
+
+    user.is_active = False
+
     return user
 
 def scrub_users(model_admin: "UserAdmin", request: HttpRequest, queryset):
     for user in queryset:
         user = scrub_user(user)
         user.profile.save()
-        print(user.email)
-        user.is_active = False
         user.save()
 
 scrub_users.short_description = "Remove all person-identifiable data from selected users."

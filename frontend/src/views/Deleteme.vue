@@ -28,6 +28,12 @@ export default {
    methods: {
       deleteme(){
          this.$api.get.rel("profile/deleteme")
+            .then(()=>{
+               window.location.href = "/accounts/login"
+            })
+            .catch((e)=>{
+
+            })
       }
    }
 }
