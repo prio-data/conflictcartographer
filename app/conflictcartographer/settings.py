@@ -249,7 +249,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 if env.bool("DEFAULT_STATIC", False):
     STATIC_URL = "/static/"
-
 else:
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
     STATIC_ROOT = os.path.join(BASE_DIR,"static")
