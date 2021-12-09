@@ -18,16 +18,6 @@ def makeLink(url, text=None):
         text = url
     return f"<p><b><a href={url}>{text}</a></b></p>"
 
-class ProfileInline(admin.StackedInline):
-    model = Profile 
-
-admin.site.unregister(User)
-@admin.register(User)
-class UserAdmin(BaseUserAdmin):
-    inlines = (
-            ProfileInline,
-        )
-
 def dispatch_invitation(modeladmin, request, queryset):
     """
     Send invitation email

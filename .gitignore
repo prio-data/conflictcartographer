@@ -27,3 +27,4 @@ penv.env
 .coverage
 htmlcov/
 depr/
+.env

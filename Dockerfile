@@ -10,13 +10,16 @@ FROM python:3.8
 RUN apt update
 RUN apt install gdal-bin -y
 
-ENV PRODUCTION=1
 COPY requirements.txt /requirements.txt
 RUN pip install -r requirements.txt
+
+ENV PRODUCTION=1
+ENV DEFAULT_STATIC=false
 
 COPY ./app /app
 WORKDIR /app
 COPY --from=nodebuilder /frontend/dist /app/compiled
+
 RUN ./manage.py collectstatic --noinput
 
 COPY ./cert/ /cert
