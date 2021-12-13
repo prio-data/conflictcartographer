@@ -1,7 +1,7 @@
 <template>
    <table cellspacing=0 cellpadding=0 id="country-status-table">
-      <CountrySummary :country="country" v-for="country in countries" :key="country.gwno">
-      </CountrySummary>
+      <CountryProgressSummary :country="country" v-for="country in countries" :key="country.gwno">
+      </CountryProgressSummary>
    </table>
 </template>
 <style lang="sass">
@@ -24,9 +24,9 @@ th
 
 </style>
 <script>
-import CountrySummary from "@/components/widgets/CountrySummary"
+import CountryProgressSummary from "@/components/CountryProgressSummary"
 export default {
    props: ["countries"],
-   components: {CountrySummary},
+   components: {CountryProgressSummary},
 }
 </script>

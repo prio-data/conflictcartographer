@@ -1,5 +1,5 @@
 
-import {format_date} from "@/date_formatting"
+import {format_date} from "@/lib/date_formatting"
 
 let tests = [
    {input:"1999-01-1",output:"January 1999"},

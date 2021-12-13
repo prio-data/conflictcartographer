@@ -135,11 +135,11 @@ select
 </style>
 <script>
 import * as L from "leaflet"
-import {TILE_URL,ll_gj_box} from "@/configure_map"
+import {TILE_URL,ll_gj_box} from "@/lib/geo"
 import bbox from "geojson-bbox"
 import {ged_point} from "@/map"
-import {display_functions,compute_stats} from "@/results_display"
-import {round_to} from "@/util"
+import {display_functions,compute_stats} from "@/lib/results_display"
+import {round_to} from "@/lib/math"
 import Spinner from "@/components/Spinner"
 
 function fetch_country(map,api,gwno){

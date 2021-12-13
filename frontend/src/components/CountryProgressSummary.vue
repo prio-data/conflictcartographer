@@ -47,6 +47,7 @@ span.noticeme
 </style>
 <script>
 export default {
+   name: "CountryEvaluationSummary",
    props: ["country"],
    data(){
       return {

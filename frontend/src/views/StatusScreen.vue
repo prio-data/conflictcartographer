@@ -46,7 +46,7 @@
 <script>
 import Card from "@/components/Card"
 import CountryStatusTable from "@/components/CountryStatusTable"
-import {format_date} from "@/date_formatting"
+import {format_date} from "@/lib/date_formatting"
 export default {
    components: {Card,CountryStatusTable},
 

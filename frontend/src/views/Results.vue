@@ -18,7 +18,7 @@
             </div>
             <div class="summaries">
                <div v-for="c in data" :key="c.gwno" class="summary">
-                  <CountrySummary :country="c"></CountrySummary>
+                  <CountryEvaluationSummary :country="c"></CountryEvaluationSummary>
                   <button class="continue" v-on:click="$router.push(`/results/${shift}/map/${c.gwno}`)">
                      Details
                      <MapSearchOutline></MapSearchOutline>
@@ -98,14 +98,15 @@
 
 </style>
 <script>
-import Card from "@/components/Card"
-import ScaleBalance from "vue-material-design-icons/ScaleBalance"
-import PagePreviousOutline from "vue-material-design-icons/PagePreviousOutline"
-import PageNextOutline from "vue-material-design-icons/PageNextOutline"
-import MapSearchOutline from "vue-material-design-icons/MapSearchOutline"
-import CountrySummary from "@/components/CountrySummary"
-import {format_date} from "@/date_formatting"
-import * as R from "ramda"
+
+import Card                     from "@/components/Card"
+import ScaleBalance             from "vue-material-design-icons/ScaleBalance"
+import PagePreviousOutline      from "vue-material-design-icons/PagePreviousOutline"
+import PageNextOutline          from "vue-material-design-icons/PageNextOutline"
+import MapSearchOutline         from "vue-material-design-icons/MapSearchOutline"
+import CountryEvaluationSummary from "@/components/CountryEvaluationSummary"
+import {format_date}            from "@/lib/date_formatting"
+import *                        as   R from "ramda"
 
 const sort_by_name = R.sortBy(R.prop("foo"))
 
@@ -128,7 +129,7 @@ const date_str = (a,b)=>{
 }
 
 export default {
-   components: {Card,ScaleBalance,CountrySummary,PagePreviousOutline,PageNextOutline,MapSearchOutline},
+   components: {Card,ScaleBalance,CountryEvaluationSummary,PagePreviousOutline,PageNextOutline,MapSearchOutline},
 
    data(){
       return {

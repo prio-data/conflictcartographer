@@ -363,10 +363,10 @@ import bbox from "geojson-bbox"
 
 import "@/sass/leaflet_custom.sass"
 
-import colorGradient from "@/util/colorGradient.js"
+import color_gradient from "@/lib/color_gradient.js"
 import HelptextOverlay from "@/components/HelptextOverlay"
 import Slideover from "@/components/Slideover"
-import Spinner from "@/components/widgets/Spinner"
+import Spinner from "@/components/Spinner"
 
 import VueSlider from "vue-slider-component"
 import "vue-slider-component/theme/default.css"
@@ -374,11 +374,11 @@ import "@/sass/vueslider.sass"
 
 import vue100vh from "vue-100vh"
 
-import {configure_map,shape_to_latlng_box,fit_to_geojson} from "@/configure_map"
+import {configure_map,shape_to_latlng_box,fit_to_geojson} from "@/lib/geo"
 
-import debounce from "@/util/debounce"
+import debounce from "@/lib/debounce"
 
-import {format_date} from "@/date_formatting"
+import {format_date} from "@/lib/date_formatting"
 
 L.drawLocal.draw.handlers.polygon.tooltip.start = ""
 
@@ -752,7 +752,7 @@ export default {
 
          toStyle.setStyle((feature)=>{
             let style = BASE_STYLE
-            style.color = colorGradient(
+            style.color = color_gradient(
                (feature.properties.intensity)/this.nchoices, COLORS.low, COLORS.high
             )
             style.fillOpacity = ((feature.properties.confidence/100)*0.5) + 0.2
@@ -769,7 +769,7 @@ export default {
 
       computeStyle: function(layer){
          let base = {
-            color: colorGradient((layer.feature.properties.intensity)/5,COLORS.low,COLORS.high), 
+            color: color_gradient((layer.feature.properties.intensity)/5,COLORS.low,COLORS.high), 
             fillOpacity: 0.4+((layer.feature.properties.confidence / 100)*0.4)
          }
          if(layer.url == this.infocus){

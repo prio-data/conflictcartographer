@@ -36,7 +36,7 @@ const rgbDiff = function(delta, x, y){
    })
 }
 
-export default function colorGradient(delta, x, y){
+export default function color_gradient(delta, x, y){
    const result = rgbDiff(delta, hexToRgb(x), hexToRgb(y))
    return rgbToHex(...result);
 }

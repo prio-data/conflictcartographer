@@ -114,8 +114,8 @@ import Card from "@/components/Card"
 import CountryStatusTable from "@/components/CountryStatusTable"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
-import {shape_to_latlng_box} from "@/configure_map"
-import {format_date} from "@/date_formatting"
+import {shape_to_latlng_box} from "@/lib/geo"
+import {format_date} from "@/lib/date_formatting"
 
 export default {
    components: {Card,CountryStatusTable},

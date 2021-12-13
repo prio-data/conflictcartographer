@@ -107,7 +107,7 @@
 <script>
 import Card from "@/components/Card"
 import CountryStatusTable from "@/components/CountryStatusTable"
-import {format_date} from "@/date_formatting"
+import {format_date} from "@/lib/date_formatting"
 
 import AccountBox from "vue-material-design-icons/AccountBox"
 import AccountEdit from "vue-material-design-icons/AccountEdit"

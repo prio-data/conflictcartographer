@@ -1,11 +1,10 @@
 //jest.mock("@/util/debounce")
 
-import {mount} from "@vue/test-utils"
-import flushPromises from "flush-promises"
-import {Api} from "@/testutils"
-import {mock_countries} from "@/mocking"
-
-import LoadingRouter from "@/components/LoadingRouter"
+import {mount}          from "@vue/test-utils"
+import flushPromises    from "flush-promises"
+import {Api}            from "@/testing/utils"
+import {mock_countries} from "@/testing/mock"
+import LoadingRouter    from "@/views/LoadingRouter"
 
 function mockRouter(){
    this.path = undefined

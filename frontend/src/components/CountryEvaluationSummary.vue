@@ -29,7 +29,7 @@ h2
    color: $ui-highlight
 </style>
 <script>
-import MetricView from "@/components/widgets/MetricView"
+import MetricView from "@/components/MetricView"
 import SetCenter from "vue-material-design-icons/SetCenter"
 import Bullseye from "vue-material-design-icons/Bullseye"
 
