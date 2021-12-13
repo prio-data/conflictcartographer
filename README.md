@@ -5,3 +5,8 @@ to be easily deployed as a single docker container, which holds both the
 backend code, and compiled frontend code.
 
 The app is being used to gather data about conflict risk from expert informants.
+
+## Development
+
+Please see the [wiki](prio-data/conflictcartographer/wiki) for information
+about how to run and maintain Conflict Cartographer.
