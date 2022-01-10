@@ -28,6 +28,7 @@ import invitations.urls
 from closed.views import closed
 from evaluations_api.views import urls as evaluations_api_urls
 from user_administration.urls import urls as user_administration_urls
+from consent.urls import urls as consent_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -49,6 +50,6 @@ urlpatterns = [
 urlpatterns += api.urls.urlpatterns
 urlpatterns += invitations.urls.urlpatterns
 urlpatterns += user_administration_urls
+urlpatterns += consent_urls
 
 urlpatterns += [path("aapi/",include(api_admin_router.urls))]
-
