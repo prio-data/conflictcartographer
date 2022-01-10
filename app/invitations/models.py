@@ -29,7 +29,7 @@ from api.models import Country,Profile
 #from invitations.services.email import dispatchInvitation
 from invitations.util import referralKeygen
 
-from utils.mixins import OnlyOneActive
+from lib.onlyoneactive import OnlyOneActive
 
 logger = logging.getLogger(__name__)
 

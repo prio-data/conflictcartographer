@@ -1,9 +1,9 @@
 import logging
-
 from datetime import date
 from dateutil.relativedelta import relativedelta
-from snec import Api
-from . import checks,exceptions
+
+from lib.api import Api
+from evaluations_api import checks,exceptions
 
 logger = logging.getLogger(__name__)
 

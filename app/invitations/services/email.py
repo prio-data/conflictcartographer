@@ -34,7 +34,7 @@ from api.models import Country,Profile
 from invitations.models import EmailTemplate,Invitation
 from invitations.util import referralKeygen
 
-from utils.mixins import OnlyOneActive
+from lib.onlyoneactive import OnlyOneActive
 
 logger = logging.getLogger(__name__)
 premailer = Premailer(

@@ -34,7 +34,7 @@ from api.validation import CountryFeatureCollection
 from api.forms import ProfileForm
 from api.view_decorators import service_proxy_error
 
-import service_calls
+from lib import service_calls
 
 # ================================================
 # Utility views 
