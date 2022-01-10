@@ -18,3 +18,4 @@ def check_active(get_response):
         except Exception as e:
             return HttpResponse(str(e))
     return middleware
+

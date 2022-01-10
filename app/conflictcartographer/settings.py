@@ -99,7 +99,8 @@ INSTALLED_APPS = [
     "cartographer",
     "api",
     "user_administration",
-    "closedMiddleware"
+    "closed",
+    "consent"
 ]
 
 MIDDLEWARE = [
@@ -111,8 +112,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #"livereload.middleware.LiveReloadScript",
-    "closedMiddleware.middleware.check_active"
+    "closed.middleware.check_active",
+    "consent.middleware.has_consented"
 ]
 
 ROOT_URLCONF = 'conflictcartographer.urls'
@@ -250,9 +251,12 @@ AUTH_PASSWORD_VALIDATORS = [
 if env.bool("DEFAULT_STATIC", False):
     STATIC_URL = "/static/"
 else:
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-    STATIC_ROOT = os.path.join(BASE_DIR,"static")
-    STATIC_HOST = 'http://0.0.0.0:1337' if DEBUG else ''
+    if DEBUG:
+        STATIC_HOST = 'http://0.0.0.0:1337' if DEBUG else ''
+    else:
+        STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+        STATIC_ROOT = os.path.join(BASE_DIR,"static")
+        STATIC_HOST=""
     STATIC_URL = STATIC_HOST + "/static/" 
 
     STATICFILES_DIRS = [

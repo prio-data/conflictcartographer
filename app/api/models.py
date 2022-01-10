@@ -11,7 +11,7 @@ from django.core.validators import MinValueValidator,MaxValueValidator
 from annoying.fields import AutoOneToOneField
 
 from cartographer.services import getQuarter,quarterRange,today
-from utils.mixins import OnlyOneActive
+from lib.onlyoneactive import OnlyOneActive
 
 class WaiverText(OnlyOneActive,Model):
     content = TextField(default="ENTER A WAIVER TEXT HERE",null=False)

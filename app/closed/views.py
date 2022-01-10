@@ -5,4 +5,4 @@ def closed(request):
     if settings.ACTIVE:
         return redirect("/")
     else:
-        return render(request,"closedMiddleware/closed.html",{})
+        return render(request,"closed/closed.html",{})

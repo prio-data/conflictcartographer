@@ -19,7 +19,7 @@
             </CountryStatusTable>
 
             <p>
-               The next data-entry period is {{ next_data_entry }}, 
+               The next data-entry period starts {{ next_data_entry }}, 
                where you will predict for conflict in the
                period {{ next_pred_period_start }} - {{ next_pred_period_end }}. 
             </p>
@@ -81,7 +81,7 @@ export default {
             this.start_pred = format_date(r.data.start)
             this.end_pred = format_date(r.data.end)
 
-            this.next_data_entry = format_date(r.data.end)
+            this.next_data_entry = format_date(r.data.start)
 
          })
          .catch((e)=>{
