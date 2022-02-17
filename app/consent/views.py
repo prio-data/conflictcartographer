@@ -11,6 +11,6 @@ def submit_consent(request: HttpRequest) -> HttpResponse:
     redirect_to = base64.b16decode(came_from).decode() if came_from else "/"
     response = redirect(redirect_to)
 
-    consent_expiry_date = datetime.now() + datetime.timedelta(days = 365)
+    consent_expiry_date = datetime.datetime.now() + datetime.timedelta(days = 365)
     response.set_cookie("privacy-consent", "true", expires = consent_expiry_date)
     return response
