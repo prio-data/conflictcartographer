@@ -41,6 +41,9 @@ class Profile(Model):
 
     waiver = BooleanField(default = False)
 
+    last_mailed = DateField(default = None, null = True, blank = True)
+    unsubscribed = BooleanField(default = False)
+
     def __str__(self):
         return f"profile of {self.user.username}" # pylint: disable=no-member
 

@@ -100,7 +100,8 @@ INSTALLED_APPS = [
     "api",
     "user_administration",
     "closed",
-    "consent"
+    "consent",
+    "unsubscribe",
 ]
 
 MIDDLEWARE = [
