@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class CartographerConfig(AppConfig):
+class CoreConfig(AppConfig):
     name = 'cartographer'

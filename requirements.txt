@@ -45,4 +45,4 @@ toolz>=0.11.1
 python-dateutil>=2.8.1
 environs>=9.3.5
 
-cc-backend-lib>=0.10.0
+cc-backend-lib>=0.11.0
