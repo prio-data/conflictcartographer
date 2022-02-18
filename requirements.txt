@@ -42,7 +42,6 @@ geojson==2.5.0
 requests>=2.24.0
 toolz>=0.11.1
 
-snec>=0.1.0
 python-dateutil>=2.8.1
 environs==9.3.5
 
