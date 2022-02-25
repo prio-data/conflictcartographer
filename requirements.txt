@@ -1,7 +1,7 @@
 astroid>=2.4.2
 beautifulsoup4>=4.8.1
 
-Django>=3.1.2
+Django==3.2.12
 django-filter>=2.4.0
 django-livereload-server>=0.3.2
 django-webpack-loader>=0.6.0
@@ -46,3 +46,6 @@ python-dateutil>=2.8.1
 environs>=9.3.5
 
 cc-backend-lib>=0.11.0
+geomock>=2.0.1
+Faker==13.2.0
+django-extensions==3.1.5

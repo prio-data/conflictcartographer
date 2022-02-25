@@ -1,9 +1,9 @@
 """
 Conflict cartographer settings
 """
-
 from environs import Env
 import os
+
 
 env = Env()
 env.read_env()
@@ -19,24 +19,25 @@ env.read_env()
 # ================================================
 # ================================================
 
-ACTIVE     = env.bool("APP_DISABLED", True)
+SECRET_KEY = env.str("SECRET_KEY","0"*128)
 
-SECRET_KEY = env.str("SECRET_KEY","fgsfds")
-DEBUG      = not env.bool("PRODUCTION")
+ACTIVE     = env.bool("APP_DISABLED", True)
+DEBUG      = not env.bool("PRODUCTION", False)
+
 
 DATABASES = {
         "default":{
             "ENGINE":       "django.db.backends.postgresql_psycopg2",
             "HOST":         env.str("DB_HOST",         "0.0.0.0"),
             "PORT":         env.str("DB_PORT",         "2345"),
-            "USER":         env.str("DB_USER",         "conflictcartographer"),
-            "PASSWORD":     env.str("DB_PASSWORD",     "letmein"),
-            "NAME":         env.str("DB_NAME",         "cc"),
+            "USER":         env.str("DB_USER",         "fakedata"),
+            "PASSWORD":     env.str("DB_PASSWORD",     "fakedata"),
+            "NAME":         env.str("DB_NAME",         "fakedata"),
             "CONN_MAX_AGE": env.int("DB_CONN_MAX_AGE", 3600)
         }
 }
 
-DB_SSL = env.bool("DB_SSL", True)
+DB_SSL = env.bool("DB_SSL", False)
 
 if DB_SSL:
     DATABASES["default"].update({
@@ -87,7 +88,7 @@ SITE_ID = 1
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
-    'django.contrib.contenttypes',
+    "django.contrib.contenttypes",
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -95,6 +96,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "invitations",
     "django_filters",
+    "django_extensions",
     "webpack_loader",
     "cartographer",
     "api",
@@ -102,6 +104,7 @@ INSTALLED_APPS = [
     "closed",
     "consent",
     "unsubscribe",
+    #"mocking",
 ]
 
 MIDDLEWARE = [
@@ -279,3 +282,11 @@ METRICS_URL   = env.str("METRICS_URL",   "http://metrics")
 API_URL       = env.str("API_URL",       "http://api")
 GED_URL       = env.str("GED_URL",       "http://ged")
 
+
+# ================================================
+# ================================================
+# DATA MOCKING
+
+MOCK_N_USERS = env.int("MOCK_N_USERS", 100)
+MOCK_MAX_PREDICTIONS_PER_USER_COUNTRY = env.int("MOCK_MAX_PREDICTIONS_PER_USER_COUNTRY", 20)
+MOCK_USER_PASSWORD = env.str("MOCK_USER_PASSWORD", "iamjustamockuser")
